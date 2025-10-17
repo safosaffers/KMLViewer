@@ -2,6 +2,10 @@
 #define VIEW_H
 
 #include <QMainWindow>
+#include <QVBoxLayout>
+
+#include "openglwidget.h"
+#include "ui_view.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -9,15 +13,17 @@ class View;
 }
 QT_END_NAMESPACE
 
-class View : public QMainWindow
-{
-    Q_OBJECT
+class OpenGLWidget;
+
+class View : public QMainWindow {
+  Q_OBJECT
 
 public:
-    View(QWidget *parent = nullptr);
-    ~View();
+  View(QWidget *parent = nullptr);
+  ~View();
 
 private:
-    Ui::View *ui;
+  Ui::View *ui;
+  OpenGLWidget *openglwidget;
 };
-#endif // VIEW_H
+#endif  // VIEW_H
