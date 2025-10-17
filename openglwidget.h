@@ -2,7 +2,6 @@
 #define OPENGLWIDGET_H
 #include <QOpenGLFunctions>
 #include <QOpenGLWidget>
-#include <QPaintEvent>
 #include <QPainter>
 class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   Q_OBJECT
