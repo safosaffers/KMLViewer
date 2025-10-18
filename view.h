@@ -18,12 +18,12 @@ class OpenGLWidget;
 class View : public QMainWindow {
   Q_OBJECT
 
-public:
-  View(QWidget *parent = nullptr);
+ public:
+  View(QWidget* parent = nullptr);
   ~View();
 
-private:
-  Ui::View *ui;
-  OpenGLWidget *openglwidget;
+ private:
+  Ui::View* ui;
+  OpenGLWidget* glwidget;
 };
 #endif  // VIEW_H
