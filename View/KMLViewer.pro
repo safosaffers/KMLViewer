@@ -1,4 +1,4 @@
-QT       += core gui widgets opengl openglwidgets
+QT       += core gui widgets opengl openglwidgets xml
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
