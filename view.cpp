@@ -12,3 +12,14 @@ View::View(QWidget* parent) : QMainWindow(parent), ui(new Ui::View) {
 }
 
 View::~View() { delete ui; }
+
+void View::on_btnUploadaKMLFile_clicked()
+{
+  QString filePath = QFileDialog::getOpenFileName(
+      nullptr, "Open File", "", "Text files (*.kml);;All files (*)");
+  if (!filePath.isEmpty()) {
+    // qInfo()<< "model choosed: " << filePath;
+    emit fileNameChoosed(filePath);
+  }
+}
+

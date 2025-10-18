@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="8,4">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="8,0">
       <item>
        <widget class="QWidget" name="glwidget" native="true"/>
       </item>
@@ -81,7 +81,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="btnUploadaKMLFile">
             <property name="text">
              <string>Выбрать файл</string>
             </property>
