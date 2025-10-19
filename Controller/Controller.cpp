@@ -8,5 +8,6 @@ Controller::~Controller() {}
 void Controller::HandleModelLoading(QString fileName) {
   model->initializeModel(fileName);
   view->getGLWidget()->setPolygons(model->getPolygons());
+  view->getGLWidget()->updateViewport(model->getDownRightCornerForViewPort());
   view->getGLWidget()->update();
 }

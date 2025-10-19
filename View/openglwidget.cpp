@@ -13,23 +13,21 @@ void OpenGLWidget::paintGL() {
   QPainter painter(this);
   painter.setRenderHint(QPainter::Antialiasing);
 
-  painter.setPen(QPen(Qt::black, 5));
+  painter.setPen(QPen(Qt::black, 1));
   QColor br = Qt::black;
   br.setAlphaF(0.5);
   painter.setBrush(br);
-  static const QPointF points2[4] = {
-      QPointF(20.0, 500.0), QPointF(200.0, 150.0), QPointF(700.0, 50.0),
-      QPointF(450.0, 450.0)};
-  painter.drawConvexPolygon(points2, 4);
 
-  painter.setPen(QPen(Qt::green, 5));
-  br = Qt::green;
-  br.setAlphaF(0.5);
-  painter.setBrush(br);
-  static const QPointF points[4] = {QPointF(50.0, 400.0), QPointF(100.0, 50.0),
-                                    QPointF(400.0, 150.0),
-                                    QPointF(450.0, 350.0)};
-  painter.drawConvexPolygon(points, 4);
+
+  // for(QPolygonF &poly : polygons){
+  //   painter.drawPolygon(poly, Qt::WindingFill);
+  // }
+  updateViewport(QPointF(20,20));
+  painter.setWorldTransform(transformViewport);
+  static const QPointF points2[4] = {
+      QPointF(0., 0.), QPointF(20., 0.), QPointF(20., 20.),
+      QPointF(0., 20.)};
+  painter.drawConvexPolygon(points2, 4);
 
   painter.end();
 }
@@ -38,4 +36,15 @@ void OpenGLWidget::resizeGL(int width, int height) {
 }
 void OpenGLWidget::setPolygons(QList<QPolygonF> polygons) {
   this->polygons = polygons;
+}
+QTransform OpenGLWidget::updateViewport(QPointF Max){
+  QTransform t;
+  double emptyPercent = 20;
+  double emptySpaceX = Max.x()*emptyPercent/100;
+  double emptySpaceY = Max.x()*emptyPercent/100;
+  double scale =  (qMax(Max.x(), Max.y())+emptySpaceX) / qMin(width(), height());
+  t.scale(1/scale, 1/scale);
+  t.translate(emptySpaceX/2, emptySpaceY/2);
+  transformViewport = t;
+  return t;
 }

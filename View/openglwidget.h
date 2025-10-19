@@ -9,12 +9,13 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   Q_OBJECT
  private:
   QList<QPolygonF> polygons;
+   QTransform transformViewport;
 
  public:
   explicit OpenGLWidget(QWidget* parent = nullptr);
   ~OpenGLWidget();
   void setPolygons(QList<QPolygonF> polygons);
-
+  QTransform updateViewport(QPointF downRightCorner);
  protected:
   void initializeGL() override;
   void paintGL() override;

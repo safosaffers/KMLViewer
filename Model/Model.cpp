@@ -148,3 +148,6 @@ void Model::initializeModel(QString filePath) {
   }
 }
 QList<QPolygonF> Model::getPolygons() { return polygons; }
+QPointF Model::getDownRightCornerForViewPort(){
+  return downRightCornerForViewPort;
+}

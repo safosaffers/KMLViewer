@@ -13,11 +13,13 @@
 class Model {
  private:
   QList<QPolygonF> polygons;
+   QPointF downRightCornerForViewPort;
 
  public:
   Model();
   ~Model();
   void initializeModel(QString filePath);
   QList<QPolygonF> getPolygons();
+  QPointF getDownRightCornerForViewPort();
 };
 #endif  // MODEL_H
