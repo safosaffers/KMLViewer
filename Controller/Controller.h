@@ -5,7 +5,6 @@
 
 #include "../Model/Model.h"
 #include "../View/view.h"
-
 class Controller : public QObject {
   Q_OBJECT
 

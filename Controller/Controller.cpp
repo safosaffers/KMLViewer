@@ -7,4 +7,6 @@ Controller::~Controller() {}
 
 void Controller::HandleModelLoading(QString fileName) {
   model->initializeModel(fileName);
+  view->getGLWidget()->setPolygons(model->getPolygons());
+  view->getGLWidget()->update();
 }

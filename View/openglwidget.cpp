@@ -17,8 +17,9 @@ void OpenGLWidget::paintGL() {
   QColor br = Qt::black;
   br.setAlphaF(0.5);
   painter.setBrush(br);
-  static const QPointF points2[4] = {QPointF(20.0, 500.0), QPointF(200.0, 150.0),
-                                     QPointF(700.0, 50.0), QPointF(450.0, 450.0)};
+  static const QPointF points2[4] = {
+      QPointF(20.0, 500.0), QPointF(200.0, 150.0), QPointF(700.0, 50.0),
+      QPointF(450.0, 450.0)};
   painter.drawConvexPolygon(points2, 4);
 
   painter.setPen(QPen(Qt::green, 5));
@@ -26,9 +27,15 @@ void OpenGLWidget::paintGL() {
   br.setAlphaF(0.5);
   painter.setBrush(br);
   static const QPointF points[4] = {QPointF(50.0, 400.0), QPointF(100.0, 50.0),
-                                    QPointF(400.0, 150.0), QPointF(450.0, 350.0)};
+                                    QPointF(400.0, 150.0),
+                                    QPointF(450.0, 350.0)};
   painter.drawConvexPolygon(points, 4);
 
   painter.end();
 }
-void OpenGLWidget::resizeGL(int width, int height) { glViewport(0, 0, width, height); }
+void OpenGLWidget::resizeGL(int width, int height) {
+  glViewport(0, 0, width, height);
+}
+void OpenGLWidget::setPolygons(QList<Polygon> polygons) {
+  this->polygons = polygons;
+}

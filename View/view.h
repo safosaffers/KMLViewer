@@ -1,9 +1,10 @@
 #ifndef VIEW_H
 #define VIEW_H
 
+#include <QFileDialog>
 #include <QMainWindow>
 #include <QVBoxLayout>
-#include <QFileDialog>
+
 #include "openglwidget.h"
 #include "ui_view.h"
 
@@ -21,15 +22,16 @@ class View : public QMainWindow {
  public:
   View(QWidget* parent = nullptr);
   ~View();
+  OpenGLWidget* getGLWidget();
 
-private slots:
+ private slots:
   void on_btnUploadaKMLFile_clicked();
 
-private:
+ private:
   Ui::View* ui;
   OpenGLWidget* glwidget;
 
-signals:
+ signals:
   /**
    * @brief Signal emitted when a file name is selected by the user
    * @param fileName Path to the selected model file

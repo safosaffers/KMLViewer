@@ -2,7 +2,6 @@
 
 Model::Model() {}
 Model::~Model() {}
-typedef QList<QPointF> Polygon;
 QDomDocument* setContentFromFile(QString filePath) {
   QDomDocument* doc = NULL;
 
@@ -122,7 +121,7 @@ void Model::initializeModel(QString filePath) {
     double maxLat = -180.0;
     const QList<Polygon> LonLatQList =
         parseLonLatFromKML(filePath, minLon, maxLon, minLat, maxLat);
-    QList<Polygon> MetersQList = convertToMeters(LonLatQList, minLon, minLat);
+    polygons = convertToMeters(LonLatQList, minLon, minLat);
 
     // -> top-left corner is just 0,0
     QPointF corner = getCornerInMeters(minLon, maxLon, minLat,
@@ -137,7 +136,7 @@ void Model::initializeModel(QString filePath) {
       }
     }
 
-    for (const Polygon& poly : MetersQList) {
+    for (const Polygon& poly : polygons) {
       qDebug() << "\n" << i << "Poly: \n";
       i++;
       for (const QPointF xy : poly) {
@@ -147,6 +146,5 @@ void Model::initializeModel(QString filePath) {
   } catch (const std::invalid_argument& e) {
     qDebug() << "Error: " << e.what();
   }
-
-  // todo
 }
+QList<Polygon> Model::getPolygons() { return polygons; }
