@@ -29,10 +29,10 @@ void updateMaxMinLatLon(double longitude, double latitude, double& minLon,
     maxLat = latitude;
   }
 }
-static Polygon parseLonLatString(const QString& coordsString, double& minLon,
-                                 double& maxLon, double& minLat,
-                                 double& maxLat) {
-  Polygon result;
+static QPolygonF parseLonLatString(const QString& coordsString, double& minLon,
+                                   double& maxLon, double& minLat,
+                                   double& maxLat) {
+  QPolygonF result;
 
   const QStringList coordPairs = coordsString.split(" ", Qt::SkipEmptyParts);
   for (const QString& pair : coordPairs) {
@@ -51,15 +51,15 @@ static Polygon parseLonLatString(const QString& coordsString, double& minLon,
   return result;
 }
 
-QList<Polygon> parseLonLatFromKML(QString filePath, double& minLon,
-                                  double& maxLon, double& minLat,
-                                  double& maxLat) {
+QList<QPolygonF> parseLonLatFromKML(QString filePath, double& minLon,
+                                    double& maxLon, double& minLat,
+                                    double& maxLat) {
   QDomDocument* doc = setContentFromFile(filePath);
   if (!doc) {
     throw std::invalid_argument("Failed to open or parse KML file");
   }
 
-  QList<Polygon> result;
+  QList<QPolygonF> result;
   QDomNodeList coordsList = doc->elementsByTagName(QString("coordinates"));
   for (const QDomNode& coords : coordsList) {
     QString coordsString = coords.firstChild().nodeValue();
@@ -92,11 +92,11 @@ double lonDifferenceInMeters(double lat1, double lat2, double lon1,
   double result = 2 * R * asin(sqrt(havTheta));
   return result;
 }
-QList<Polygon> convertToMeters(QList<Polygon> LonLatQList, double& minLon,
-                               double& minLat) {
-  QList<Polygon> MetersQList;
-  for (Polygon& latLonPoly : LonLatQList) {
-    Polygon metersPoly;
+QList<QPolygonF> convertToMeters(QList<QPolygonF> LonLatQList, double& minLon,
+                                 double& minLat) {
+  QList<QPolygonF> MetersQList;
+  for (QPolygonF& latLonPoly : LonLatQList) {
+    QPolygonF metersPoly;
     for (QPointF lonlat : latLonPoly) {
       double xLen = latDifferenceInMeters(minLat, lonlat.y());
       double yLen =
@@ -119,7 +119,7 @@ void Model::initializeModel(QString filePath) {
     double maxLon = -90.0;
     double minLat = 180.0;
     double maxLat = -180.0;
-    const QList<Polygon> LonLatQList =
+    const QList<QPolygonF> LonLatQList =
         parseLonLatFromKML(filePath, minLon, maxLon, minLat, maxLat);
     polygons = convertToMeters(LonLatQList, minLon, minLat);
 
@@ -128,7 +128,7 @@ void Model::initializeModel(QString filePath) {
                                        maxLat);  // -> down-right corner
 
     int i = 0;
-    for (const Polygon& poly : LonLatQList) {
+    for (const QPolygonF& poly : LonLatQList) {
       qDebug() << "\n" << i << "Poly: \n";
       i++;
       for (const QPointF lonlat : poly) {
@@ -136,7 +136,7 @@ void Model::initializeModel(QString filePath) {
       }
     }
 
-    for (const Polygon& poly : polygons) {
+    for (const QPolygonF& poly : polygons) {
       qDebug() << "\n" << i << "Poly: \n";
       i++;
       for (const QPointF xy : poly) {
@@ -147,4 +147,4 @@ void Model::initializeModel(QString filePath) {
     qDebug() << "Error: " << e.what();
   }
 }
-QList<Polygon> Model::getPolygons() { return polygons; }
+QList<QPolygonF> Model::getPolygons() { return polygons; }

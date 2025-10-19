@@ -6,19 +6,18 @@
 #include <QDomAttr>
 #include <QFile>
 #include <QPointF>
+#include <QPolygonF>
 #include <QString>
 #include <cmath>
-
-#include "../Common/Common.h"
 #define EQUATORIAL_EARTH_RADIUS_METERS 6378137
 class Model {
-private:
-  QList<Polygon> polygons;
+ private:
+  QList<QPolygonF> polygons;
 
  public:
   Model();
   ~Model();
   void initializeModel(QString filePath);
-  QList<Polygon> getPolygons();
+  QList<QPolygonF> getPolygons();
 };
 #endif  // MODEL_H

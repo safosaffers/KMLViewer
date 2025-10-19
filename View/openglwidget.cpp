@@ -36,6 +36,6 @@ void OpenGLWidget::paintGL() {
 void OpenGLWidget::resizeGL(int width, int height) {
   glViewport(0, 0, width, height);
 }
-void OpenGLWidget::setPolygons(QList<Polygon> polygons) {
+void OpenGLWidget::setPolygons(QList<QPolygonF> polygons) {
   this->polygons = polygons;
 }

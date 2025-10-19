@@ -3,17 +3,17 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLWidget>
 #include <QPainter>
+#include <QPolygonF>
 
-#include "../Common/Common.h"
 class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   Q_OBJECT
  private:
-  QList<Polygon> polygons;
+  QList<QPolygonF> polygons;
 
  public:
   explicit OpenGLWidget(QWidget* parent = nullptr);
   ~OpenGLWidget();
-  void setPolygons(QList<Polygon> polygons);
+  void setPolygons(QList<QPolygonF> polygons);
 
  protected:
   void initializeGL() override;
