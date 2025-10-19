@@ -23,7 +23,8 @@ void updateMaxMinLatLon(double longitude, double latitude, double& minLon,
     minLon = longitude;
   } else if (maxLon < longitude) {
     maxLon = longitude;
-  } else if (minLat > latitude) {
+  }
+  if (minLat > latitude) {
     minLat = latitude;
   } else if (maxLat < latitude) {
     maxLat = latitude;
@@ -98,9 +99,9 @@ QList<QPolygonF> convertToMeters(QList<QPolygonF> LonLatQList, double& minLon,
   for (QPolygonF& latLonPoly : LonLatQList) {
     QPolygonF metersPoly;
     for (QPointF lonlat : latLonPoly) {
-      double xLen = latDifferenceInMeters(minLat, lonlat.y());
-      double yLen =
+      double xLen =
           lonDifferenceInMeters(minLat, lonlat.y(), minLon, lonlat.x());
+      double yLen = latDifferenceInMeters(minLat, lonlat.y());
       metersPoly.append(QPointF(xLen, yLen));
     }
     MetersQList.append(metersPoly);
