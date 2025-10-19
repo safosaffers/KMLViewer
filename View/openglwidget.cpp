@@ -43,7 +43,12 @@ QTransform OpenGLWidget::updateViewport() {
       qMin(width(), height());
   t.scale(1 / scale, 1 / scale);
   t.translate(emptySpaceX / 2, emptySpaceY / 2);
-  transformViewport = t;
+
+  QTransform swapY;
+  swapY.translate(0, height());
+  swapY.scale(1, -1);
+
+  transformViewport = t * swapY;
   return t;
 }
 QTransform OpenGLWidget::updateViewport(QPointF Max) {
