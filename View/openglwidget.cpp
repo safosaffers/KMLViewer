@@ -18,33 +18,36 @@ void OpenGLWidget::paintGL() {
   br.setAlphaF(0.5);
   painter.setBrush(br);
 
-
-  // for(QPolygonF &poly : polygons){
-  //   painter.drawPolygon(poly, Qt::WindingFill);
-  // }
-  updateViewport(QPointF(20,20));
   painter.setWorldTransform(transformViewport);
-  static const QPointF points2[4] = {
-      QPointF(0., 0.), QPointF(20., 0.), QPointF(20., 20.),
-      QPointF(0., 20.)};
-  painter.drawConvexPolygon(points2, 4);
+
+  for (QPolygonF& poly : polygons) {
+    painter.drawPolygon(poly, Qt::WindingFill);
+  }
 
   painter.end();
 }
 void OpenGLWidget::resizeGL(int width, int height) {
   glViewport(0, 0, width, height);
+  updateViewport();
 }
 void OpenGLWidget::setPolygons(QList<QPolygonF> polygons) {
   this->polygons = polygons;
 }
-QTransform OpenGLWidget::updateViewport(QPointF Max){
+QTransform OpenGLWidget::updateViewport() {
   QTransform t;
   double emptyPercent = 20;
-  double emptySpaceX = Max.x()*emptyPercent/100;
-  double emptySpaceY = Max.x()*emptyPercent/100;
-  double scale =  (qMax(Max.x(), Max.y())+emptySpaceX) / qMin(width(), height());
-  t.scale(1/scale, 1/scale);
-  t.translate(emptySpaceX/2, emptySpaceY/2);
+  double emptySpaceX = maxCorner.x() * emptyPercent / 100;
+  double emptySpaceY = maxCorner.y() * emptyPercent / 100;
+  double scale =
+      (qMax(maxCorner.x(), maxCorner.y()) + qMax(emptySpaceX, emptySpaceY)) /
+      qMin(width(), height());
+  t.scale(1 / scale, 1 / scale);
+  t.translate(emptySpaceX / 2, emptySpaceY / 2);
   transformViewport = t;
   return t;
+}
+QTransform OpenGLWidget::updateViewport(QPointF Max) {
+  maxCorner = Max;
+  updateViewport();
+  return transformViewport;
 }

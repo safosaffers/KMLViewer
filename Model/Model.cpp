@@ -124,30 +124,14 @@ void Model::initializeModel(QString filePath) {
     polygons = convertToMeters(LonLatQList, minLon, minLat);
 
     // -> top-left corner is just 0,0
-    QPointF corner = getCornerInMeters(minLon, maxLon, minLat,
-                                       maxLat);  // -> down-right corner
-
-    int i = 0;
-    for (const QPolygonF& poly : LonLatQList) {
-      qDebug() << "\n" << i << "Poly: \n";
-      i++;
-      for (const QPointF lonlat : poly) {
-        qDebug() << "Longitude: " << lonlat.x() << ", Latitude: " << lonlat.y();
-      }
-    }
-
-    for (const QPolygonF& poly : polygons) {
-      qDebug() << "\n" << i << "Poly: \n";
-      i++;
-      for (const QPointF xy : poly) {
-        qDebug() << "x: " << xy.x() << ", y: " << xy.y();
-      }
-    }
+    downRightCornerForViewPort =
+        getCornerInMeters(minLon, maxLon, minLat,
+                          maxLat);  // -> down-right corner
   } catch (const std::invalid_argument& e) {
     qDebug() << "Error: " << e.what();
   }
 }
 QList<QPolygonF> Model::getPolygons() { return polygons; }
-QPointF Model::getDownRightCornerForViewPort(){
+QPointF Model::getDownRightCornerForViewPort() {
   return downRightCornerForViewPort;
 }
