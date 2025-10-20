@@ -1,6 +1,7 @@
 #ifndef VIEW_H
 #define VIEW_H
 
+#include <QDoubleValidator>
 #include <QFileDialog>
 #include <QMainWindow>
 #include <QVBoxLayout>
@@ -26,11 +27,12 @@ class View : public QMainWindow {
 
  private slots:
   void on_btnUploadaKMLFile_clicked();
+   void on_btnSimplifyPoligons_clicked();
 
  private:
   Ui::View* ui;
   OpenGLWidget* glwidget;
-
+  void set_parameters_validators();
  signals:
   /**
    * @brief Signal emitted when a file name is selected by the user
