@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <Placemark>
+      <name>Square</name>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+                28.455024,59.559906
+                28.475229,59.536383
+                28.560143,59.525360
+                28.616912,59.558171
+                28.703737,59.576025
+                28.750655,59.567808
+                28.812433,59.545604
+                28.970220,59.602569
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+  </Document>
+</kml>
