@@ -136,5 +136,50 @@ QList<QPolygonF> Model::getPolygons() { return polygons; }
 QPointF Model::getDownRightCornerForViewPort() {
   return downRightCornerForViewPort;
 }
+qreal Model::distanceBetweenQLineFAndPoint(const QLineF& line,
+                                           const QPointF& p) const {
+  // transform to loocal coordinates system (0,0) - (lx, ly)
+  QPointF p1 = line.p1();
+  QPointF p2 = line.p2();
+  qreal x = p.x() - p1.x();
+  qreal y = p.y() - p1.y();
+  qreal x2 = p2.x() - p1.x();
+  qreal y2 = p2.y() - p1.y();
 
-QPolygonF Model::simplifyPolygon(QPolygonF polygon, double epsilon) {}
+  // if line is a point (nodes are the same) =>
+  // just return distance between point and one line node
+  qreal norm = sqrt(x2 * x2 + y2 * y2);
+  if (norm <= std::numeric_limits<int>::epsilon()) return sqrt(x * x + y * y);
+
+  // distance
+  return fabs(x * y2 - y * x2) / norm;
+}
+QPolygonF Model::simplifyPolygon(QPolygonF polygon, double epsilon) {
+  if (polygon.size() <= 2 || epsilon <= 0) return polygon;
+  QPolygonF simplifiedPolygon;
+  QPointF A = polygon.first();
+  QPointF B = polygon.last();
+  QLineF AB(A, B);
+  qreal d_max = 0.0;
+  qsizetype C_idx;
+  for (qsizetype i = 1; i < polygon.size() - 1; i++) {
+    qreal d = distanceBetweenQLineFAndPoint(AB, polygon.at(i));
+    if (d > d_max) {
+      d_max = d;
+      C_idx = i;
+    }
+  }
+  if (d_max <= epsilon) {
+    simplifiedPolygon.append(A);
+    simplifiedPolygon.append(B);
+  } else {
+    QPolygonF A___C = polygon.first(C_idx);
+    QPolygonF C___B = polygon.first(polygon.size() - C_idx);
+    QPolygonF A___C_simplified = simplifyPolygon(A___C, epsilon);
+    QPolygonF C___B_simplified = simplifyPolygon(C___B, epsilon);
+    QPolygonF simplifiedPolygon = std::move(A___C_simplified);
+    simplifiedPolygon.removeLast();
+    simplifiedPolygon.append(C___B_simplified);
+  }
+  return simplifiedPolygon;
+}

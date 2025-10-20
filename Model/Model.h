@@ -5,8 +5,8 @@
 #include <QDebug>
 #include <QDomAttr>
 #include <QFile>
-#include <QPointF>
 #include <QLineF>
+#include <QPointF>
 #include <QPolygonF>
 #include <QString>
 #include <cmath>
@@ -14,7 +14,7 @@
 class Model {
  private:
   QList<QPolygonF> polygons;
-   QPointF downRightCornerForViewPort;
+  QPointF downRightCornerForViewPort;
 
  public:
   Model();
@@ -24,5 +24,6 @@ class Model {
   QPointF getDownRightCornerForViewPort();
 
   QPolygonF simplifyPolygon(QPolygonF polygon, double epsilon);
+  qreal distanceBetweenQLineFAndPoint(const QLineF& line, const QPointF& p) const;
 };
 #endif  // MODEL_H
