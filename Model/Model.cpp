@@ -136,3 +136,5 @@ QList<QPolygonF> Model::getPolygons() { return polygons; }
 QPointF Model::getDownRightCornerForViewPort() {
   return downRightCornerForViewPort;
 }
+
+QPolygonF Model::simplifyPolygon(QPolygonF polygon, double epsilon) {}

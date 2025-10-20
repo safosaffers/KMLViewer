@@ -6,6 +6,7 @@
 #include <QDomAttr>
 #include <QFile>
 #include <QPointF>
+#include <QLineF>
 #include <QPolygonF>
 #include <QString>
 #include <cmath>
@@ -21,5 +22,7 @@ class Model {
   void initializeModel(QString filePath);
   QList<QPolygonF> getPolygons();
   QPointF getDownRightCornerForViewPort();
+
+  QPolygonF simplifyPolygon(QPolygonF polygon, double epsilon);
 };
 #endif  // MODEL_H
