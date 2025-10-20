@@ -8,18 +8,28 @@ void OpenGLWidget::initializeGL() {
   initializeOpenGLFunctions();
   glClearColor(1.f, 1.f, 1.f, 1.f);
 }
+void OpenGLWidget::setPenWidthAccordingToViewport(QPainter& painter,
+                                                  QColor color) {
+  QRectF viewportRect(0, 0, width(), height());
+  QRectF logicalBB = transformViewport.inverted().mapRect(viewportRect);
+  qreal penWidth =
+      qMax(logicalBB.width(), logicalBB.height()) / LINE_WIDTH_RATIO;
+  painter.setPen(QPen(color, penWidth));
+}
+void OpenGLWidget::setBrushWithAlpha(QPainter& painter, QColor color, qreal alpha) {
+  QColor br = color;
+  br.setAlphaF(alpha);
+  painter.setBrush(br);
+}
 void OpenGLWidget::paintGL() {
   glClear(GL_COLOR_BUFFER_BIT);
   QPainter painter(this);
   painter.setRenderHint(QPainter::Antialiasing);
 
-  painter.setPen(QPen(Qt::black, 1));
-  QColor br = Qt::black;
-  br.setAlphaF(0.5);
-  painter.setBrush(br);
-
   painter.setWorldTransform(transformViewport);
 
+  setPenWidthAccordingToViewport(painter, Qt::black);
+  setBrushWithAlpha(painter, Qt::black, 0.5);
   for (QPolygonF& poly : polygons) {
     painter.drawPolygon(poly, Qt::WindingFill);
   }
@@ -35,13 +45,13 @@ void OpenGLWidget::setPolygons(QList<QPolygonF> polygons) {
 }
 QTransform OpenGLWidget::updateViewport() {
   QTransform t;
-  double emptyPercent = 20;
-  double emptySpaceX = maxCorner.x() * emptyPercent / 100;
-  double emptySpaceY = maxCorner.y() * emptyPercent / 100;
-  double scale =
-      (qMax(maxCorner.x(), maxCorner.y()) + qMax(emptySpaceX, emptySpaceY)) /
-      qMin(width(), height());
-  t.scale(1 / scale, 1 / scale);
+  int emptyPercent = 20;
+  qreal emptySpaceX = maxCorner.x() * emptyPercent / 100;
+  qreal emptySpaceY = maxCorner.y() * emptyPercent / 100;
+  scaleViewport =
+      qMin(width(), height()) /
+      (qMax(maxCorner.x(), maxCorner.y()) + qMax(emptySpaceX, emptySpaceY));
+  t.scale(scaleViewport, scaleViewport);
   t.translate(emptySpaceX / 2, emptySpaceY / 2);
 
   QTransform swapY;
