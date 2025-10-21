@@ -29,5 +29,10 @@ class Model {
   QPolygonF simplifyPolygon(QPolygonF polygon, double epsilon);
   void simplifyPolygons(double epsilon);
   QList<QPolygonF> getSimplifiedPolygons();
+
+  int getNumberOfPolygons();
+  int getQListQPolygonFPointsCount(QList<QPolygonF> polygons);
+  int getNumberOfPolygonsPoints();
+  int getNumberOfSimplifiedPolygonsPoints();
 };
 #endif  // MODEL_H

@@ -25,9 +25,14 @@ class View : public QMainWindow {
   ~View();
   OpenGLWidget* getGLWidget();
 
+  void updateNumberOfPolygons(int numberOfPolygons);
+  void updateNumberOfPolygonsPoints(int numberOfPolygonsPoints);
+  void updateNumberOfSimplifiedPolygonsPoints(
+      int numberOfSimplifiedPolygonsPoints);
+
  private slots:
   void on_btnUploadaKMLFile_clicked();
-   void on_btnSimplifyPoligons_clicked();
+  void on_btnSimplifyPoligons_clicked();
 
  private:
   Ui::View* ui;
@@ -39,6 +44,6 @@ class View : public QMainWindow {
    * @param fileName Path to the selected model file
    */
   void fileNameChoosed(QString fileName);
-   void polygonSimplifyRequested(double epsilon);
+  void polygonSimplifyRequested(double epsilon);
 };
 #endif  // VIEW_H

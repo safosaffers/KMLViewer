@@ -161,7 +161,7 @@ QPolygonF Model::simplifyPolygon(QPolygonF polygon, double epsilon) {
   QPointF B = polygon.last();
   QLineF AB(A, B);
   qreal d_max = 0.0;
-  qsizetype C_idx=0;
+  qsizetype C_idx = 0;
   for (qsizetype i = 1; i < polygon.size() - 1; i++) {
     qreal d = distanceBetweenQLineFAndPoint(AB, polygon.at(i));
     if (d > d_max) {
@@ -173,7 +173,7 @@ QPolygonF Model::simplifyPolygon(QPolygonF polygon, double epsilon) {
     simplifiedPolygon.append(A);
     simplifiedPolygon.append(B);
   } else {
-    QPolygonF A___C = polygon.first(C_idx+1);
+    QPolygonF A___C = polygon.first(C_idx + 1);
     QPolygonF C___B = polygon.last(polygon.size() - C_idx);
     QPolygonF A___C_simplified = simplifyPolygon(A___C, epsilon);
     QPolygonF C___B_simplified = simplifyPolygon(C___B, epsilon);
@@ -189,4 +189,19 @@ void Model::simplifyPolygons(double epsilon) {
   for (QPolygonF& polygon : polygons) {
     simplifiedPolygons.append(simplifyPolygon(polygon, epsilon));
   }
+}
+
+int Model::getNumberOfPolygons() { return polygons.size(); }
+int Model::getQListQPolygonFPointsCount(QList<QPolygonF> polygons) {
+  int result = 0;
+  for (QPolygonF polygon : polygons) {
+    result += polygon.size();
+  }
+  return result;
+}
+int Model::getNumberOfPolygonsPoints() {
+  return getQListQPolygonFPointsCount(polygons);
+}
+int Model::getNumberOfSimplifiedPolygonsPoints() {
+  return getQListQPolygonFPointsCount(simplifiedPolygons);
 }

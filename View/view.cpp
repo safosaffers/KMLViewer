@@ -38,3 +38,16 @@ void View::set_parameters_validators() {
   ui->leEpsilon->setValidator(validator);
   ui->leEpsilon->setPlaceholderText("  Epsilon > 0");
 }
+
+void View::updateNumberOfPolygons(int numberOfPolygons) {
+  ui->lblNumberOfPolygons->setText(QString::number(numberOfPolygons));
+}
+void View::updateNumberOfPolygonsPoints(int numberOfPolygonsPoints) {
+  ui->lblNumberOfPolygonsPoints->setText(
+      QString::number(numberOfPolygonsPoints));
+}
+void View::updateNumberOfSimplifiedPolygonsPoints(
+    int numberOfSimplifiedPolygonsPoints) {
+  ui->lblNumberOfSimplifiedPolygonsPoints->setText(
+      QString::number(numberOfSimplifiedPolygonsPoints));
+}
