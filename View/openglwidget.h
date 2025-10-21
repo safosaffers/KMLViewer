@@ -10,6 +10,8 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
  private:
   QTransform transformViewport;
   QTransform initialTransformViewport;
+  QPointF lastMousePos;
+  bool isPanning;
   QList<QPolygonF> polygons;
   QList<QPolygonF> simplifiedPolygons;
   QPointF maxCorner;
@@ -37,5 +39,8 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   void setPenWidthAccordingToViewport(QPainter& painter, QColor color);
   void setBrushWithAlpha(QPainter& painter, QColor color, qreal alpha);
   void wheelEvent(QWheelEvent* event) override;
+  void mousePressEvent(QMouseEvent* event) override;
+  void mouseMoveEvent(QMouseEvent* event) override;
+  void mouseReleaseEvent(QMouseEvent* event) override;
 };
 #endif  // OPENGLWIDGET_H

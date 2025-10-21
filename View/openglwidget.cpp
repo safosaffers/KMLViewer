@@ -2,6 +2,7 @@
 
 OpenGLWidget::OpenGLWidget(QWidget* parent) : QOpenGLWidget(parent) {
   setFocusPolicy(Qt::StrongFocus);
+  isPanning = false;
 }
 OpenGLWidget::~OpenGLWidget() {}
 void OpenGLWidget::initializeGL() {
@@ -110,5 +111,41 @@ void OpenGLWidget::wheelEvent(QWheelEvent* event) {
   transformViewport.translate(-worldCursor.x(), -worldCursor.y());
 
   update();
+  event->accept();
+}
+
+void OpenGLWidget::mousePressEvent(QMouseEvent* event) {
+  if (event->button() == Qt::LeftButton) {
+    isPanning = true;
+    lastMousePos = event->pos();
+    setCursor(Qt::ClosedHandCursor);
+  }
+  event->accept();
+}
+
+void OpenGLWidget::mouseMoveEvent(QMouseEvent* event) {
+  if (isPanning) {
+    QPointF currentScreenPos = event->position();
+    QPointF lastScreenPos = lastMousePos;
+
+    QTransform inv = transformViewport.inverted();
+    QPointF currentWorld = inv.map(currentScreenPos);
+    QPointF lastWorld = inv.map(lastScreenPos);
+
+    QPointF worldDelta = lastWorld - currentWorld;
+
+    transformViewport.translate(-worldDelta.x(), -worldDelta.y());
+
+    lastMousePos = event->pos();
+    update();
+  }
+  event->accept();
+}
+
+void OpenGLWidget::mouseReleaseEvent(QMouseEvent* event) {
+  if (event->button() == Qt::LeftButton) {
+    isPanning = false;
+    setCursor(Qt::ArrowCursor);
+  }
   event->accept();
 }
