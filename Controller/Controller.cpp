@@ -30,9 +30,9 @@ void Controller::HandleModelLoading(QString fileName) {
 void Controller::HandleModelSimplify(double epsilon) {
   if (view->ui->btnSimplifyPoligons->isChecked()) {
     view->ui->btnUploadaKMLFile->setEnabled(false);
-    view->ui->btnSimplifyPoligons->setText(tr("Cancel"));
+    view->ui->btnSimplifyPoligons->setText(tr("Отмена"));
     view->ui->lblNumberOfSimplifiedPolygonsPoints->setText(
-        tr("Calculating ..."));
+        tr("Вычисление ..."));
     view->ui->progressBar->setValue(0);
 
     const double eps = epsilon;
@@ -54,7 +54,7 @@ void Controller::HandleModelSimplify(double epsilon) {
     view->ui->progressBar->setValue(0);
     view->ui->btnUploadaKMLFile->setEnabled(true);
     view->ui->lblNumberOfSimplifiedPolygonsPoints->setText(tr("—"));
-    view->ui->btnSimplifyPoligons->setText(tr("Start"));
+    view->ui->btnSimplifyPoligons->setText(tr("Упростить"));
   }
 }
 
@@ -66,7 +66,7 @@ void Controller::finishModelSimplify() {
 
   view->ui->btnUploadaKMLFile->setEnabled(true);
   view->ui->btnSimplifyPoligons->setChecked(false);
-  view->ui->btnSimplifyPoligons->setText(tr("Start"));
+  view->ui->btnSimplifyPoligons->setText(tr("Упростить"));
   view->ui->lblNumberOfSimplifiedPolygonsPoints->setText(
       QString::number(model->getNumberOfSimplifiedPolygonsPoints()));
 

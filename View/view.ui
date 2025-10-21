@@ -311,7 +311,7 @@
              </size>
             </property>
             <property name="text">
-             <string>Минимизировация вершин</string>
+             <string>Минимизация вершин</string>
             </property>
            </widget>
           </item>
@@ -453,7 +453,7 @@
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Минимизировать</string>
+             <string>Упростить</string>
             </property>
             <property name="checkable">
              <bool>true</bool>
