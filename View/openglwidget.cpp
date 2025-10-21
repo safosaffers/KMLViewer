@@ -16,7 +16,8 @@ void OpenGLWidget::setPenWidthAccordingToViewport(QPainter& painter,
       qMax(logicalBB.width(), logicalBB.height()) / LINE_WIDTH_RATIO;
   painter.setPen(QPen(color, penWidth));
 }
-void OpenGLWidget::setBrushWithAlpha(QPainter& painter, QColor color, qreal alpha) {
+void OpenGLWidget::setBrushWithAlpha(QPainter& painter, QColor color,
+                                     qreal alpha) {
   QColor br = color;
   br.setAlphaF(alpha);
   painter.setBrush(br);
@@ -34,6 +35,12 @@ void OpenGLWidget::paintGL() {
     painter.drawPolygon(poly, Qt::WindingFill);
   }
 
+  setPenWidthAccordingToViewport(painter, Qt::green);
+  setBrushWithAlpha(painter, Qt::green, 0.5);
+  for (QPolygonF& poly : simplifiedPolygons) {
+    painter.drawPolygon(poly, Qt::WindingFill);
+  }
+
   painter.end();
 }
 void OpenGLWidget::resizeGL(int width, int height) {
@@ -42,6 +49,9 @@ void OpenGLWidget::resizeGL(int width, int height) {
 }
 void OpenGLWidget::setPolygons(QList<QPolygonF> polygons) {
   this->polygons = polygons;
+}
+void OpenGLWidget::setSimplifiedPolygons(QList<QPolygonF> simplifiedPolygons) {
+  this->simplifiedPolygons = simplifiedPolygons;
 }
 QTransform OpenGLWidget::updateViewport() {
   QTransform t;

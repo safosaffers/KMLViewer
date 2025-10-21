@@ -14,6 +14,7 @@
 class Model {
  private:
   QList<QPolygonF> polygons;
+  QList<QPolygonF> simplifiedPolygons;
   QPointF downRightCornerForViewPort;
 
  public:
@@ -23,7 +24,10 @@ class Model {
   QList<QPolygonF> getPolygons();
   QPointF getDownRightCornerForViewPort();
 
+  qreal distanceBetweenQLineFAndPoint(const QLineF& line,
+                                      const QPointF& p) const;
   QPolygonF simplifyPolygon(QPolygonF polygon, double epsilon);
-  qreal distanceBetweenQLineFAndPoint(const QLineF& line, const QPointF& p) const;
+  void simplifyPolygons(double epsilon);
+  QList<QPolygonF> getSimplifiedPolygons();
 };
 #endif  // MODEL_H

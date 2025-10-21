@@ -17,6 +17,7 @@ class Controller : public QObject {
   ~Controller();
  public slots:
   void HandleModelLoading(QString fileName);
+  void HandleModelSimplify(double epsilon);
 };
 
 #endif  // CONTROLLER_H

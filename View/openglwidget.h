@@ -9,6 +9,7 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   Q_OBJECT
  private:
   QList<QPolygonF> polygons;
+  QList<QPolygonF> simplifiedPolygons;
   QPointF maxCorner;
   QTransform transformViewport;
   qreal scaleViewport;
@@ -18,6 +19,7 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   explicit OpenGLWidget(QWidget* parent = nullptr);
   ~OpenGLWidget();
   void setPolygons(QList<QPolygonF> polygons);
+  void setSimplifiedPolygons(QList<QPolygonF> polygons);
   QTransform updateViewport(QPointF maxCorner);
   QTransform updateViewport();
 
@@ -25,7 +27,7 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   void initializeGL() override;
   void paintGL() override;
   void resizeGL(int width, int height) override;
-  void setPenWidthAccordingToViewport(QPainter &painter, QColor color);
-  void setBrushWithAlpha(QPainter &painter, QColor color, qreal alpha);
+  void setPenWidthAccordingToViewport(QPainter& painter, QColor color);
+  void setBrushWithAlpha(QPainter& painter, QColor color, qreal alpha);
 };
 #endif  // OPENGLWIDGET_H

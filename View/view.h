@@ -39,5 +39,6 @@ class View : public QMainWindow {
    * @param fileName Path to the selected model file
    */
   void fileNameChoosed(QString fileName);
+   void polygonSimplifyRequested(double epsilon);
 };
 #endif  // VIEW_H

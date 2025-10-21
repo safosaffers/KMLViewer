@@ -25,11 +25,10 @@ OpenGLWidget* View::getGLWidget() { return glwidget; }
 
 void View::on_btnSimplifyPoligons_clicked() {
   qDebug() << "btnSimplifyPoligons was clicked!";
-
   if (ui->leEpsilon->hasAcceptableInput()) {
-    qDebug()<< "number is correct";
-  }else{
-    qDebug()<< "there is no number";
+    QString strEpsilon = ui->leEpsilon->text();
+    double epsilon = strEpsilon.toDouble();
+    emit polygonSimplifyRequested(epsilon);
   }
 }
 
@@ -37,4 +36,5 @@ void View::set_parameters_validators() {
   auto* validator = new QDoubleValidator(1e-6, 1e9, 6, this);
   validator->setNotation(QDoubleValidator::StandardNotation);
   ui->leEpsilon->setValidator(validator);
+  ui->leEpsilon->setPlaceholderText("  Epsilon > 0");
 }
