@@ -194,7 +194,7 @@ void Model::simplifyPolygons(double epsilon) {
 int Model::getNumberOfPolygons() { return polygons.size(); }
 int Model::getQListQPolygonFPointsCount(QList<QPolygonF> polygons) {
   int result = 0;
-  for (QPolygonF polygon : polygons) {
+  for (QPolygonF &polygon : polygons) {
     result += polygon.size();
   }
   return result;

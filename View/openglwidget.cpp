@@ -22,6 +22,13 @@ void OpenGLWidget::setBrushWithAlpha(QPainter& painter, QColor color,
   br.setAlphaF(alpha);
   painter.setBrush(br);
 }
+void OpenGLWidget::drawPolygons(QPainter& painter, const QList<QPolygonF>& polygons, const QColor& color) {
+  setPenWidthAccordingToViewport(painter, color);
+  setBrushWithAlpha(painter, color, 0.5);
+  for (const QPolygonF& poly : polygons) {
+    painter.drawPolygon(poly, Qt::WindingFill);
+  }
+}
 void OpenGLWidget::paintGL() {
   glClear(GL_COLOR_BUFFER_BIT);
   QPainter painter(this);
@@ -29,17 +36,8 @@ void OpenGLWidget::paintGL() {
 
   painter.setWorldTransform(transformViewport);
 
-  setPenWidthAccordingToViewport(painter, Qt::black);
-  setBrushWithAlpha(painter, Qt::black, 0.5);
-  for (QPolygonF& poly : polygons) {
-    painter.drawPolygon(poly, Qt::WindingFill);
-  }
-
-  setPenWidthAccordingToViewport(painter, Qt::green);
-  setBrushWithAlpha(painter, Qt::green, 0.5);
-  for (QPolygonF& poly : simplifiedPolygons) {
-    painter.drawPolygon(poly, Qt::WindingFill);
-  }
+  drawPolygons(painter, polygons, Qt::black);
+  drawPolygons(painter, simplifiedPolygons, Qt::green);
 
   painter.end();
 }
