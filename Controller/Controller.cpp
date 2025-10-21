@@ -22,6 +22,8 @@ void Controller::HandleModelLoading(QString fileName) {
   view->updateNumberOfPolygons(model->getNumberOfPolygons());
   view->updateNumberOfPolygonsPoints(model->getNumberOfPolygonsPoints());
   view->ui->progressBar->setValue(0);
+  view->ui->btnSimplifyPoligons->setEnabled(true);
+  view->ui->leEpsilon->setEnabled(true);
   view->getGLWidget()->update();
 }
 

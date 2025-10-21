@@ -24,7 +24,6 @@ void View::on_btnUploadaKMLFile_clicked() {
 OpenGLWidget* View::getGLWidget() { return glwidget; }
 
 void View::on_btnSimplifyPoligons_clicked() {
-  qDebug() << "btnSimplifyPoligons was clicked!";
   if (ui->leEpsilon->hasAcceptableInput()) {
     QString strEpsilon = ui->leEpsilon->text();
     double epsilon = strEpsilon.toDouble();
@@ -33,7 +32,7 @@ void View::on_btnSimplifyPoligons_clicked() {
 }
 
 void View::set_parameters_validators() {
-  auto* validator = new QDoubleValidator(1e-6, 1e9, 6, this);
+  auto* validator = new QDoubleValidator(1, 1e9, 6, this);
   validator->setNotation(QDoubleValidator::StandardNotation);
   ui->leEpsilon->setValidator(validator);
   ui->leEpsilon->setPlaceholderText("  Epsilon > 0");
