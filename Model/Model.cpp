@@ -115,6 +115,7 @@ QPointF getCornerInMeters(double& minLon, double& maxLon, double& minLat,
   return QPointF(xLen, yLen);
 }
 void Model::initializeModel(QString filePath) {
+  simplifiedPolygons.clear();
   try {
     double minLon = 90.0;
     double maxLon = -90.0;
@@ -186,6 +187,7 @@ QPolygonF Model::simplifyPolygon(QPolygonF polygon, double epsilon) {
 
 QList<QPolygonF> Model::getSimplifiedPolygons() { return simplifiedPolygons; }
 void Model::simplifyPolygons(double epsilon) {
+  simplifiedPolygons.clear();
   for (QPolygonF& polygon : polygons) {
     simplifiedPolygons.append(simplifyPolygon(polygon, epsilon));
   }

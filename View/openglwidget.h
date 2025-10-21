@@ -19,6 +19,7 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   explicit OpenGLWidget(QWidget* parent = nullptr);
   ~OpenGLWidget();
   void setPolygons(QList<QPolygonF> polygons);
+  void resetSimplifiedPolygons();
   void setSimplifiedPolygons(QList<QPolygonF> polygons);
   QTransform updateViewport(QPointF maxCorner);
   QTransform updateViewport();
