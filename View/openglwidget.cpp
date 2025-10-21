@@ -70,5 +70,45 @@ QTransform OpenGLWidget::setInitialViewport(QPointF Max) {
 
   initialTransformViewport *= swapY;
   transformViewport = initialTransformViewport;
+  minAllowedScale = initialTransformViewport.m11() * MIN_ZOOM_FACTOR;
+  maxAllowedScale = initialTransformViewport.m11() * MAX_ZOOM_FACTOR;
+
   return initialTransformViewport;
+}
+void OpenGLWidget::wheelEvent(QWheelEvent* event) {
+  double angle = event->angleDelta().y();
+  if (!transformViewport.isInvertible() || qAbs(angle) < 1e-6) {
+    event->accept();
+    return;
+  }
+  QPointF cursorPos = event->position();
+  QTransform inv;
+
+  inv = transformViewport.inverted();
+  QPointF worldCursor = inv.map(cursorPos);
+
+  double factor = 1.0;
+  factor = 1 + (angle > 0 ? 0.1 : -0.1);
+
+  double currentScale = transformViewport.m11();
+  // qDebug() << "currentScale = " << currentScale;
+
+  double newScale = currentScale * factor;
+  // qDebug() << "newScale = " << newScale;
+  if (newScale < minAllowedScale || newScale > maxAllowedScale) {
+    event->accept();
+    return;
+  }
+
+  // === Apply zooming relative to the cursor ===
+  // So that the point under the cursor remains in place after the zoom:
+  // 1. Shift the coordinate system so that the cursor is at (0, 0)
+  // 2. Apply the zoom
+  // 3. We return the system back
+  transformViewport.translate(worldCursor.x(), worldCursor.y());
+  transformViewport.scale(factor, factor);
+  transformViewport.translate(-worldCursor.x(), -worldCursor.y());
+
+  update();
+  event->accept();
 }

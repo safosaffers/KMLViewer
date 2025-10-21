@@ -1,5 +1,6 @@
 #ifndef OPENGLWIDGET_H
 #define OPENGLWIDGET_H
+#include <QMouseEvent>
 #include <QOpenGLFunctions>
 #include <QOpenGLWidget>
 #include <QPainter>
@@ -14,6 +15,10 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   QPointF maxCorner;
   qreal scaleViewport;
   static constexpr qreal LINE_WIDTH_RATIO = 300.0;
+  qreal minAllowedScale;
+  qreal maxAllowedScale;
+  static constexpr const double MIN_ZOOM_FACTOR = 0.02;
+  static constexpr const double MAX_ZOOM_FACTOR = 50.0;
 
  public:
   explicit OpenGLWidget(QWidget* parent = nullptr);
@@ -31,5 +36,6 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
                     const QColor& color);
   void setPenWidthAccordingToViewport(QPainter& painter, QColor color);
   void setBrushWithAlpha(QPainter& painter, QColor color, qreal alpha);
+  void wheelEvent(QWheelEvent* event) override;
 };
 #endif  // OPENGLWIDGET_H
