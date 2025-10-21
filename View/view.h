@@ -21,6 +21,7 @@ class View : public QMainWindow {
   Q_OBJECT
 
  public:
+  Ui::View* ui;
   View(QWidget* parent = nullptr);
   ~View();
   OpenGLWidget* getGLWidget();
@@ -35,7 +36,6 @@ class View : public QMainWindow {
   void on_btnSimplifyPoligons_clicked();
 
  private:
-  Ui::View* ui;
   OpenGLWidget* glwidget;
   void set_parameters_validators();
  signals:

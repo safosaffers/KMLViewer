@@ -138,7 +138,7 @@ QPointF Model::getDownRightCornerForViewPort() {
   return downRightCornerForViewPort;
 }
 qreal Model::distanceBetweenQLineFAndPoint(const QLineF& line,
-                                           const QPointF& p) const {
+                                           const QPointF& p) {
   // transform to loocal coordinates system (0,0) - (lx, ly)
   QPointF p1 = line.p1();
   QPointF p2 = line.p2();
@@ -196,7 +196,7 @@ void Model::simplifyPolygons(double epsilon) {
 int Model::getNumberOfPolygons() { return polygons.size(); }
 int Model::getQListQPolygonFPointsCount(QList<QPolygonF> polygons) {
   int result = 0;
-  for (QPolygonF &polygon : polygons) {
+  for (QPolygonF& polygon : polygons) {
     result += polygon.size();
   }
   return result;
@@ -206,4 +206,7 @@ int Model::getNumberOfPolygonsPoints() {
 }
 int Model::getNumberOfSimplifiedPolygonsPoints() {
   return getQListQPolygonFPointsCount(simplifiedPolygons);
+}
+void Model::setSimplifiedPolygons(const QList<QPolygonF>& polys) {
+  simplifiedPolygons = polys;
 }

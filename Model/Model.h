@@ -24,9 +24,9 @@ class Model {
   QList<QPolygonF> getPolygons();
   QPointF getDownRightCornerForViewPort();
 
-  qreal distanceBetweenQLineFAndPoint(const QLineF& line,
-                                      const QPointF& p) const;
-  QPolygonF simplifyPolygon(QPolygonF polygon, double epsilon);
+  static qreal distanceBetweenQLineFAndPoint(const QLineF& line,
+                                      const QPointF& p);
+  static QPolygonF simplifyPolygon(QPolygonF polygon, double epsilon);
   void simplifyPolygons(double epsilon);
   QList<QPolygonF> getSimplifiedPolygons();
 
@@ -34,5 +34,6 @@ class Model {
   int getQListQPolygonFPointsCount(QList<QPolygonF> polygons);
   int getNumberOfPolygonsPoints();
   int getNumberOfSimplifiedPolygonsPoints();
+  void setSimplifiedPolygons(const QList<QPolygonF>& polys);
 };
 #endif  // MODEL_H
