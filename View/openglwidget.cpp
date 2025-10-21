@@ -57,19 +57,21 @@ void OpenGLWidget::setSimplifiedPolygons(QList<QPolygonF> simplifiedPolygons) {
   this->simplifiedPolygons = simplifiedPolygons;
 }
 QTransform OpenGLWidget::setInitialViewport(QPointF Max) {
+  QTransform t;
   int emptyPercent = 20;
   qreal emptySpaceX = Max.x() * emptyPercent / 100;
   qreal emptySpaceY = Max.y() * emptyPercent / 100;
   scaleViewport = qMin(width(), height()) /
                   (qMax(Max.x(), Max.y()) + qMax(emptySpaceX, emptySpaceY));
-  initialTransformViewport.scale(scaleViewport, scaleViewport);
-  initialTransformViewport.translate(emptySpaceX / 2, emptySpaceY / 2);
+  t.scale(scaleViewport, scaleViewport);
+  t.translate(emptySpaceX / 2, emptySpaceY / 2);
 
   QTransform swapY;
   swapY.translate(0, height());
   swapY.scale(1, -1);
 
-  initialTransformViewport *= swapY;
+  t *= swapY;
+  initialTransformViewport=t;
   transformViewport = initialTransformViewport;
   minAllowedScale = initialTransformViewport.m11() * MIN_ZOOM_FACTOR;
   maxAllowedScale = initialTransformViewport.m11() * MAX_ZOOM_FACTOR;
