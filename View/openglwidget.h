@@ -4,14 +4,14 @@
 #include <QOpenGLWidget>
 #include <QPainter>
 #include <QPolygonF>
-
 class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   Q_OBJECT
  private:
+  QTransform transformViewport;
+  QTransform initialTransformViewport;
   QList<QPolygonF> polygons;
   QList<QPolygonF> simplifiedPolygons;
   QPointF maxCorner;
-  QTransform transformViewport;
   qreal scaleViewport;
   static constexpr qreal LINE_WIDTH_RATIO = 300.0;
 
@@ -21,14 +21,14 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   void setPolygons(QList<QPolygonF> polygons);
   void resetSimplifiedPolygons();
   void setSimplifiedPolygons(QList<QPolygonF> polygons);
-  QTransform updateViewport(QPointF maxCorner);
-  QTransform updateViewport();
+  QTransform setInitialViewport(QPointF Max);
 
  protected:
   void initializeGL() override;
   void paintGL() override;
   void resizeGL(int width, int height) override;
-  void drawPolygons(QPainter& painter, const QList<QPolygonF>& polygons, const QColor& color);
+  void drawPolygons(QPainter& painter, const QList<QPolygonF>& polygons,
+                    const QColor& color);
   void setPenWidthAccordingToViewport(QPainter& painter, QColor color);
   void setBrushWithAlpha(QPainter& painter, QColor color, qreal alpha);
 };

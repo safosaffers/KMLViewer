@@ -45,7 +45,6 @@ void OpenGLWidget::paintGL() {
 }
 void OpenGLWidget::resizeGL(int width, int height) {
   glViewport(0, 0, width, height);
-  updateViewport();
 }
 void OpenGLWidget::setPolygons(QList<QPolygonF> polygons) {
   this->polygons = polygons;
@@ -56,26 +55,20 @@ void OpenGLWidget::resetSimplifiedPolygons() {
 void OpenGLWidget::setSimplifiedPolygons(QList<QPolygonF> simplifiedPolygons) {
   this->simplifiedPolygons = simplifiedPolygons;
 }
-QTransform OpenGLWidget::updateViewport() {
-  QTransform t;
+QTransform OpenGLWidget::setInitialViewport(QPointF Max) {
   int emptyPercent = 20;
-  qreal emptySpaceX = maxCorner.x() * emptyPercent / 100;
-  qreal emptySpaceY = maxCorner.y() * emptyPercent / 100;
-  scaleViewport =
-      qMin(width(), height()) /
-      (qMax(maxCorner.x(), maxCorner.y()) + qMax(emptySpaceX, emptySpaceY));
-  t.scale(scaleViewport, scaleViewport);
-  t.translate(emptySpaceX / 2, emptySpaceY / 2);
+  qreal emptySpaceX = Max.x() * emptyPercent / 100;
+  qreal emptySpaceY = Max.y() * emptyPercent / 100;
+  scaleViewport = qMin(width(), height()) /
+                  (qMax(Max.x(), Max.y()) + qMax(emptySpaceX, emptySpaceY));
+  initialTransformViewport.scale(scaleViewport, scaleViewport);
+  initialTransformViewport.translate(emptySpaceX / 2, emptySpaceY / 2);
 
   QTransform swapY;
   swapY.translate(0, height());
   swapY.scale(1, -1);
 
-  transformViewport = t * swapY;
-  return t;
-}
-QTransform OpenGLWidget::updateViewport(QPointF Max) {
-  maxCorner = Max;
-  updateViewport();
-  return transformViewport;
+  initialTransformViewport *= swapY;
+  transformViewport = initialTransformViewport;
+  return initialTransformViewport;
 }
