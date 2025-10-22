@@ -14,8 +14,7 @@ Controller::Controller(Model* m, View* v) : QObject(v), model(m), view(v) {
 
 Controller::~Controller() { watcher.cancel(); }
 
-void Controller::HandleModelLoading(QString fileName) {
-  model->initializeModel(fileName);
+void Controller::HandleModelLoading(QString fileName) {  model->initializeModel(fileName);
   view->getGLWidget()->setPolygons(model->getPolygons());
   view->getGLWidget()->resetSimplifiedPolygons();
   view->getGLWidget()->setInitialViewport(
@@ -29,48 +28,48 @@ void Controller::HandleModelLoading(QString fileName) {
 }
 
 void Controller::HandleModelSimplify(double epsilon) {
-  if (view->ui->btnSimplifyPoligons->isChecked()) {
-    view->ui->btnUploadaKMLFile->setEnabled(false);
-    view->ui->btnSimplifyPoligons->setText(tr("Отмена"));
-    view->ui->lblNumberOfSimplifiedPolygonsPoints->setText(
-        tr("Вычисление ..."));
-    view->ui->progressBar->setValue(0);
+  // if (view->ui->btnSimplifyPoligons->isChecked()) {
+  //   view->ui->btnUploadaKMLFile->setEnabled(false);
+  //   view->ui->btnSimplifyPoligons->setText(tr("Отмена"));
+  //   view->ui->lblNumberOfSimplifiedPolygonsPoints->setText(
+  //       tr("Вычисление ..."));
+  //   view->ui->progressBar->setValue(0);
 
-    const double eps = epsilon;
+  //   const double eps = epsilon;
 
-    auto polygonsToSimplify = model->getPolygons();
+  //   auto polygonsToSimplify = model->getPolygonsInMeters();
 
-    timer.start();
+  //   timer.start();
 
-    // starts simplification in parrallel
-    auto future = QtConcurrent::mapped(polygonsToSimplify,
-                                       [eps](const QPolygonF& p) -> QPolygonF {
-                                         return Model::simplifyPolygon(p, eps);
-                                       });
+  //   // starts simplification in parrallel
+  //   auto future = QtConcurrent::mapped(polygonsToSimplify,
+  //                                      [eps](const QPolygonF& p) -> QPolygonF {
+  //                                        return Model::simplifyPolygon(p, eps);
+  //                                      });
 
-    watcher.setFuture(future);
+  //   watcher.setFuture(future);
 
-  } else {
-    watcher.cancel();
-    view->ui->progressBar->setValue(0);
-    view->ui->btnUploadaKMLFile->setEnabled(true);
-    view->ui->lblNumberOfSimplifiedPolygonsPoints->setText(tr("—"));
-    view->ui->btnSimplifyPoligons->setText(tr("Упростить"));
-  }
+  // } else {
+  //   watcher.cancel();
+  //   view->ui->progressBar->setValue(0);
+  //   view->ui->btnUploadaKMLFile->setEnabled(true);
+  //   view->ui->lblNumberOfSimplifiedPolygonsPoints->setText(tr("—"));
+  //   view->ui->btnSimplifyPoligons->setText(tr("Упростить"));
+  // }
 }
 
 void Controller::finishModelSimplify() {
-  if (watcher.isCanceled()) return;
+  // if (watcher.isCanceled()) return;
 
-  QList<QPolygonF> simplified = watcher.future().results();
-  model->setSimplifiedPolygons(simplified);
+  // QList<QPolygonF> simplified = watcher.future().results();
+  // model->setSimplifiedPolygons(simplified);
 
-  view->ui->btnUploadaKMLFile->setEnabled(true);
-  view->ui->btnSimplifyPoligons->setChecked(false);
-  view->ui->btnSimplifyPoligons->setText(tr("Упростить"));
-  view->ui->lblNumberOfSimplifiedPolygonsPoints->setText(
-      QString::number(model->getNumberOfSimplifiedPolygonsPoints()));
+  // view->ui->btnUploadaKMLFile->setEnabled(true);
+  // view->ui->btnSimplifyPoligons->setChecked(false);
+  // view->ui->btnSimplifyPoligons->setText(tr("Упростить"));
+  // view->ui->lblNumberOfSimplifiedPolygonsPoints->setText(
+  //     QString::number(model->getNumberOfSimplifiedPolygonsPoints()));
 
-  view->getGLWidget()->setSimplifiedPolygons(simplified);
-  view->getGLWidget()->update();
+  // view->getGLWidget()->setSimplifiedPolygons(simplified);
+  // view->getGLWidget()->update();
 }

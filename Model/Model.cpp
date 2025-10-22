@@ -93,9 +93,9 @@ double lonDifferenceInMeters(double lat1, double lat2, double lon1,
   double result = 2 * R * asin(sqrt(havTheta));
   return result;
 }
-QList<QPolygonF> convertToMeters(QList<QPolygonF> LonLatQList, double& minLon,
-                                 double& minLat) {
-  QList<QPolygonF> MetersQList;
+QList<PolygonPair> Model::convertToMeters(QList<QPolygonF> LonLatQList,
+                                          double& minLon, double& minLat) {
+  latLonToMetersPolygons.clear();
   for (QPolygonF& latLonPoly : LonLatQList) {
     QPolygonF metersPoly;
     for (QPointF lonlat : latLonPoly) {
@@ -104,26 +104,25 @@ QList<QPolygonF> convertToMeters(QList<QPolygonF> LonLatQList, double& minLon,
       double yLen = latDifferenceInMeters(minLat, lonlat.y());
       metersPoly.append(QPointF(xLen, yLen));
     }
-    MetersQList.append(metersPoly);
+    latLonToMetersPolygons.append({latLonPoly, metersPoly});
   }
-  return MetersQList;
+  return latLonToMetersPolygons;
 }
-QPointF getCornerInMeters(double& minLon, double& maxLon, double& minLat,
-                          double& maxLat) {
+QPointF Model::getCornerInMeters(double& minLon, double& maxLon, double& minLat,
+                                 double& maxLat) {
   double xLen = latDifferenceInMeters(minLat, maxLat);
   double yLen = lonDifferenceInMeters(minLat, maxLat, minLon, maxLon);
   return QPointF(xLen, yLen);
 }
 void Model::initializeModel(QString filePath) {
-  simplifiedPolygons.clear();
   try {
     double minLon = 90.0;
     double maxLon = -90.0;
     double minLat = 180.0;
     double maxLat = -180.0;
-    const QList<QPolygonF> LonLatQList =
+    QList<QPolygonF> LonLatQList =
         parseLonLatFromKML(filePath, minLon, maxLon, minLat, maxLat);
-    polygons = convertToMeters(LonLatQList, minLon, minLat);
+    latLonToMetersPolygons = convertToMeters(LonLatQList, minLon, minLat);
 
     // -> top-left corner is just 0,0
     downRightCornerForViewPort =
@@ -133,7 +132,9 @@ void Model::initializeModel(QString filePath) {
     qDebug() << "Error: " << e.what();
   }
 }
-QList<QPolygonF> Model::getPolygons() { return polygons; }
+QList<PolygonPair> Model::getPolygons() {
+  return latLonToMetersPolygons;
+}
 QPointF Model::getDownRightCornerForViewPort() {
   return downRightCornerForViewPort;
 }
@@ -155,58 +156,60 @@ qreal Model::distanceBetweenQLineFAndPoint(const QLineF& line,
   // distance
   return fabs(x * y2 - y * x2) / norm;
 }
-QPolygonF Model::simplifyPolygon(QPolygonF polygon, double epsilon) {
-  if (polygon.size() <= 2 || epsilon <= 0) return polygon;
-  QPolygonF simplifiedPolygon;
-  QPointF A = polygon.first();
-  QPointF B = polygon.last();
+PolygonPair Model::simplifyPolygon(PolygonPair latLonMetPoly, double epsilon) {
+  if (latLonMetPoly.second.size() <= 2 || epsilon <= 0) return latLonMetPoly;
+  PolygonPair simplifiedPolygon;
+  QPointF A = latLonMetPoly.second.first();
+  QPointF B = latLonMetPoly.second.last();
   QLineF AB(A, B);
   qreal d_max = 0.0;
   qsizetype C_idx = 0;
-  for (qsizetype i = 1; i < polygon.size() - 1; i++) {
-    qreal d = distanceBetweenQLineFAndPoint(AB, polygon.at(i));
+  for (qsizetype i = 1; i < latLonMetPoly.second.size() - 1; i++) {
+    qreal d = distanceBetweenQLineFAndPoint(AB, latLonMetPoly.second.at(i));
     if (d > d_max) {
       d_max = d;
       C_idx = i;
     }
   }
   if (d_max <= epsilon) {
-    simplifiedPolygon.append(A);
-    simplifiedPolygon.append(B);
+    simplifiedPolygon.first<<latLonMetPoly.first.first()<<latLonMetPoly.first.last();
+    simplifiedPolygon.second<<latLonMetPoly.second.first()<<latLonMetPoly.second.last();
   } else {
-    QPolygonF A___C = polygon.first(C_idx + 1);
-    QPolygonF C___B = polygon.last(polygon.size() - C_idx);
-    QPolygonF A___C_simplified = simplifyPolygon(A___C, epsilon);
-    QPolygonF C___B_simplified = simplifyPolygon(C___B, epsilon);
+    PolygonPair A___C = {{latLonMetPoly.first.first(C_idx + 1)}, {latLonMetPoly.second.first(C_idx + 1)}};
+    PolygonPair C___B = {{latLonMetPoly.first.last(latLonMetPoly.second.size() - C_idx)}, {latLonMetPoly.second.last(latLonMetPoly.second.size() - C_idx)}};
+    PolygonPair A___C_simplified = simplifyPolygon(A___C, epsilon);
+    PolygonPair C___B_simplified = simplifyPolygon(C___B, epsilon);
     simplifiedPolygon = std::move(A___C_simplified);
-    simplifiedPolygon.removeLast();
-    simplifiedPolygon.append(C___B_simplified);
+    simplifiedPolygon.first.removeLast();
+    simplifiedPolygon.second.removeLast();
+    simplifiedPolygon.first <<C___B_simplified.first;
+    simplifiedPolygon.second <<C___B_simplified.second;
   }
   return simplifiedPolygon;
 }
 
-QList<QPolygonF> Model::getSimplifiedPolygons() { return simplifiedPolygons; }
-void Model::simplifyPolygons(double epsilon) {
-  simplifiedPolygons.clear();
-  for (QPolygonF& polygon : polygons) {
-    simplifiedPolygons.append(simplifyPolygon(polygon, epsilon));
-  }
-}
+// QList<QPolygonF> Model::getSimplifiedPolygons() { return simplifiedPolygons; }
+// void Model::simplifyPolygons(double epsilon) {
+//   simplifiedPolygons.clear();
+//   for (QPolygonF& polygon : polygons) {
+//     simplifiedPolygons.append(simplifyPolygon(polygon, epsilon));
+//   }
+// }
 
-int Model::getNumberOfPolygons() { return polygons.size(); }
-int Model::getQListQPolygonFPointsCount(QList<QPolygonF> polygons) {
+int Model::getNumberOfPolygons() { return latLonToMetersPolygons.size(); }
+int Model::getQListQPolygonFPointsCount(QList<PolygonPair> polygons) {
   int result = 0;
-  for (QPolygonF& polygon : polygons) {
-    result += polygon.size();
+  for (PolygonPair& polygon : polygons) {
+    result += polygon.first.size();
   }
   return result;
 }
 int Model::getNumberOfPolygonsPoints() {
-  return getQListQPolygonFPointsCount(polygons);
+  return getQListQPolygonFPointsCount(latLonToMetersPolygons);
 }
 int Model::getNumberOfSimplifiedPolygonsPoints() {
   return getQListQPolygonFPointsCount(simplifiedPolygons);
 }
-void Model::setSimplifiedPolygons(const QList<QPolygonF>& polys) {
+void Model::setSimplifiedPolygons(const QList<PolygonPair>& polys) {
   simplifiedPolygons = polys;
 }

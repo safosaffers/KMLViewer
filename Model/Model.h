@@ -11,29 +11,35 @@
 #include <QString>
 #include <cmath>
 #define EQUATORIAL_EARTH_RADIUS_METERS 6378137
+using PolygonPair = QPair<QPolygonF, QPolygonF>;
 class Model {
  private:
-  QList<QPolygonF> polygons;
-  QList<QPolygonF> simplifiedPolygons;
+  QList<PolygonPair> latLonToMetersPolygons;
+  QList<PolygonPair> simplifiedPolygons;
   QPointF downRightCornerForViewPort;
 
  public:
   Model();
   ~Model();
   void initializeModel(QString filePath);
-  QList<QPolygonF> getPolygons();
+  QList<PolygonPair> getPolygons();
   QPointF getDownRightCornerForViewPort();
 
   static qreal distanceBetweenQLineFAndPoint(const QLineF& line,
-                                      const QPointF& p);
-  static QPolygonF simplifyPolygon(QPolygonF polygon, double epsilon);
+                                             const QPointF& p);
+  static PolygonPair simplifyPolygon(PolygonPair latLonMetPoly, double epsilon);
   void simplifyPolygons(double epsilon);
-  QList<QPolygonF> getSimplifiedPolygons();
 
   int getNumberOfPolygons();
-  int getQListQPolygonFPointsCount(QList<QPolygonF> polygons);
+  int getQListQPolygonFPointsCount(QList<PolygonPair> polygons);
   int getNumberOfPolygonsPoints();
   int getNumberOfSimplifiedPolygonsPoints();
-  void setSimplifiedPolygons(const QList<QPolygonF>& polys);
+  void setSimplifiedPolygons(const QList<PolygonPair>& polys);
+
+ private:
+  QList<PolygonPair> convertToMeters(QList<QPolygonF> LonLatQList,
+                                     double& minLon, double& minLat);
+  QPointF getCornerInMeters(double& minLon, double& maxLon, double& minLat,
+                            double& maxLat);
 };
 #endif  // MODEL_H

@@ -24,12 +24,12 @@ void OpenGLWidget::setBrushWithAlpha(QPainter& painter, QColor color,
   painter.setBrush(br);
 }
 void OpenGLWidget::drawPolygons(QPainter& painter,
-                                const QList<QPolygonF>& polygons,
+                                const QList<PolygonPair>& polygons,
                                 const QColor& color) {
   setPenWidthAccordingToViewport(painter, color);
   setBrushWithAlpha(painter, color, 0.5);
-  for (const QPolygonF& poly : polygons) {
-    painter.drawPolygon(poly, Qt::WindingFill);
+  for (const PolygonPair& pairPoly : polygons) {
+    painter.drawPolygon(pairPoly.second, Qt::WindingFill);
   }
 }
 void OpenGLWidget::paintGL() {
@@ -47,13 +47,13 @@ void OpenGLWidget::paintGL() {
 void OpenGLWidget::resizeGL(int width, int height) {
   glViewport(0, 0, width, height);
 }
-void OpenGLWidget::setPolygons(QList<QPolygonF> polygons) {
+void OpenGLWidget::setPolygons(QList<PolygonPair> polygons) {
   this->polygons = polygons;
 }
 void OpenGLWidget::resetSimplifiedPolygons() {
   this->simplifiedPolygons.clear();
 }
-void OpenGLWidget::setSimplifiedPolygons(QList<QPolygonF> simplifiedPolygons) {
+void OpenGLWidget::setSimplifiedPolygons(QList<PolygonPair> simplifiedPolygons) {
   this->simplifiedPolygons = simplifiedPolygons;
 }
 QTransform OpenGLWidget::setInitialViewport(QPointF Max) {

@@ -5,6 +5,7 @@
 #include <QOpenGLWidget>
 #include <QPainter>
 #include <QPolygonF>
+using PolygonPair = QPair<QPolygonF, QPolygonF>;
 class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   Q_OBJECT
  private:
@@ -12,8 +13,8 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   QTransform initialTransformViewport;
   QPointF lastMousePos;
   bool isPanning;
-  QList<QPolygonF> polygons;
-  QList<QPolygonF> simplifiedPolygons;
+  QList<PolygonPair> polygons;
+  QList<PolygonPair> simplifiedPolygons;
   QPointF maxCorner;
   qreal scaleViewport;
   static constexpr qreal LINE_WIDTH_RATIO = 300.0;
@@ -25,16 +26,16 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
  public:
   explicit OpenGLWidget(QWidget* parent = nullptr);
   ~OpenGLWidget();
-  void setPolygons(QList<QPolygonF> polygons);
+  void setPolygons(QList<PolygonPair> polygons);
   void resetSimplifiedPolygons();
-  void setSimplifiedPolygons(QList<QPolygonF> polygons);
+  void setSimplifiedPolygons(QList<PolygonPair> polygons);
   QTransform setInitialViewport(QPointF Max);
 
  protected:
   void initializeGL() override;
   void paintGL() override;
   void resizeGL(int width, int height) override;
-  void drawPolygons(QPainter& painter, const QList<QPolygonF>& polygons,
+  void drawPolygons(QPainter& painter, const QList<PolygonPair>& polygons,
                     const QColor& color);
   void setPenWidthAccordingToViewport(QPainter& painter, QColor color);
   void setBrushWithAlpha(QPainter& painter, QColor color, qreal alpha);
