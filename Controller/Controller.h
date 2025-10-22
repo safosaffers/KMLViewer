@@ -16,7 +16,7 @@ class Controller : public QObject {
   Model* model;
   View* view;
   QElapsedTimer timer;
-  QFutureWatcher<QPolygonF> watcher;
+  QFutureWatcher<PolygonPair> watcher;
 
  public:
   Controller(Model* model, View* view);
