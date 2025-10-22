@@ -25,6 +25,7 @@ class Controller : public QObject {
   void HandleModelLoading(QString fileName);
   void HandleModelSimplify(double epsilon);
   void finishModelSimplify();
+  void HandleModelSimplifySave(QString fileName);
 };
 
 #endif  // CONTROLLER_H

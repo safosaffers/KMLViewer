@@ -5,7 +5,7 @@
 #include <QFileDialog>
 #include <QMainWindow>
 #include <QVBoxLayout>
-
+#include <QMessageBox>
 #include "openglwidget.h"
 #include "ui_view.h"
 
@@ -35,7 +35,9 @@ class View : public QMainWindow {
   void on_btnUploadaKMLFile_clicked();
   void on_btnSimplifyPoligons_clicked();
 
- private:
+  void on_btnSaveSimplifyPoligons_clicked();
+
+private:
   OpenGLWidget* glwidget;
   void set_parameters_validators();
  signals:
@@ -45,5 +47,6 @@ class View : public QMainWindow {
    */
   void fileNameChoosed(QString fileName);
   void polygonSimplifyRequested(double epsilon);
+  void saveSimplifyPoligons(QString fileName);
 };
 #endif  // VIEW_H

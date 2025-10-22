@@ -4,6 +4,8 @@ Controller::Controller(Model* m, View* v) : QObject(v), model(m), view(v) {
   connect(view, &View::fileNameChoosed, this, &Controller::HandleModelLoading);
   connect(view, &View::polygonSimplifyRequested, this,
           &Controller::HandleModelSimplify);
+  connect(view, &View::saveSimplifyPoligons, this,
+          &Controller::HandleModelSimplifySave);
   connect(&watcher, &QFutureWatcher<QPolygonF>::finished, this,
           [this] { finishModelSimplify(); });
   connect(&watcher, &QFutureWatcher<QPolygonF>::progressRangeChanged,
@@ -14,7 +16,8 @@ Controller::Controller(Model* m, View* v) : QObject(v), model(m), view(v) {
 
 Controller::~Controller() { watcher.cancel(); }
 
-void Controller::HandleModelLoading(QString fileName) {  model->initializeModel(fileName);
+void Controller::HandleModelLoading(QString fileName) {
+  model->initializeModel(fileName);
   view->getGLWidget()->setPolygons(model->getPolygons());
   view->getGLWidget()->resetSimplifiedPolygons();
   view->getGLWidget()->setInitialViewport(
@@ -24,6 +27,7 @@ void Controller::HandleModelLoading(QString fileName) {  model->initializeModel(
   view->ui->progressBar->setValue(0);
   view->ui->btnSimplifyPoligons->setEnabled(true);
   view->ui->leEpsilon->setEnabled(true);
+  view->ui->btnSaveSimplifyPoligons->setEnabled(false);
   view->getGLWidget()->update();
 }
 
@@ -42,10 +46,10 @@ void Controller::HandleModelSimplify(double epsilon) {
     timer.start();
 
     // starts simplification in parrallel
-    auto future = QtConcurrent::mapped(polygonsToSimplify,
-                                       [eps](const PolygonPair& p) -> PolygonPair {
-                                         return Model::simplifyPolygon(p, eps);
-                                       });
+    auto future = QtConcurrent::mapped(
+        polygonsToSimplify, [eps](const PolygonPair& p) -> PolygonPair {
+          return Model::simplifyPolygon(p, eps);
+        });
 
     watcher.setFuture(future);
 
@@ -65,6 +69,7 @@ void Controller::finishModelSimplify() {
   model->setSimplifiedPolygons(simplified);
 
   view->ui->btnUploadaKMLFile->setEnabled(true);
+  view->ui->btnSaveSimplifyPoligons->setEnabled(true);
   view->ui->btnSimplifyPoligons->setChecked(false);
   view->ui->btnSimplifyPoligons->setText(tr("Упростить"));
   view->ui->lblNumberOfSimplifiedPolygonsPoints->setText(
@@ -72,4 +77,8 @@ void Controller::finishModelSimplify() {
 
   view->getGLWidget()->setSimplifiedPolygons(simplified);
   view->getGLWidget()->update();
+}
+
+void Controller::HandleModelSimplifySave(QString fileName) {
+  qDebug() << "pathToSave = " << fileName;
 }
