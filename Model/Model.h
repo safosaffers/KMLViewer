@@ -10,6 +10,8 @@
 #include <QPolygonF>
 #include <QString>
 #include <cmath>
+#include <limits>
+
 #define EQUATORIAL_EARTH_RADIUS_METERS 6378137
 using PolygonPair = QPair<QPolygonF, QPolygonF>;
 class Model {
@@ -17,8 +19,9 @@ class Model {
   QList<PolygonPair> latLonToMetersPolygons;
   QList<PolygonPair> simplifiedPolygons;
   QPointF downRightCornerForViewPort;
-  QDomDocument *currentDocument;
+  QDomDocument* currentDocument;
   QString currentFilePath;
+
  public:
   Model();
   ~Model();
@@ -26,8 +29,10 @@ class Model {
   QList<PolygonPair> getPolygons();
   QPointF getDownRightCornerForViewPort();
 
-  static qreal distanceBetweenQLineFAndPoint(const QLineF& line,
-                                             const QPointF& p);
+  static PolygonPair RamerDouglasPeucker(PolygonPair latLonMetPoly,
+                                         double epsilon);
+  static PolygonPair createFallbackSimplification(
+      const PolygonPair& originalPoly);
   static PolygonPair simplifyPolygon(PolygonPair latLonMetPoly, double epsilon);
   void simplifyPolygons(double epsilon);
 
@@ -39,8 +44,9 @@ class Model {
   void saveSimplifiedModel(QString fileName);
   QString polygonToKmlCoords(const QPolygonF& polygon);
   void updateCoordinatesInDocument(QDomDocument& doc,
-                                          const QList<PolygonPair>& simplified);
+                                   const QList<PolygonPair>& simplified);
   bool writeDocumentToFile(const QDomDocument& doc, const QString& fileName);
+
  private:
   QList<PolygonPair> convertToMeters(QList<QPolygonF> LonLatQList,
                                      double& minLon, double& minLat);

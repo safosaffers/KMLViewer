@@ -14610,8 +14610,7 @@
 				<tessellate>1</tessellate>
 				<outerBoundaryIs>
 					<LinearRing>
-						<coordinates>
-						</coordinates>
+						<coordinates/>
 					</LinearRing>
 				</outerBoundaryIs>
 			</Polygon>
@@ -14939,8 +14938,7 @@
 				<tessellate>1</tessellate>
 				<outerBoundaryIs>
 					<LinearRing>
-						<coordinates>
-						</coordinates>
+						<coordinates/>
 					</LinearRing>
 				</outerBoundaryIs>
 			</Polygon>
