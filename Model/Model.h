@@ -17,7 +17,8 @@ class Model {
   QList<PolygonPair> latLonToMetersPolygons;
   QList<PolygonPair> simplifiedPolygons;
   QPointF downRightCornerForViewPort;
-
+  QDomDocument *currentDocument;
+  QString currentFilePath;
  public:
   Model();
   ~Model();
@@ -35,7 +36,11 @@ class Model {
   int getNumberOfPolygonsPoints();
   int getNumberOfSimplifiedPolygonsPoints();
   void setSimplifiedPolygons(const QList<PolygonPair>& polys);
-
+  void saveSimplifiedModel(QString fileName);
+  QString polygonToKmlCoords(const QPolygonF& polygon);
+  void updateCoordinatesInDocument(QDomDocument& doc,
+                                          const QList<PolygonPair>& simplified);
+  bool writeDocumentToFile(const QDomDocument& doc, const QString& fileName);
  private:
   QList<PolygonPair> convertToMeters(QList<QPolygonF> LonLatQList,
                                      double& minLon, double& minLat);

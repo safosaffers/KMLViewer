@@ -80,5 +80,5 @@ void Controller::finishModelSimplify() {
 }
 
 void Controller::HandleModelSimplifySave(QString fileName) {
-  qDebug() << "pathToSave = " << fileName;
+  model->saveSimplifiedModel(fileName);
 }

@@ -1,10 +1,11 @@
 #include "Model.h"
 
-Model::Model() {}
-Model::~Model() {}
+Model::Model() { currentDocument = NULL; }
+Model::~Model() {
+  if (currentDocument) delete currentDocument;
+}
 QDomDocument* setContentFromFile(QString filePath) {
   QDomDocument* doc = NULL;
-
   QFile file(filePath);
   if (file.open(QIODevice::ReadOnly)) {
     doc = new QDomDocument("KML Document");
@@ -54,21 +55,21 @@ static QPolygonF parseLonLatString(const QString& coordsString, double& minLon,
 
 QList<QPolygonF> parseLonLatFromKML(QString filePath, double& minLon,
                                     double& maxLon, double& minLat,
-                                    double& maxLat) {
-  QDomDocument* doc = setContentFromFile(filePath);
-  if (!doc) {
+                                    double& maxLat, QDomDocument** document) {
+  *document = setContentFromFile(filePath);
+  if (!document) {
     throw std::invalid_argument("Failed to open or parse KML file");
   }
 
   QList<QPolygonF> result;
-  QDomNodeList coordsList = doc->elementsByTagName(QString("coordinates"));
+  QDomNodeList coordsList =
+      (*document)->elementsByTagName(QString("coordinates"));
   for (const QDomNode& coords : coordsList) {
     QString coordsString = coords.firstChild().nodeValue();
     result.append(
         parseLonLatString(coordsString, minLon, maxLon, minLat, maxLat));
   }
 
-  delete doc;
   return result;
 }
 double degToRad(double deg) { return deg * M_PI / 180.0; }
@@ -120,8 +121,12 @@ void Model::initializeModel(QString filePath) {
     double maxLon = -90.0;
     double minLat = 180.0;
     double maxLat = -180.0;
-    QList<QPolygonF> LonLatQList =
-        parseLonLatFromKML(filePath, minLon, maxLon, minLat, maxLat);
+    if (currentDocument) {
+      delete currentDocument;
+      currentDocument = NULL;
+    }
+    QList<QPolygonF> LonLatQList = parseLonLatFromKML(
+        filePath, minLon, maxLon, minLat, maxLat, &currentDocument);
     latLonToMetersPolygons = convertToMeters(LonLatQList, minLon, minLat);
 
     // -> top-left corner is just 0,0
@@ -132,9 +137,7 @@ void Model::initializeModel(QString filePath) {
     qDebug() << "Error: " << e.what();
   }
 }
-QList<PolygonPair> Model::getPolygons() {
-  return latLonToMetersPolygons;
-}
+QList<PolygonPair> Model::getPolygons() { return latLonToMetersPolygons; }
 QPointF Model::getDownRightCornerForViewPort() {
   return downRightCornerForViewPort;
 }
@@ -172,24 +175,29 @@ PolygonPair Model::simplifyPolygon(PolygonPair latLonMetPoly, double epsilon) {
     }
   }
   if (d_max <= epsilon) {
-    simplifiedPolygon.first<<latLonMetPoly.first.first()<<latLonMetPoly.first.last();
-    simplifiedPolygon.second<<latLonMetPoly.second.first()<<latLonMetPoly.second.last();
+    simplifiedPolygon.first << latLonMetPoly.first.first()
+                            << latLonMetPoly.first.last();
+    simplifiedPolygon.second << latLonMetPoly.second.first()
+                             << latLonMetPoly.second.last();
   } else {
-    PolygonPair A___C = {{latLonMetPoly.first.first(C_idx + 1)}, {latLonMetPoly.second.first(C_idx + 1)}};
-    PolygonPair C___B = {{latLonMetPoly.first.last(latLonMetPoly.second.size() - C_idx)}, {latLonMetPoly.second.last(latLonMetPoly.second.size() - C_idx)}};
+    PolygonPair A___C = {{latLonMetPoly.first.first(C_idx + 1)},
+                         {latLonMetPoly.second.first(C_idx + 1)}};
+    PolygonPair C___B = {
+        {latLonMetPoly.first.last(latLonMetPoly.second.size() - C_idx)},
+        {latLonMetPoly.second.last(latLonMetPoly.second.size() - C_idx)}};
     PolygonPair A___C_simplified = simplifyPolygon(A___C, epsilon);
     PolygonPair C___B_simplified = simplifyPolygon(C___B, epsilon);
     simplifiedPolygon = std::move(A___C_simplified);
     simplifiedPolygon.first.removeLast();
     simplifiedPolygon.second.removeLast();
-    simplifiedPolygon.first <<C___B_simplified.first;
-    simplifiedPolygon.second <<C___B_simplified.second;
+    simplifiedPolygon.first << C___B_simplified.first;
+    simplifiedPolygon.second << C___B_simplified.second;
   }
   return simplifiedPolygon;
 }
 
-// QList<QPolygonF> Model::getSimplifiedPolygons() { return simplifiedPolygons; }
-// void Model::simplifyPolygons(double epsilon) {
+// QList<QPolygonF> Model::getSimplifiedPolygons() { return simplifiedPolygons;
+// } void Model::simplifyPolygons(double epsilon) {
 //   simplifiedPolygons.clear();
 //   for (QPolygonF& polygon : polygons) {
 //     simplifiedPolygons.append(simplifyPolygon(polygon, epsilon));
@@ -212,4 +220,53 @@ int Model::getNumberOfSimplifiedPolygonsPoints() {
 }
 void Model::setSimplifiedPolygons(const QList<PolygonPair>& polys) {
   simplifiedPolygons = polys;
+}
+QString Model::polygonToKmlCoords(const QPolygonF& polygon) {
+  QStringList parts;
+  for (const QPointF& pt : polygon) {
+    parts << QString::number(pt.x(), 'g', 12) + "," +
+                 QString::number(pt.y(), 'g', 12) + "," +
+                 QString::number(0, 'g', 12);
+  }
+  return parts.join(" ");
+}
+
+void Model::updateCoordinatesInDocument(QDomDocument& doc,
+                                        const QList<PolygonPair>& simplified) {
+  QDomNodeList coordNodes = doc.elementsByTagName("coordinates");
+  if (coordNodes.size() != simplified.size()) {
+    qWarning() << "Mismatch: KML has" << coordNodes.size()
+               << "coordinate blocks, but we have" << simplified.size()
+               << "simplified polygons";
+    return;
+  }
+
+  for (int i = 0; i < coordNodes.size(); ++i) {
+    QString newCoords = polygonToKmlCoords(simplified[i].first);
+    coordNodes.at(i).firstChild().setNodeValue(newCoords);
+  }
+}
+
+bool Model::writeDocumentToFile(const QDomDocument& doc,
+                                const QString& fileName) {
+  QFile file(fileName);
+  if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    qWarning() << "Failed to write KML to" << fileName;
+    return false;
+  }
+  QTextStream stream(&file);
+  stream << doc.toString();
+  file.close();
+  return true;
+}
+
+void Model::saveSimplifiedModel(QString fileName) {
+  if (!currentDocument) {
+    qWarning() << "No source KML document to preserve structure";
+    return;
+  }
+
+  QDomDocument doc = currentDocument->cloneNode(true).toDocument();
+  updateCoordinatesInDocument(doc, simplifiedPolygons);
+  writeDocumentToFile(doc, fileName);
 }
