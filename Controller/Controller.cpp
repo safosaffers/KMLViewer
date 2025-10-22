@@ -28,6 +28,7 @@ void Controller::HandleModelLoading(QString fileName) {
   view->ui->btnSimplifyPoligons->setEnabled(true);
   view->ui->leEpsilon->setEnabled(true);
   view->ui->btnSaveSimplifyPoligons->setEnabled(false);
+  view->ui->lblNumberOfSimplifiedPolygonsPoints->setText("—");
   view->getGLWidget()->update();
 }
 
