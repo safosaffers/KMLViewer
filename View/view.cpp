@@ -51,14 +51,10 @@ void View::updateNumberOfSimplifiedPolygonsPoints(
       QString::number(numberOfSimplifiedPolygonsPoints));
 }
 
-void View::on_btnSaveSimplifyPoligons_clicked()
-{
+void View::on_btnSaveSimplifyPoligons_clicked() {
   QString pathToSave = QFileDialog::getSaveFileName(
-      this,
-      tr("Save Simplified Polygons as KML"),
-      "simplified_polygons.kml",
-      "KML Files (*.kml)"
-      );
+      this, tr("Save Simplified Polygons as KML"), "simplified_polygons.kml",
+      "KML Files (*.kml)");
 
   if (!pathToSave.isEmpty()) {
     if (!pathToSave.endsWith(".kml", Qt::CaseInsensitive)) {

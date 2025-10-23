@@ -35,6 +35,7 @@ void OpenGLWidget::drawPolygons(QPainter& painter,
 void OpenGLWidget::paintGL() {
   QPainter painter(this);
   painter.setRenderHint(QPainter::Antialiasing);
+
   painter.fillRect(rect(), Qt::white);
 
   painter.setWorldTransform(transformViewport);
@@ -53,7 +54,8 @@ void OpenGLWidget::setPolygons(QList<PolygonPair> polygons) {
 void OpenGLWidget::resetSimplifiedPolygons() {
   this->simplifiedPolygons.clear();
 }
-void OpenGLWidget::setSimplifiedPolygons(QList<PolygonPair> simplifiedPolygons) {
+void OpenGLWidget::setSimplifiedPolygons(
+    QList<PolygonPair> simplifiedPolygons) {
   this->simplifiedPolygons = simplifiedPolygons;
 }
 QTransform OpenGLWidget::setInitialViewport(QPointF Max) {
@@ -71,7 +73,7 @@ QTransform OpenGLWidget::setInitialViewport(QPointF Max) {
   swapY.scale(1, -1);
 
   t *= swapY;
-  initialTransformViewport=t;
+  initialTransformViewport = t;
   transformViewport = initialTransformViewport;
   minAllowedScale = initialTransformViewport.m11() * MIN_ZOOM_FACTOR;
   maxAllowedScale = initialTransformViewport.m11() * MAX_ZOOM_FACTOR;
