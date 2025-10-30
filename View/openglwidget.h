@@ -17,7 +17,7 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   QList<PolygonPair> simplifiedPolygons;
   QPointF maxCorner;
   qreal scaleViewport;
-  static constexpr qreal LINE_WIDTH_RATIO = 300.0;
+  static constexpr qreal LINE_WIDTH_RATIO = 1000.0;
   qreal minAllowedScale;
   qreal maxAllowedScale;
   static constexpr const double MIN_ZOOM_FACTOR = 0.02;

@@ -11,10 +11,12 @@ void OpenGLWidget::initializeGL() {
 }
 void OpenGLWidget::setPenWidthAccordingToViewport(QPainter& painter,
                                                   QColor color) {
-  QRectF viewportRect(0, 0, width(), height());
-  QRectF logicalBB = transformViewport.inverted().mapRect(viewportRect);
+  QScreen* screen = QGuiApplication::primaryScreen();
+  QRect screenGeometry = screen->geometry();
+  QRectF logicalBB = transformViewport.inverted().mapRect(screenGeometry);
   qreal penWidth =
       qMax(logicalBB.width(), logicalBB.height()) / LINE_WIDTH_RATIO;
+  // qDebug() << "penWidth: " << penWidth;
   painter.setPen(QPen(color, penWidth));
 }
 void OpenGLWidget::setBrushWithAlpha(QPainter& painter, QColor color,
@@ -59,6 +61,7 @@ void OpenGLWidget::setSimplifiedPolygons(
   this->simplifiedPolygons = simplifiedPolygons;
 }
 QTransform OpenGLWidget::setInitialViewport(QPointF Max) {
+  // qDebug() << Max.x() << Max.y();
   QTransform t;
   int emptyPercent = 20;
   qreal emptySpaceX = Max.x() * emptyPercent / 100;
