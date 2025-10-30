@@ -11,13 +11,9 @@ void OpenGLWidget::initializeGL() {
 }
 void OpenGLWidget::setPenWidthAccordingToViewport(QPainter& painter,
                                                   QColor color) {
-  QScreen* screen = QGuiApplication::primaryScreen();
-  QRect screenGeometry = screen->geometry();
-  QRectF logicalBB = transformViewport.inverted().mapRect(screenGeometry);
-  qreal penWidth =
-      qMax(logicalBB.width(), logicalBB.height()) / LINE_WIDTH_RATIO;
-  // qDebug() << "penWidth: " << penWidth;
-  painter.setPen(QPen(color, penWidth));
+  QPen pen(color, 2);
+  pen.setCosmetic(true);
+  painter.setPen(pen);
 }
 void OpenGLWidget::setBrushWithAlpha(QPainter& painter, QColor color,
                                      qreal alpha) {
@@ -50,6 +46,15 @@ void OpenGLWidget::paintGL() {
 void OpenGLWidget::resizeGL(int width, int height) {
   glViewport(0, 0, width, height);
 }
+void OpenGLWidget::normalizePolygons(QPointF maxCoord) {
+  qreal maxCoordVal  = qMax(maxCoord.x(), maxCoord.y());
+  for (PolygonPair & poly : polygons){
+    for(QPointF & point: poly.second){
+      point/=maxCoordVal;
+    }
+  }
+  this->maxCoord=maxCoord/maxCoordVal;
+}
 void OpenGLWidget::setPolygons(QList<PolygonPair> polygons) {
   this->polygons = polygons;
 }
@@ -60,14 +65,13 @@ void OpenGLWidget::setSimplifiedPolygons(
     QList<PolygonPair> simplifiedPolygons) {
   this->simplifiedPolygons = simplifiedPolygons;
 }
-QTransform OpenGLWidget::setInitialViewport(QPointF Max) {
-  // qDebug() << Max.x() << Max.y();
+QTransform OpenGLWidget::setInitialViewport() {
   QTransform t;
   int emptyPercent = 20;
-  qreal emptySpaceX = Max.x() * emptyPercent / 100;
-  qreal emptySpaceY = Max.y() * emptyPercent / 100;
+  qreal emptySpaceX = this->maxCoord.x() * emptyPercent / 100;
+  qreal emptySpaceY = this->maxCoord.y() * emptyPercent / 100;
   scaleViewport = qMin(width(), height()) /
-                  (qMax(Max.x(), Max.y()) + qMax(emptySpaceX, emptySpaceY));
+                  (qMax(this->maxCoord.x(), this->maxCoord.y()) + qMax(emptySpaceX, emptySpaceY));
   t.scale(scaleViewport, scaleViewport);
   t.translate(emptySpaceX / 2, emptySpaceY / 2);
 
@@ -79,7 +83,6 @@ QTransform OpenGLWidget::setInitialViewport(QPointF Max) {
   initialTransformViewport = t;
   transformViewport = initialTransformViewport;
   minAllowedScale = initialTransformViewport.m11() * MIN_ZOOM_FACTOR;
-  maxAllowedScale = initialTransformViewport.m11() * MAX_ZOOM_FACTOR;
 
   return initialTransformViewport;
 }
@@ -103,7 +106,7 @@ void OpenGLWidget::wheelEvent(QWheelEvent* event) {
 
   double newScale = currentScale * factor;
   // qDebug() << "newScale = " << newScale;
-  if (newScale < minAllowedScale || newScale > maxAllowedScale) {
+  if (newScale < minAllowedScale) {  // || newScale > maxAllowedScale
     event->accept();
     return;
   }

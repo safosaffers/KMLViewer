@@ -19,9 +19,9 @@ Controller::~Controller() { watcher.cancel(); }
 void Controller::HandleModelLoading(QString fileName) {
   model->initializeModel(fileName);
   view->getGLWidget()->setPolygons(model->getPolygons());
+  view->getGLWidget()->normalizePolygons(model->getDownRightCornerForViewPort());
   view->getGLWidget()->resetSimplifiedPolygons();
-  view->getGLWidget()->setInitialViewport(
-      model->getDownRightCornerForViewPort());
+  view->getGLWidget()->setInitialViewport();//always called after normalizePolygons
   view->updateNumberOfPolygons(model->getNumberOfPolygons());
   view->updateNumberOfPolygonsPoints(model->getNumberOfPolygonsPoints());
   view->ui->progressBar->setValue(0);

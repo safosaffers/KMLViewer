@@ -22,7 +22,6 @@ void View::on_btnUploadaKMLFile_clicked() {
   }
 }
 OpenGLWidget* View::getGLWidget() { return glwidget; }
-
 void View::on_btnSimplifyPoligons_clicked() {
   if (ui->leEpsilon->hasAcceptableInput()) {
     QString strEpsilon = ui->leEpsilon->text();

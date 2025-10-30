@@ -15,21 +15,19 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   bool isPanning;
   QList<PolygonPair> polygons;
   QList<PolygonPair> simplifiedPolygons;
-  QPointF maxCorner;
+  QPointF maxCoord;
   qreal scaleViewport;
-  static constexpr qreal LINE_WIDTH_RATIO = 1000.0;
   qreal minAllowedScale;
-  qreal maxAllowedScale;
-  static constexpr const double MIN_ZOOM_FACTOR = 0.02;
-  static constexpr const double MAX_ZOOM_FACTOR = 50.0;
+  static constexpr const double MIN_ZOOM_FACTOR = 0.10;
 
  public:
   explicit OpenGLWidget(QWidget* parent = nullptr);
   ~OpenGLWidget();
+  void normalizePolygons(QPointF MaxCoord);
   void setPolygons(QList<PolygonPair> polygons);
   void resetSimplifiedPolygons();
   void setSimplifiedPolygons(QList<PolygonPair> polygons);
-  QTransform setInitialViewport(QPointF Max);
+  QTransform setInitialViewport();
 
  protected:
   void initializeGL() override;
