@@ -80,6 +80,7 @@ void Controller::finishModelSimplify() {
       QString::number(model->getNumberOfSimplifiedPolygonsPoints()));
 
   view->getGLWidget()->setSimplifiedPolygons(simplified);
+  view->getGLWidget()->normalizeSimplifiedPolygons();
   view->getGLWidget()->update();
 }
 
