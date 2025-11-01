@@ -10,8 +10,7 @@ void OpenGLWidget::initializeGL() {
   glClearColor(1.f, 1.f, 1.f, 1.f);
 }
 
-void OpenGLWidget::setPenWidthAccordingToViewport(QPainter& painter,
-                                                  QColor color) {
+void OpenGLWidget::setPenForEdges(QPainter& painter, QColor color) {
   qreal scaleX = sqrt(transformViewport.m11() * transformViewport.m11() +
                       transformViewport.m12() * transformViewport.m12());
   qreal penWidth = MIN_PEN_WIDTH;
@@ -21,20 +20,65 @@ void OpenGLWidget::setPenWidthAccordingToViewport(QPainter& painter,
   }
   painter.setPen(QPen(color, penWidth));
 }
+void OpenGLWidget::setPenForPoints(QPainter& painter, QColor color) {
+  qreal scaleX = qSqrt(transformViewport.m11() * transformViewport.m11() +
+                       transformViewport.m12() * transformViewport.m12());
+  qreal penWidth = MIN_PEN_WIDTH;
+  qreal scaledPenWidth = LINE_WIDTH_RATIO / scaleX;
+  if (scaledPenWidth > MIN_PEN_WIDTH) {
+    penWidth = scaledPenWidth;
+  }
+  penWidth *= 4;
+  painter.setPen(QPen(color, penWidth, Qt::SolidLine, Qt::RoundCap));
+}
 void OpenGLWidget::setBrushWithAlpha(QPainter& painter, QColor color,
                                      qreal alpha) {
   QColor br = color;
   br.setAlphaF(alpha);
   painter.setBrush(br);
 }
+
+void OpenGLWidget::drawVertexMarkers(QPainter& painter,
+                                     const QList<QPolygonF>& polygons,
+                                     const QColor& color) {
+  if (polygons.isEmpty()) return;
+
+  qreal scaleX = qSqrt(transformViewport.m11() * transformViewport.m11() +
+                       transformViewport.m12() * transformViewport.m12());
+  if (scaleX >= 1e+6) scaleX = 1e+6;
+  if (scaleX <= 1e-6) scaleX = 1e-6;
+  const qreal worldLength = 1.0 / scaleX;
+
+  QPainterPath path;
+  for (const auto& poly : polygons) {
+    for (const auto& pt : poly) {
+      path.moveTo(pt);
+      path.lineTo(pt.x() + worldLength, pt.y());
+    }
+  }
+
+  painter.save();
+  setPenForPoints(painter, color);
+  painter.setBrush(Qt::NoBrush);
+  painter.drawPath(path);
+  painter.restore();
+}
 void OpenGLWidget::drawPolygons(QPainter& painter,
                                 const QList<PolygonPair>& polygons,
                                 const QColor& color) {
-  setPenWidthAccordingToViewport(painter, color);
   setBrushWithAlpha(painter, color, 0.5);
   for (const PolygonPair& pairPoly : polygons) {
+    setPenForEdges(painter, color);
     painter.drawPolygon(pairPoly.second, Qt::WindingFill);
+
+    setPenForPoints(painter, Qt::red);
   }
+
+  QList<QPolygonF> allPolys;
+  for (const auto& pair : polygons) {
+    allPolys << pair.second;
+  }
+  drawVertexMarkers(painter, allPolys, Qt::red);
 }
 void OpenGLWidget::paintGL() {
   QPainter painter(this);

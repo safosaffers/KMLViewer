@@ -4,7 +4,9 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLWidget>
 #include <QPainter>
+#include <QPainterPath>
 #include <QPolygonF>
+#include <QtMath>
 using PolygonPair = QPair<QPolygonF, QPolygonF>;
 class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   Q_OBJECT
@@ -37,7 +39,10 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   void resizeGL(int width, int height) override;
   void drawPolygons(QPainter& painter, const QList<PolygonPair>& polygons,
                     const QColor& color);
-  void setPenWidthAccordingToViewport(QPainter& painter, QColor color);
+  void setPenForEdges(QPainter& painter, QColor color);
+  void setPenForPoints(QPainter& painter, QColor color);
+  void drawVertexMarkers(QPainter& painter, const QList<QPolygonF>& polygons,
+                         const QColor& color);
   void setBrushWithAlpha(QPainter& painter, QColor color, qreal alpha);
   void wheelEvent(QWheelEvent* event) override;
   void mousePressEvent(QMouseEvent* event) override;
