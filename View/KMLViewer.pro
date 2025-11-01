@@ -15,6 +15,7 @@ SOURCES += \
     ../Model/Model.cpp \
     ../Model/CoordinateConverter.cpp \
     ../Model/KmlFileHandler.cpp \
+    ../Model/PolygonSimplifier.cpp \
 
 HEADERS += \
     openglwidget.h \
@@ -23,6 +24,7 @@ HEADERS += \
     ../Model/Model.h \
     ../Model/CoordinateConverter.h \
     ../Model/KmlFileHandler.h \
+    ../Model/PolygonSimplifier.h \
 
 FORMS += \
     view.ui

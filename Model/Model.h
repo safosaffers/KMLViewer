@@ -14,6 +14,7 @@
 
 #include "CoordinateConverter.h"
 #include "KmlFileHandler.h"
+#include "PolygonSimplifier.h"
 
 using PolygonPair = QPair<QPolygonF, QPolygonF>;
 class Model {
@@ -31,10 +32,6 @@ class Model {
   QList<PolygonPair> getPolygons();
   QPointF getDownRightCornerForViewPort();
 
-  static PolygonPair RamerDouglasPeucker(PolygonPair latLonMetPoly,
-                                         double epsilon);
-  static PolygonPair createFallbackSimplification(
-      const PolygonPair& originalPoly);
   static PolygonPair simplifyPolygon(PolygonPair latLonMetPoly, double epsilon);
   void simplifyPolygons(double epsilon);
 
