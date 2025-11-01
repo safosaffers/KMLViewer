@@ -9,14 +9,16 @@ void OpenGLWidget::initializeGL() {
   initializeOpenGLFunctions();
   glClearColor(1.f, 1.f, 1.f, 1.f);
 }
+
 void OpenGLWidget::setPenWidthAccordingToViewport(QPainter& painter,
                                                   QColor color) {
-  QScreen* screen = QGuiApplication::primaryScreen();
-  QRect screenGeometry = screen->geometry();
-  QRectF logicalBB = transformViewport.inverted().mapRect(screenGeometry);
-  qreal penWidth =
-      qMax(logicalBB.width(), logicalBB.height()) / LINE_WIDTH_RATIO;
-  // qDebug() << "penWidth: " << penWidth;
+  qreal scaleX = sqrt(transformViewport.m11() * transformViewport.m11() +
+                      transformViewport.m12() * transformViewport.m12());
+  qreal penWidth = MIN_PEN_WIDTH;
+  qreal scaledPenWidth = LINE_WIDTH_RATIO / scaleX;
+  if (scaledPenWidth > MIN_PEN_WIDTH) {
+    penWidth = scaledPenWidth;
+  }
   painter.setPen(QPen(color, penWidth));
 }
 void OpenGLWidget::setBrushWithAlpha(QPainter& painter, QColor color,
@@ -70,12 +72,13 @@ void OpenGLWidget::setSimplifiedPolygons(
   this->simplifiedPolygons = simplifiedPolygons;
 }
 QTransform OpenGLWidget::setInitialViewport() {
-    QTransform t;
+  QTransform t;
   int emptyPercent = 20;
-  qreal emptySpaceX = Max.x() * emptyPercent / 100;
-  qreal emptySpaceY = Max.y() * emptyPercent / 100;
-  scaleViewport = qMin(width(), height()) /
-                  (qMax(Max.x(), Max.y()) + qMax(emptySpaceX, emptySpaceY));
+  qreal emptySpaceX = this->maxCoord.x() * emptyPercent / 100;
+  qreal emptySpaceY = this->maxCoord.y() * emptyPercent / 100;
+  scaleViewport =
+      qMin(width(), height()) / (qMax(this->maxCoord.x(), this->maxCoord.y()) +
+                                 qMax(emptySpaceX, emptySpaceY));
   t.scale(scaleViewport, scaleViewport);
   t.translate(emptySpaceX / 2, emptySpaceY / 2);
 
@@ -87,7 +90,6 @@ QTransform OpenGLWidget::setInitialViewport() {
   initialTransformViewport = t;
   transformViewport = initialTransformViewport;
   minAllowedScale = initialTransformViewport.m11() * MIN_ZOOM_FACTOR;
-  maxAllowedScale = initialTransformViewport.m11() * MAX_ZOOM_FACTOR;
 
   return initialTransformViewport;
 }
@@ -111,7 +113,7 @@ void OpenGLWidget::wheelEvent(QWheelEvent* event) {
 
   double newScale = currentScale * factor;
   // qDebug() << "newScale = " << newScale;
-  if (newScale < minAllowedScale || newScale > maxAllowedScale) {
+  if (newScale < minAllowedScale) {  // || newScale > maxAllowedScale
     event->accept();
     return;
   }

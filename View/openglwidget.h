@@ -15,13 +15,12 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   bool isPanning;
   QList<PolygonPair> polygons;
   QList<PolygonPair> simplifiedPolygons;
-  QPointF maxCorner;
+  QPointF maxCoord;
   qreal scaleViewport;
-  static constexpr qreal LINE_WIDTH_RATIO = 1000.0;
   qreal minAllowedScale;
-  qreal maxAllowedScale;
-  static constexpr const double MIN_ZOOM_FACTOR = 0.02;
-  static constexpr const double MAX_ZOOM_FACTOR = 50.0;
+  static constexpr const double MIN_ZOOM_FACTOR = 0.10;
+  static constexpr const double MIN_PEN_WIDTH = 5e-6;
+  static constexpr const double LINE_WIDTH_RATIO = 2;
 
  public:
   explicit OpenGLWidget(QWidget* parent = nullptr);
