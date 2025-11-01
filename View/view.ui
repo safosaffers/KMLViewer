@@ -163,6 +163,11 @@ QPlainTextEdit {
                <height>300</height>
               </size>
              </property>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <item>
+               <layout class="QVBoxLayout" name="glWidgetLayout"/>
+              </item>
+             </layout>
             </widget>
            </item>
           </layout>
@@ -182,8 +187,8 @@ QPlainTextEdit {
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>-239</y>
-           <width>335</width>
+           <y>0</y>
+           <width>308</width>
            <height>773</height>
           </rect>
          </property>

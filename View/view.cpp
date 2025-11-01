@@ -1,14 +1,10 @@
 #include "view.h"
 View::View(QWidget* parent) : QMainWindow(parent), ui(new Ui::View) {
   ui->setupUi(this);
-
-  QVBoxLayout* layout = new QVBoxLayout(ui->glwidget);
-  layout->setContentsMargins(0, 0, 0, 0);
-  ui->glwidget->setLayout(layout);
-  glwidget = new OpenGLWidget(this);
-  layout->addWidget(glwidget);
+  glwidget = new OpenGLWidget(ui->glwidget);
+  ui->glWidgetLayout->addWidget(glwidget);
   set_parameters_validators();
-  // setCentralWidget(openglwidget);
+    show();
 }
 
 View::~View() { delete ui; }

@@ -27,7 +27,7 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
 
  public:
   explicit OpenGLWidget(QWidget* parent = nullptr);
-  ~OpenGLWidget();
+  ~OpenGLWidget() override;
   void normalizePolygons(QPointF MaxCoord);
   void normalizeSimplifiedPolygons();
   void setPolygons(QList<PolygonPair> polygons);

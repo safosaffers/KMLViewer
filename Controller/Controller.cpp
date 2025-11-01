@@ -7,7 +7,7 @@ Controller::Controller(Model* m, View* v) : QObject(v), model(m), view(v) {
   connect(view, &View::saveSimplifyPoligons, this,
           &Controller::HandleModelSimplifySave);
   connect(&watcher, &QFutureWatcher<QPolygonF>::finished, this,
-          [this] { finishModelSimplify(); });
+          &Controller::finishModelSimplify);
   connect(&watcher, &QFutureWatcher<QPolygonF>::progressRangeChanged,
           view->ui->progressBar, &QProgressBar::setRange);
   connect(&watcher, &QFutureWatcher<QPolygonF>::progressValueChanged,

@@ -3,9 +3,10 @@
 OpenGLWidget::OpenGLWidget(QWidget* parent) : QOpenGLWidget(parent) {
   setFocusPolicy(Qt::StrongFocus);
   isPanning = false;
-  normalizeFactor=1;
+  normalizeFactor = 1;
 }
-OpenGLWidget::~OpenGLWidget() {}
+OpenGLWidget::~OpenGLWidget() {
+}
 void OpenGLWidget::initializeGL() {
   initializeOpenGLFunctions();
   glClearColor(1.f, 1.f, 1.f, 1.f);
