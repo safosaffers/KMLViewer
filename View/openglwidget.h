@@ -20,6 +20,7 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   QPointF maxCoord;
   qreal scaleViewport;
   qreal minAllowedScale;
+  qreal normalizeFactor;
   static constexpr const double MIN_ZOOM_FACTOR = 0.10;
   static constexpr const double MIN_PEN_WIDTH = 5e-6;
   static constexpr const double LINE_WIDTH_RATIO = 2;
@@ -28,6 +29,7 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   explicit OpenGLWidget(QWidget* parent = nullptr);
   ~OpenGLWidget();
   void normalizePolygons(QPointF MaxCoord);
+  void normalizeSimplifiedPolygons();
   void setPolygons(QList<PolygonPair> polygons);
   void resetSimplifiedPolygons();
   void setSimplifiedPolygons(QList<PolygonPair> polygons);

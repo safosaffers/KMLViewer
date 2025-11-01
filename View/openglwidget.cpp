@@ -3,6 +3,7 @@
 OpenGLWidget::OpenGLWidget(QWidget* parent) : QOpenGLWidget(parent) {
   setFocusPolicy(Qt::StrongFocus);
   isPanning = false;
+  normalizeFactor=1;
 }
 OpenGLWidget::~OpenGLWidget() {}
 void OpenGLWidget::initializeGL() {
@@ -97,13 +98,20 @@ void OpenGLWidget::resizeGL(int width, int height) {
   glViewport(0, 0, width, height);
 }
 void OpenGLWidget::normalizePolygons(QPointF maxCoord) {
-  qreal maxCoordVal = qMax(maxCoord.x(), maxCoord.y());
+  normalizeFactor = qMax(maxCoord.x(), maxCoord.y());
   for (PolygonPair& poly : polygons) {
     for (QPointF& point : poly.second) {
-      point /= maxCoordVal;
+      point /= normalizeFactor;
     }
   }
-  this->maxCoord = maxCoord / maxCoordVal;
+  this->maxCoord = maxCoord / normalizeFactor;
+}
+void OpenGLWidget::normalizeSimplifiedPolygons() {
+  for (PolygonPair& poly : simplifiedPolygons) {
+    for (QPointF& point : poly.second) {
+      point /= normalizeFactor;
+    }
+  }
 }
 void OpenGLWidget::setPolygons(QList<PolygonPair> polygons) {
   this->polygons = polygons;
