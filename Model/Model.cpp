@@ -3,22 +3,24 @@
 #include "CoordinateConverter.h"
 #include "KmlFileLoader.h"
 #include "KmlFileSaver.h"
+#include "CoordinateConverter.h"
 
 Model::Model() { currentDocument = NULL; }
 Model::~Model() {
   if (currentDocument) delete currentDocument;
 }
 
-QList<PolygonPair> Model::convertToMeters(QList<QPolygonF> LonLatQList,
-                                          double& minLon, double& minLat) {
-  latLonToMetersPolygons.clear();
+QList<QPolygonF> Model::convertToMeters(QList<QPolygonF> LonLatQList,
+                                        double& minLon, double& minLat) {
+  QList<QPolygonF> metersPolygons;
   for (const QPolygonF& latLonPoly : LonLatQList) {
-    PolygonPair latLonMetPair = qMakePair(latLonPoly, QPolygonF());
+    // Create a temporary pair for conversion
+    PolygonPair tempPair = qMakePair(latLonPoly, QPolygonF());
     PolygonPair convertedPair = CoordinateConverter::convertLatLonToMeters(
-        latLonMetPair, minLon, minLat);
-    latLonToMetersPolygons.append(convertedPair);
+        tempPair, minLon, minLat);
+    metersPolygons.append(convertedPair.second);
   }
-  return latLonToMetersPolygons;
+  return metersPolygons;
 }
 QPointF Model::getCornerInMeters(double& minLon, double& maxLon, double& minLat,
                                  double& maxLat) {
@@ -41,49 +43,130 @@ void Model::initializeModel(QString filePath) {
 
     QList<QPolygonF> LonLatQList = KmlFileLoader::parseCoordinatesFromDocument(
         currentDocument, minLon, maxLon, minLat, maxLat);
-    latLonToMetersPolygons = convertToMeters(LonLatQList, minLon, minLat);
+    QList<QPolygonF> metersPolygons = convertToMeters(LonLatQList, minLon, minLat);
+
+    // Set up the polygon representations
+    setLonLatPolygons(LonLatQList);
+    setMetersPolygons(metersPolygons);
 
     // -> top-left corner is just 0,0
     downRightCornerForViewPort =
         getCornerInMeters(minLon, maxLon, minLat,
                           maxLat);  // -> down-right corner
+    // Normalize the polygons to [-1, 1] range or similar
+    normalizePolygons();
   } catch (const std::invalid_argument& e) {
     qDebug() << "Error: " << e.what();
   }
 }
-QList<PolygonPair> Model::getPolygons() { return latLonToMetersPolygons; }
-QPointF Model::getDownRightCornerForViewPort() {
-  return downRightCornerForViewPort;
-}
+PolyRepr Model::getPolygons() { return polygonRepresentations; }
+QPointF Model::getNormalizedMaxCoord() { return this->normalizedMaxCoord; }
 
-int Model::getNumberOfPolygons() { return latLonToMetersPolygons.size(); }
-int Model::getQListQPolygonFPointsCount(const QList<PolygonPair>& polygons) {
+int Model::getNumberOfPolygons() { return polygonRepresentations.size(); }
+int Model::getQListQPolygonFPointsCount(const QList<QPolygonF>& polygons){
   int result = 0;
-  for (const PolygonPair& polygon : polygons) {
-    result += polygon.first.size();
+  for(const QPolygonF & poly : polygons){
+    result+=poly.size();
   }
   return result;
 }
 int Model::getNumberOfPolygonsPoints() {
-  return getQListQPolygonFPointsCount(latLonToMetersPolygons);
+  return getQListQPolygonFPointsCount(getMetersPolygons());
 }
 int Model::getNumberOfSimplifiedPolygonsPoints() {
-  return getQListQPolygonFPointsCount(simplifiedPolygons);
-}
-void Model::setSimplifiedPolygons(const QList<PolygonPair>& polys) {
-  simplifiedPolygons = polys;
+  return getQListQPolygonFPointsCount(getSimplifiedNormalizedPolygons());
 }
 
-PolygonPair Model::simplifyPolygon(PolygonPair latLonMetPoly, double epsilon) {
-  return PolygonSimplifier::simplifyPolygon(latLonMetPoly, epsilon);
+PolygonPair Model::simplifyPolygon(const PolygonPair poly, double epsilon) {
+  // Create a temporary pair for the simplification function (to maintain compatibility)
+  PolygonPair simplifiedPair = PolygonSimplifier::simplifyPolygon(poly, epsilon);
+  return simplifiedPair; // Return only the simplified meters polygon
 }
 
-void Model::simplifyPolygons(double epsilon) {
-  QList<PolygonPair> simplified;
-  for (const PolygonPair& poly : latLonToMetersPolygons) {
-    simplified.append(simplifyPolygon(poly, epsilon));
-  }
-  setSimplifiedPolygons(simplified);
+QPointF Model::getMaxCoord() const {
+    return normalizedMaxCoord;
+}
+
+// Access to different polygon representations
+QList<QPolygonF> Model::getLonLatPolygons() const {
+    return polygonRepresentations.getLonLatPolygons();
+}
+
+QList<QPolygonF> Model::getMetersPolygons() const {
+    return polygonRepresentations.getMetersPolygons();
+}
+
+QList<QPolygonF> Model::getNormalizedPolygons() const {
+    return polygonRepresentations.getNormalizedPolygons();
+}
+
+void Model::setLonLatPolygons(const QList<QPolygonF>& polys) {
+    polygonRepresentations.setLonLatPolygons(polys);
+}
+
+void Model::setMetersPolygons(const QList<QPolygonF>& polys) {
+    polygonRepresentations.setMetersPolygons(polys);
+}
+
+void Model::setNormalizedPolygons(const QList<QPolygonF>& polys) {
+    polygonRepresentations.setNormalizedPolygons(polys);
+}
+void Model::setSimplifiedLonLatPolygons(const QList<QPolygonF>& polys) {
+  // This updates the normalized representation with simplified polygons
+  polygonRepresentationsSimplified.setLonLatPolygons(polys);
+}
+void Model::setSimplifiedMetersPolygons(const QList<QPolygonF>& polys) {
+  // This updates the normalized representation with simplified polygons
+  polygonRepresentationsSimplified.setMetersPolygons(polys);
+}
+void Model::setSimplifiedNormalizedPolygons(const QList<QPolygonF>& polys)  {
+  polygonRepresentationsSimplified.setNormalizedPolygons(polys);
+}
+QList<QPolygonF> Model::getSimplifiedNormalizedPolygons() const {
+  return polygonRepresentationsSimplified.getNormalizedPolygons();
+}
+void Model::normalizePolygons() {
+    // Calculate max coordinate for normalization factor
+    maxCoord = 0;
+    QList<QPolygonF> metersPolygons = getMetersPolygons();
+    for (const auto& poly : metersPolygons) {
+        for (const auto& point : poly) {
+            maxCoord = qMax(maxCoord, qMax(qAbs(point.x()), qAbs(point.y())));
+        }
+    }
+    
+    if (maxCoord > 0) {
+        normalizeFactor = maxCoord;
+        this->normalizedMaxCoord = QPointF(maxCoord, maxCoord)/normalizeFactor;
+        
+        // Normalize the meters polygons
+        QList<QPolygonF> normalizedPolygons;
+        for (const auto& poly : metersPolygons) {
+            QPolygonF normalizedPoly;
+            for (const auto& point : poly) {
+                normalizedPoly.append(QPointF(point.x() / maxCoord, point.y() / maxCoord));
+            }
+            normalizedPolygons.append(normalizedPoly);
+        }
+        setNormalizedPolygons(normalizedPolygons);
+    }
+}
+
+void Model::normalizeSimplifiedPolygons() {
+    // Normalize the simplified polygons based on the same normalization factor
+    QList<QPolygonF> simplifiedMetersPolygons = polygonRepresentationsSimplified.getMetersPolygons();
+    if (maxCoord > 0) {
+      // Normalize the meters polygons
+      QList<QPolygonF> normalizedPolygons;
+      for (const auto& poly : simplifiedMetersPolygons) {
+        QPolygonF normalizedPoly;
+        for (const auto& point : poly) {
+          normalizedPoly.append(QPointF(point.x() / maxCoord, point.y() / maxCoord));
+        }
+        normalizedPolygons.append(normalizedPoly);
+      }
+      setSimplifiedNormalizedPolygons(normalizedPolygons);
+    }
 }
 
 void Model::saveSimplifiedModel(QString fileName) {
@@ -93,6 +176,16 @@ void Model::saveSimplifiedModel(QString fileName) {
   }
 
   QDomDocument doc = currentDocument->cloneNode(true).toDocument();
-  KmlFileSaver::updateCoordinatesInDocument(doc, simplifiedPolygons);
+  // For saving, we need to use the simplified normalized polygons
+  QList<PolygonPair> simplifiedPairs;
+  QList<QPolygonF> originalLonLatPolygons = getLonLatPolygons();
+  QList<QPolygonF> simplifiedNormalized = getSimplifiedNormalizedPolygons();
+  
+  // Create PolygonPair list for saving (using original lonLat as the first part and simplified as second)
+  for (int i = 0; i < qMin(originalLonLatPolygons.size(), simplifiedNormalized.size()); ++i) {
+    simplifiedPairs.append(qMakePair(originalLonLatPolygons[i], simplifiedNormalized[i]));
+  }
+  
+  KmlFileSaver::updateCoordinatesInDocument(doc, simplifiedPairs);
   KmlFileSaver::saveKmlFile(doc, fileName);
 }

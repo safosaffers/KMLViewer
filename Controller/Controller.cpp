@@ -18,10 +18,10 @@ Controller::~Controller() { watcher.cancel(); }
 
 void Controller::HandleModelLoading(QString fileName) {
   model->initializeModel(fileName);
-  view->getGLWidget()->setPolygons(model->getPolygons());
-  view->getGLWidget()->normalizePolygons(model->getDownRightCornerForViewPort());
+  view->getGLWidget()->setPolygons(model->getNormalizedPolygons());
   view->getGLWidget()->resetSimplifiedPolygons();
-  view->getGLWidget()->setInitialViewport();//always called after normalizePolygons
+  view->getGLWidget()->setInitialViewport(
+      model->getNormalizedMaxCoord());  // always called after normalizePolygons
   view->updateNumberOfPolygons(model->getNumberOfPolygons());
   view->updateNumberOfPolygonsPoints(model->getNumberOfPolygonsPoints());
   view->ui->progressBar->setValue(0);
@@ -45,15 +45,18 @@ void Controller::HandleModelSimplify(double epsilon) {
 
     const double eps = epsilon;
 
-    auto polygonsToSimplify = model->getPolygons();
+    QList<PolygonPair> polygonsToSimplify;
+    for(int i=0;i<model->getNumberOfPolygons();i++){
+      polygonsToSimplify.append(QPair(model->getLonLatPolygons().at(i), model->getMetersPolygons().at(i)));
+    }
 
     timer.start();
 
     // starts simplification in parrallel
-    auto future = QtConcurrent::mapped(
-        polygonsToSimplify, [eps](const PolygonPair& p) -> PolygonPair {
-          return Model::simplifyPolygon(p, eps);
-        });
+    auto future = QtConcurrent::mapped(polygonsToSimplify,
+                                       [eps](const PolygonPair& p) -> PolygonPair {
+                                         return Model::simplifyPolygon(p, eps);
+                                       });
 
     watcher.setFuture(future);
 
@@ -70,7 +73,16 @@ void Controller::finishModelSimplify() {
   if (watcher.isCanceled()) return;
 
   QList<PolygonPair> simplified = watcher.future().results();
-  model->setSimplifiedPolygons(simplified);
+  QList<QPolygonF> polyMeters;
+  QList<QPolygonF> polyLonLat;
+  for(int i=0;i<simplified.size();i++){
+    PolygonPair simplifiedPair = simplified.at(i);
+    polyLonLat.append(simplifiedPair.first);
+    polyMeters.append(simplifiedPair.second);
+  }
+  model->setSimplifiedLonLatPolygons(polyLonLat);
+  model->setSimplifiedMetersPolygons(polyMeters);
+  model->normalizeSimplifiedPolygons();
 
   view->ui->btnUploadaKMLFile->setEnabled(true);
   view->ui->btnSaveSimplifyPoligons->setEnabled(true);
@@ -79,8 +91,8 @@ void Controller::finishModelSimplify() {
   view->ui->lblNumberOfSimplifiedPolygonsPoints->setText(
       QString::number(model->getNumberOfSimplifiedPolygonsPoints()));
 
-  view->getGLWidget()->setSimplifiedPolygons(simplified);
-  view->getGLWidget()->normalizeSimplifiedPolygons();
+
+  view->getGLWidget()->setSimplifiedPolygons(model->getSimplifiedNormalizedPolygons());
   view->getGLWidget()->update();
 }
 

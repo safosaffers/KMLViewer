@@ -5,8 +5,7 @@ OpenGLWidget::OpenGLWidget(QWidget* parent) : QOpenGLWidget(parent) {
   isPanning = false;
   normalizeFactor = 1;
 }
-OpenGLWidget::~OpenGLWidget() {
-}
+OpenGLWidget::~OpenGLWidget() {}
 void OpenGLWidget::initializeGL() {
   initializeOpenGLFunctions();
   glClearColor(1.f, 1.f, 1.f, 1.f);
@@ -66,21 +65,17 @@ void OpenGLWidget::drawVertexMarkers(QPainter& painter,
   painter.restore();
 }
 void OpenGLWidget::drawPolygons(QPainter& painter,
-                                const QList<PolygonPair>& polygons,
+                                const QList<QPolygonF>& polygons,
                                 const QColor& color) {
   setBrushWithAlpha(painter, color, 0.5);
-  for (const PolygonPair& pairPoly : polygons) {
+  for (const QPolygonF& poly : polygons) {
     setPenForEdges(painter, color);
-    painter.drawPolygon(pairPoly.second, Qt::WindingFill);
+    painter.drawPolygon(poly, Qt::WindingFill);
 
     setPenForPoints(painter, Qt::red);
   }
 
-  QList<QPolygonF> allPolys;
-  for (const auto& pair : polygons) {
-    allPolys << pair.second;
-  }
-  drawVertexMarkers(painter, allPolys, Qt::red);
+  drawVertexMarkers(painter, polygons, Qt::red);
 }
 void OpenGLWidget::paintGL() {
   QPainter painter(this);
@@ -98,40 +93,24 @@ void OpenGLWidget::paintGL() {
 void OpenGLWidget::resizeGL(int width, int height) {
   glViewport(0, 0, width, height);
 }
-void OpenGLWidget::normalizePolygons(QPointF maxCoord) {
-  normalizeFactor = qMax(maxCoord.x(), maxCoord.y());
-  for (PolygonPair& poly : polygons) {
-    for (QPointF& point : poly.second) {
-      point /= normalizeFactor;
-    }
-  }
-  this->maxCoord = maxCoord / normalizeFactor;
-}
-void OpenGLWidget::normalizeSimplifiedPolygons() {
-  for (PolygonPair& poly : simplifiedPolygons) {
-    for (QPointF& point : poly.second) {
-      point /= normalizeFactor;
-    }
-  }
-}
-void OpenGLWidget::setPolygons(QList<PolygonPair> polygons) {
+
+void OpenGLWidget::setPolygons(const QList<QPolygonF>& polygons) {
   this->polygons = polygons;
 }
 void OpenGLWidget::resetSimplifiedPolygons() {
   this->simplifiedPolygons.clear();
 }
 void OpenGLWidget::setSimplifiedPolygons(
-    QList<PolygonPair> simplifiedPolygons) {
+    const QList<QPolygonF>& simplifiedPolygons) {
   this->simplifiedPolygons = simplifiedPolygons;
 }
-QTransform OpenGLWidget::setInitialViewport() {
+QTransform OpenGLWidget::setInitialViewport(QPointF maxCoord) {
   QTransform t;
   int emptyPercent = 20;
-  qreal emptySpaceX = this->maxCoord.x() * emptyPercent / 100;
-  qreal emptySpaceY = this->maxCoord.y() * emptyPercent / 100;
-  scaleViewport =
-      qMin(width(), height()) / (qMax(this->maxCoord.x(), this->maxCoord.y()) +
-                                 qMax(emptySpaceX, emptySpaceY));
+  qreal emptySpaceX = maxCoord.x() * emptyPercent / 100;
+  qreal emptySpaceY = maxCoord.y() * emptyPercent / 100;
+  scaleViewport = qMin(width(), height()) / (qMax(maxCoord.x(), maxCoord.y()) +
+                                             qMax(emptySpaceX, emptySpaceY));
   t.scale(scaleViewport, scaleViewport);
   t.translate(emptySpaceX / 2, emptySpaceY / 2);
 
