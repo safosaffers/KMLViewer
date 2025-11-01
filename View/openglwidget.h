@@ -26,10 +26,11 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
  public:
   explicit OpenGLWidget(QWidget* parent = nullptr);
   ~OpenGLWidget();
+  void normalizePolygons(QPointF MaxCoord);
   void setPolygons(QList<PolygonPair> polygons);
   void resetSimplifiedPolygons();
   void setSimplifiedPolygons(QList<PolygonPair> polygons);
-  QTransform setInitialViewport(QPointF Max);
+  QTransform setInitialViewport();
 
  protected:
   void initializeGL() override;

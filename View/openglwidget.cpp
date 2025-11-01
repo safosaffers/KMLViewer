@@ -50,6 +50,15 @@ void OpenGLWidget::paintGL() {
 void OpenGLWidget::resizeGL(int width, int height) {
   glViewport(0, 0, width, height);
 }
+void OpenGLWidget::normalizePolygons(QPointF maxCoord) {
+  qreal maxCoordVal = qMax(maxCoord.x(), maxCoord.y());
+  for (PolygonPair& poly : polygons) {
+    for (QPointF& point : poly.second) {
+      point /= maxCoordVal;
+    }
+  }
+  this->maxCoord = maxCoord / maxCoordVal;
+}
 void OpenGLWidget::setPolygons(QList<PolygonPair> polygons) {
   this->polygons = polygons;
 }
@@ -60,9 +69,8 @@ void OpenGLWidget::setSimplifiedPolygons(
     QList<PolygonPair> simplifiedPolygons) {
   this->simplifiedPolygons = simplifiedPolygons;
 }
-QTransform OpenGLWidget::setInitialViewport(QPointF Max) {
-  // qDebug() << Max.x() << Max.y();
-  QTransform t;
+QTransform OpenGLWidget::setInitialViewport() {
+    QTransform t;
   int emptyPercent = 20;
   qreal emptySpaceX = Max.x() * emptyPercent / 100;
   qreal emptySpaceY = Max.y() * emptyPercent / 100;
