@@ -1,79 +1,12 @@
 #include "Model.h"
 #include "CoordinateConverter.h"
+#include "KmlFileHandler.h"
 
 Model::Model() { currentDocument = NULL; }
 Model::~Model() {
   if (currentDocument) delete currentDocument;
 }
-QDomDocument* setContentFromFile(QString filePath) {
-  QDomDocument* doc = NULL;
-  QFile file(filePath);
-  if (file.open(QIODevice::ReadOnly)) {
-    doc = new QDomDocument("KML Document");
-    if (!doc->setContent(&file)) {
-      delete doc;
-      doc = NULL;
-    }
-    file.close();
-  }
 
-  return doc;
-}
-void updateMaxMinLatLon(double longitude, double latitude, double& minLon,
-                        double& maxLon, double& minLat, double& maxLat) {
-  if (minLon > longitude) {
-    minLon = longitude;
-  } else if (maxLon < longitude) {
-    maxLon = longitude;
-  }
-  if (minLat > latitude) {
-    minLat = latitude;
-  } else if (maxLat < latitude) {
-    maxLat = latitude;
-  }
-}
-static QPolygonF parseLonLatString(const QString& coordsString, double& minLon,
-                                   double& maxLon, double& minLat,
-                                   double& maxLat) {
-  QPolygonF result;
-
-  const QStringList coordPairs = coordsString.split(" ", Qt::SkipEmptyParts);
-  for (const QString& pair : coordPairs) {
-    QStringList lonLatAlt = pair.split(",", Qt::SkipEmptyParts);
-    if (lonLatAlt.size() >= 2) {
-      bool okLon = false, okLat = false;
-      double longitude = lonLatAlt[0].toDouble(&okLon);
-      double latitude = lonLatAlt[1].toDouble(&okLat);
-      if (okLon && okLat) {
-        result.append(QPointF(longitude, latitude));
-        updateMaxMinLatLon(longitude, latitude, minLon, maxLon, minLat, maxLat);
-      }
-    }
-  }
-
-  return result;
-}
-
-QList<QPolygonF> parseLonLatFromKML(QString filePath, double& minLon,
-                                    double& maxLon, double& minLat,
-                                    double& maxLat, QDomDocument** document) {
-  *document = setContentFromFile(filePath);
-  if (!document) {
-    throw std::invalid_argument("Failed to open or parse KML file");
-  }
-
-  QList<QPolygonF> result;
-  QDomNodeList coordsList =
-      (*document)->elementsByTagName(QString("coordinates"));
-  for (const QDomNode& coords : coordsList) {
-    QString coordsString = coords.firstChild().nodeValue();
-    QPolygonF res =
-        parseLonLatString(coordsString, minLon, maxLon, minLat, maxLat);
-    result.append(res);
-  }
-
-  return result;
-}
 QList<PolygonPair> Model::convertToMeters(QList<QPolygonF> LonLatQList,
                                           double& minLon, double& minLat) {
   latLonToMetersPolygons.clear();
@@ -98,8 +31,13 @@ void Model::initializeModel(QString filePath) {
       delete currentDocument;
       currentDocument = NULL;
     }
-    QList<QPolygonF> LonLatQList = parseLonLatFromKML(
-        filePath, minLon, maxLon, minLat, maxLat, &currentDocument);
+    currentDocument = KmlFileHandler::loadKmlFile(filePath);
+    if (!currentDocument) {
+      throw std::invalid_argument("Failed to open or parse KML file");
+    }
+    
+    QList<QPolygonF> LonLatQList = KmlFileHandler::parseCoordinatesFromDocument(
+        currentDocument, minLon, maxLon, minLat, maxLat);
     latLonToMetersPolygons = convertToMeters(LonLatQList, minLon, minLat);
 
     // -> top-left corner is just 0,0
@@ -291,44 +229,7 @@ int Model::getNumberOfSimplifiedPolygonsPoints() {
 void Model::setSimplifiedPolygons(const QList<PolygonPair>& polys) {
   simplifiedPolygons = polys;
 }
-QString Model::polygonToKmlCoords(const QPolygonF& polygon) {
-  QStringList parts;
-  for (const QPointF& pt : polygon) {
-    parts << QString::number(pt.x(), 'g', 12) + "," +
-                 QString::number(pt.y(), 'g', 12) + "," +
-                 QString::number(0, 'g', 12);
-  }
-  return parts.join(" ");
-}
 
-void Model::updateCoordinatesInDocument(QDomDocument& doc,
-                                        const QList<PolygonPair>& simplified) {
-  QDomNodeList coordNodes = doc.elementsByTagName("coordinates");
-  if (coordNodes.size() != simplified.size()) {
-    qWarning() << "Mismatch: KML has" << coordNodes.size()
-               << "coordinate blocks, but we have" << simplified.size()
-               << "simplified polygons";
-    return;
-  }
-
-  for (int i = 0; i < coordNodes.size(); ++i) {
-    QString newCoords = polygonToKmlCoords(simplified[i].first);
-    coordNodes.at(i).firstChild().setNodeValue(newCoords);
-  }
-}
-
-bool Model::writeDocumentToFile(const QDomDocument& doc,
-                                const QString& fileName) {
-  QFile file(fileName);
-  if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-    qWarning() << "Failed to write KML to" << fileName;
-    return false;
-  }
-  QTextStream stream(&file);
-  stream << doc.toString();
-  file.close();
-  return true;
-}
 
 void Model::saveSimplifiedModel(QString fileName) {
   if (!currentDocument) {
@@ -337,6 +238,6 @@ void Model::saveSimplifiedModel(QString fileName) {
   }
 
   QDomDocument doc = currentDocument->cloneNode(true).toDocument();
-  updateCoordinatesInDocument(doc, simplifiedPolygons);
-  writeDocumentToFile(doc, fileName);
+  KmlFileHandler::updateCoordinatesInDocument(doc, simplifiedPolygons);
+  KmlFileHandler::saveKmlFile(doc, fileName);
 }

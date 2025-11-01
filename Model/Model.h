@@ -13,6 +13,7 @@
 #include <limits>
 
 #include "CoordinateConverter.h"
+#include "KmlFileHandler.h"
 
 using PolygonPair = QPair<QPolygonF, QPolygonF>;
 class Model {
@@ -43,10 +44,6 @@ class Model {
   int getNumberOfSimplifiedPolygonsPoints();
   void setSimplifiedPolygons(const QList<PolygonPair>& polys);
   void saveSimplifiedModel(QString fileName);
-  QString polygonToKmlCoords(const QPolygonF& polygon);
-  void updateCoordinatesInDocument(QDomDocument& doc,
-                                   const QList<PolygonPair>& simplified);
-  bool writeDocumentToFile(const QDomDocument& doc, const QString& fileName);
 
  private:
   QList<PolygonPair> convertToMeters(QList<QPolygonF> LonLatQList,

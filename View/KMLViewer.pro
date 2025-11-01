@@ -14,6 +14,7 @@ SOURCES += \
     ../Controller/Controller.cpp \
     ../Model/Model.cpp \
     ../Model/CoordinateConverter.cpp \
+    ../Model/KmlFileHandler.cpp \
 
 HEADERS += \
     openglwidget.h \
@@ -21,6 +22,7 @@ HEADERS += \
     ../Controller/Controller.h \ 
     ../Model/Model.h \
     ../Model/CoordinateConverter.h \
+    ../Model/KmlFileHandler.h \
 
 FORMS += \
     view.ui
