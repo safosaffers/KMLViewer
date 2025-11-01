@@ -13,7 +13,8 @@
 #include <limits>
 
 #include "CoordinateConverter.h"
-#include "KmlFileHandler.h"
+#include "KmlFileLoader.h"
+#include "KmlFileSaver.h"
 #include "PolygonSimplifier.h"
 
 using PolygonPair = QPair<QPolygonF, QPolygonF>;

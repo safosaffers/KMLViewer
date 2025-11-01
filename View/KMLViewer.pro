@@ -14,7 +14,8 @@ SOURCES += \
     ../Controller/Controller.cpp \
     ../Model/Model.cpp \
     ../Model/CoordinateConverter.cpp \
-    ../Model/KmlFileHandler.cpp \
+    ../Model/KmlFileLoader.cpp \
+    ../Model/KmlFileSaver.cpp \
     ../Model/PolygonSimplifier.cpp \
 
 HEADERS += \
@@ -23,7 +24,8 @@ HEADERS += \
     ../Controller/Controller.h \ 
     ../Model/Model.h \
     ../Model/CoordinateConverter.h \
-    ../Model/KmlFileHandler.h \
+    ../Model/KmlFileLoader.h \
+    ../Model/KmlFileSaver.h \
     ../Model/PolygonSimplifier.h \
 
 FORMS += \

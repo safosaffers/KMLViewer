@@ -1,7 +1,8 @@
 #include "Model.h"
 
 #include "CoordinateConverter.h"
-#include "KmlFileHandler.h"
+#include "KmlFileLoader.h"
+#include "KmlFileSaver.h"
 
 Model::Model() { currentDocument = NULL; }
 Model::~Model() {
@@ -33,12 +34,12 @@ void Model::initializeModel(QString filePath) {
       delete currentDocument;
       currentDocument = NULL;
     }
-    currentDocument = KmlFileHandler::loadKmlFile(filePath);
+    currentDocument = KmlFileLoader::loadKmlFile(filePath);
     if (!currentDocument) {
       throw std::invalid_argument("Failed to open or parse KML file");
     }
 
-    QList<QPolygonF> LonLatQList = KmlFileHandler::parseCoordinatesFromDocument(
+    QList<QPolygonF> LonLatQList = KmlFileLoader::parseCoordinatesFromDocument(
         currentDocument, minLon, maxLon, minLat, maxLat);
     latLonToMetersPolygons = convertToMeters(LonLatQList, minLon, minLat);
 
@@ -92,6 +93,6 @@ void Model::saveSimplifiedModel(QString fileName) {
   }
 
   QDomDocument doc = currentDocument->cloneNode(true).toDocument();
-  KmlFileHandler::updateCoordinatesInDocument(doc, simplifiedPolygons);
-  KmlFileHandler::saveKmlFile(doc, fileName);
+  KmlFileSaver::updateCoordinatesInDocument(doc, simplifiedPolygons);
+  KmlFileSaver::saveKmlFile(doc, fileName);
 }
