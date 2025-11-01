@@ -12,7 +12,8 @@
 #include <cmath>
 #include <limits>
 
-#define EQUATORIAL_EARTH_RADIUS_METERS 6378137
+#include "CoordinateConverter.h"
+
 using PolygonPair = QPair<QPolygonF, QPolygonF>;
 class Model {
  private:

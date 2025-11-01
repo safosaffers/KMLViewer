@@ -13,12 +13,14 @@ SOURCES += \
     view.cpp \
     ../Controller/Controller.cpp \
     ../Model/Model.cpp \
+    ../Model/CoordinateConverter.cpp \
 
 HEADERS += \
     openglwidget.h \
     view.h \
     ../Controller/Controller.h \ 
-    ../Model/Model.h \ 
+    ../Model/Model.h \
+    ../Model/CoordinateConverter.h \
 
 FORMS += \
     view.ui

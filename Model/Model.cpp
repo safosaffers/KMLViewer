@@ -1,4 +1,5 @@
 #include "Model.h"
+#include "CoordinateConverter.h"
 
 Model::Model() { currentDocument = NULL; }
 Model::~Model() {
@@ -73,48 +74,19 @@ QList<QPolygonF> parseLonLatFromKML(QString filePath, double& minLon,
 
   return result;
 }
-double degToRad(double deg) { return deg * M_PI / 180.0; }
-double Haversine(double theta) {
-  double radiansTheta = degToRad(theta);
-  return pow(sin(radiansTheta / 2.0), 2);
-}
-double latDifferenceInMeters(double lat1, double lat2) {
-  double R = EQUATORIAL_EARTH_RADIUS_METERS;
-  double deltaLat = fabs(lat2 - lat1);
-  double havTheta = Haversine(deltaLat);
-  double result = 2 * R * asin(sqrt(havTheta));
-  return result;
-}
-double lonDifferenceInMeters(double lat1, double lat2, double lon1,
-                             double lon2) {
-  double R = EQUATORIAL_EARTH_RADIUS_METERS;
-  double deltaLon = fabs(lon2 - lon1);
-  double radLat1 = degToRad(lat1);
-  double radLat2 = degToRad(lat2);
-  double havTheta = cos(radLat1) * cos(radLat2) * Haversine(deltaLon);
-  double result = 2 * R * asin(sqrt(havTheta));
-  return result;
-}
 QList<PolygonPair> Model::convertToMeters(QList<QPolygonF> LonLatQList,
                                           double& minLon, double& minLat) {
   latLonToMetersPolygons.clear();
-  for (QPolygonF& latLonPoly : LonLatQList) {
-    QPolygonF metersPoly;
-    for (QPointF lonlat : latLonPoly) {
-      double xLen =
-          lonDifferenceInMeters(minLat, lonlat.y(), minLon, lonlat.x());
-      double yLen = latDifferenceInMeters(minLat, lonlat.y());
-      metersPoly.append(QPointF(xLen, yLen));
-    }
-    latLonToMetersPolygons.append({latLonPoly, metersPoly});
+  for (const QPolygonF& latLonPoly : LonLatQList) {
+    PolygonPair latLonMetPair = qMakePair(latLonPoly, QPolygonF());
+    PolygonPair convertedPair = CoordinateConverter::convertLatLonToMeters(latLonMetPair, minLon, minLat);
+    latLonToMetersPolygons.append(convertedPair);
   }
   return latLonToMetersPolygons;
 }
 QPointF Model::getCornerInMeters(double& minLon, double& maxLon, double& minLat,
                                  double& maxLat) {
-  double xLen = latDifferenceInMeters(minLat, maxLat);
-  double yLen = lonDifferenceInMeters(minLat, maxLat, minLon, maxLon);
-  return QPointF(xLen, yLen);
+  return CoordinateConverter::getCornerInMeters(minLon, maxLon, minLat, maxLat);
 }
 void Model::initializeModel(QString filePath) {
   try {
