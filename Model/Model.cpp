@@ -56,9 +56,9 @@ QPointF Model::getDownRightCornerForViewPort() {
 }
 
 int Model::getNumberOfPolygons() { return latLonToMetersPolygons.size(); }
-int Model::getQListQPolygonFPointsCount(QList<PolygonPair> polygons) {
+int Model::getQListQPolygonFPointsCount(const QList<PolygonPair>& polygons) {
   int result = 0;
-  for (PolygonPair& polygon : polygons) {
+  for (const PolygonPair& polygon : polygons) {
     result += polygon.first.size();
   }
   return result;

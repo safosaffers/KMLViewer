@@ -36,7 +36,7 @@ class Model {
   void simplifyPolygons(double epsilon);
 
   int getNumberOfPolygons();
-  int getQListQPolygonFPointsCount(QList<PolygonPair> polygons);
+  int getQListQPolygonFPointsCount(const QList<PolygonPair>& polygons);
   int getNumberOfPolygonsPoints();
   int getNumberOfSimplifiedPolygonsPoints();
   void setSimplifiedPolygons(const QList<PolygonPair>& polys);
