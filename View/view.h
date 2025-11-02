@@ -4,8 +4,9 @@
 #include <QDoubleValidator>
 #include <QFileDialog>
 #include <QMainWindow>
-#include <QVBoxLayout>
 #include <QMessageBox>
+#include <QVBoxLayout>
+
 #include "openglwidget.h"
 #include "ui_view.h"
 
@@ -34,9 +35,12 @@ class View : public QMainWindow {
   void updateNumberOfPolygonsPoints(int numberOfPolygonsPoints);
   void updateNumberOfSimplifiedPolygonsPoints(
       int numberOfSimplifiedPolygonsPoints);
-private:
+
+ private:
   void saveKMLFile();
   void uploadaKMLFile();
+  void confirmitionExit(QCloseEvent* event);
+  void closeEvent(QCloseEvent* event);
  private slots:
   void on_btnUploadaKMLFile_clicked();
   void on_btnSimplifyPoligons_clicked();
@@ -47,7 +51,9 @@ private:
 
   void on_action_saveSimplifyPoligons_triggered();
 
-private:
+  void on_action_exit_triggered();
+
+ private:
   OpenGLWidget* glwidget;
   void set_parameters_validators();
  signals:

@@ -899,7 +899,7 @@ QPlainTextEdit {
     <addaction name="separator"/>
     <addaction name="action_uploadaKMLFile"/>
     <addaction name="action_saveSimplifyPoligons"/>
-    <addaction name="action_preferences"/>
+    <addaction name="action_exit"/>
    </widget>
    <widget class="QMenu" name="menu">
     <property name="title">
@@ -932,7 +932,7 @@ QPlainTextEdit {
     <string>Сохранить</string>
    </property>
   </action>
-  <action name="action_preferences">
+  <action name="action_exit">
    <property name="text">
     <string>Выход</string>
    </property>

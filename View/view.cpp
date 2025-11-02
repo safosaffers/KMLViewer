@@ -4,11 +4,11 @@ View::View(QWidget* parent) : QMainWindow(parent), ui(new Ui::View) {
   glwidget = new OpenGLWidget(ui->glwidget);
   ui->glWidgetLayout->addWidget(glwidget);
   set_parameters_validators();
-    show();
+  show();
 }
 
 View::~View() { delete ui; }
-void View::setSaveSimplificationPolygonsAvailable(bool flag){
+void View::setSaveSimplificationPolygonsAvailable(bool flag) {
   ui->btnSaveSimplifyPoligons->setEnabled(flag);
   ui->action_saveSimplifyPoligons->setEnabled(flag);
 }
@@ -19,7 +19,7 @@ void View::setSimplificationAvailable(bool flag) {
   ui->btnSaveSimplifyPoligons->setEnabled(!flag);
   if (flag) ui->leEpsilon->setText("1");
 }
-void View::clearPolygonStats(){
+void View::clearPolygonStats() {
   ui->lblNumberOfPolygons->setText("—");
   ui->lblNumberOfPolygonsPoints->setText("—");
   ui->lblNumberOfSimplifiedPolygonsPoints->setText("—");
@@ -30,12 +30,10 @@ void View::clearViewData() {
   getGLWidget()->clearPolygons();
   getGLWidget()->clearSimplifiedPolygons();
   getGLWidget()->update();
-
-
 }
 
 OpenGLWidget* View::getGLWidget() { return glwidget; }
-void View::showMessageError(QString text){
+void View::showMessageError(QString text) {
   QMessageBox msgBox;
   msgBox.setWindowTitle("Error");
   msgBox.setText(text);
@@ -77,7 +75,7 @@ void View::uploadaKMLFile() {
   }
 }
 
-void View::saveKMLFile(){
+void View::saveKMLFile() {
   QString pathToSave = QFileDialog::getSaveFileName(
       this, tr("Save Simplified Polygons as KML"), "simplified_polygons.kml",
       "KML Files (*.kml)");
@@ -89,20 +87,24 @@ void View::saveKMLFile(){
     emit saveSimplifyPoligons(pathToSave);
   }
 }
-void View::on_btnUploadaKMLFile_clicked() {
-  uploadaKMLFile();
-}
+void View::on_btnUploadaKMLFile_clicked() { uploadaKMLFile(); }
 
-void View::on_action_uploadaKMLFile_triggered()
-{
-  uploadaKMLFile();
-}
-void View::on_btnSaveSimplifyPoligons_clicked() {
-  saveKMLFile();
-}
+void View::on_action_uploadaKMLFile_triggered() { uploadaKMLFile(); }
+void View::on_btnSaveSimplifyPoligons_clicked() { saveKMLFile(); }
 
-void View::on_action_saveSimplifyPoligons_triggered()
-{
-  saveKMLFile();
+void View::on_action_saveSimplifyPoligons_triggered() { saveKMLFile(); }
+void View::confirmitionExit(QCloseEvent* event) {
+  event->ignore();
+  if (QMessageBox::Yes ==
+      QMessageBox::question(this, "Подтверждне закрытия",
+                            "Вы уверены, что хотите выйти?",
+                            QMessageBox::Yes | QMessageBox::No)) {
+    // Если добавлю стили
+    // то тут сохраняем настройки стилей...
+    glwidget->update();
+    event->accept();
+  }
 }
+void View::closeEvent(QCloseEvent* event) { confirmitionExit(event); }
 
+void View::on_action_exit_triggered() { close(); }
