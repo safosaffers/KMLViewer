@@ -28,6 +28,7 @@ class View : public QMainWindow {
   OpenGLWidget* getGLWidget();
   void setSaveSimplificationPolygonsAvailable(bool flag);
   void setSimplificationAvailable(bool flag);
+  void clearChosenFileName();
   void clearPolygonStats();
   void clearViewData();
   void showMessageError(QString text);

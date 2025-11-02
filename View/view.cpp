@@ -19,6 +19,9 @@ void View::setSimplificationAvailable(bool flag) {
   ui->btnSaveSimplifyPoligons->setEnabled(!flag);
   if (flag) ui->leEpsilon->setText("1");
 }
+void View::clearChosenFileName() {
+  ui->lblChosenFilename->setText("—");
+}
 void View::clearPolygonStats() {
   ui->lblNumberOfPolygons->setText("—");
   ui->lblNumberOfPolygonsPoints->setText("—");
@@ -26,6 +29,7 @@ void View::clearPolygonStats() {
 }
 void View::clearViewData() {
   clearPolygonStats();
+  clearChosenFileName();
   setSimplificationAvailable(false);
   getGLWidget()->clearPolygons();
   getGLWidget()->clearSimplifiedPolygons();
@@ -72,6 +76,7 @@ void View::uploadaKMLFile() {
   if (!filePath.isEmpty()) {
     // qInfo()<< "model choosed: " << filePath;
     emit fileNameChoosed(filePath);
+    ui->lblChosenFilename->setText(filePath);
   }
 }
 
