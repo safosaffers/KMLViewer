@@ -30,7 +30,8 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   ~OpenGLWidget() override;
 
   void setPolygons(const QList<QPolygonF>& polygons);
-  void resetSimplifiedPolygons();
+  void clearPolygons();
+  void clearSimplifiedPolygons();
   void setSimplifiedPolygons(const QList<QPolygonF>& polygons);
   QTransform setInitialViewport(QPointF maxCoord);
 

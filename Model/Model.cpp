@@ -59,6 +59,7 @@ void Model::initializeModel(QString filePath) {
     normalizePolygons();
   } catch (const std::invalid_argument& e) {
     qDebug() << "Error: " << e.what();
+    throw;
   }
 }
 PolyRepr Model::getPolygons() { return polygonRepresentations; }
@@ -136,11 +137,11 @@ void Model::normalizePolygons() {
             maxCoord = qMax(maxCoord, qMax(qAbs(point.x()), qAbs(point.y())));
         }
     }
-    
+
     if (maxCoord > 0) {
         normalizeFactor = maxCoord;
         this->normalizedMaxCoord = QPointF(maxCoord, maxCoord)/normalizeFactor;
-        
+
         // Normalize the meters polygons
         QList<QPolygonF> normalizedPolygons;
         for (const auto& poly : metersPolygons) {
@@ -182,12 +183,12 @@ void Model::saveSimplifiedModel(QString fileName) {
   QList<PolygonPair> simplifiedPairs;
   QList<QPolygonF> originalLonLatPolygons = getLonLatPolygons();
   QList<QPolygonF> simplifiedNormalized = getSimplifiedNormalizedPolygons();
-  
+
   // Create PolygonPair list for saving (using original lonLat as the first part and simplified as second)
   for (int i = 0; i < qMin(originalLonLatPolygons.size(), simplifiedNormalized.size()); ++i) {
     simplifiedPairs.append(qMakePair(originalLonLatPolygons[i], simplifiedNormalized[i]));
   }
-  
+
   KmlFileSaver::updateCoordinatesInDocument(doc, simplifiedPairs);
   KmlFileSaver::saveKmlFile(doc, fileName);
 }

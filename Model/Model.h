@@ -11,6 +11,7 @@
 #include <QString>
 #include <cmath>
 #include <limits>
+#include <stdexcept>
 
 #include "CoordinateConverter.h"
 #include "KmlFileLoader.h"

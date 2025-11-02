@@ -97,7 +97,10 @@ void OpenGLWidget::resizeGL(int width, int height) {
 void OpenGLWidget::setPolygons(const QList<QPolygonF>& polygons) {
   this->polygons = polygons;
 }
-void OpenGLWidget::resetSimplifiedPolygons() {
+void OpenGLWidget::clearPolygons() {
+  this->polygons.clear();
+}
+void OpenGLWidget::clearSimplifiedPolygons() {
   this->simplifiedPolygons.clear();
 }
 void OpenGLWidget::setSimplifiedPolygons(
