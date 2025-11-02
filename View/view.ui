@@ -602,7 +602,7 @@ QFrame#line {
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>-300</y>
+           <y>0</y>
            <width>316</width>
            <height>872</height>
           </rect>
@@ -1210,17 +1210,19 @@ QTableView::item:selected {
    <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="action_uploadaKMLFile">
+  <action name="action_2">
    <property name="text">
-    <string>Загрузить файл * .kml</string>
+    <string>Тема</string>
    </property>
   </action>
-  <action name="action_saveSimplifyPoligons">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
+  <action name="action">
    <property name="text">
-    <string>Сохранить</string>
+    <string>Язык</string>
+   </property>
+  </action>
+  <action name="action_4">
+   <property name="text">
+    <string>О программе</string>
    </property>
   </action>
   <action name="action_exit">
@@ -1231,19 +1233,17 @@ QTableView::item:selected {
     <enum>QAction::MenuRole::PreferencesRole</enum>
    </property>
   </action>
-  <action name="action_4">
+  <action name="action_saveSimplifyPoligons">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
-    <string>О программе</string>
+    <string>Сохранить</string>
    </property>
   </action>
-  <action name="action">
+  <action name="action_uploadaKMLFile">
    <property name="text">
-    <string>Язык</string>
-   </property>
-  </action>
-  <action name="action_2">
-   <property name="text">
-    <string>Тема</string>
+    <string>Загрузить файл * .kml</string>
    </property>
   </action>
  </widget>

@@ -69,6 +69,7 @@ void Controller::HandleModelSimplify(double epsilon) {
     view->ui->lblNumberOfSimplifiedPolygonsPoints->setText(
         tr("Вычисление ..."));
     view->ui->progressBar->setValue(0);
+    view->showProgressBar(); // Show the progress bar
 
     const double eps = epsilon;
 
@@ -93,6 +94,7 @@ void Controller::HandleModelSimplify(double epsilon) {
   } else {
     watcher.cancel();
     view->ui->progressBar->setValue(0);
+    view->hideProgressBar(); // Hide the progress bar when cancelled
     view->ui->btnUploadaKMLFile->setEnabled(true);
     view->ui->lblNumberOfSimplifiedPolygonsPoints->setText(tr("—"));
     view->ui->btnSimplifyPoligons->setText(tr("Упростить"));
@@ -100,7 +102,10 @@ void Controller::HandleModelSimplify(double epsilon) {
 }
 
 void Controller::finishModelSimplify() {
-  if (watcher.isCanceled()) return;
+  if (watcher.isCanceled()) {
+    view->hideProgressBar(); // Hide the progress bar if cancelled
+    return;
+  }
 
   // Get the elapsed time for the total simplification process
   const qint64 elapsed = timer.nsecsElapsed();
@@ -142,6 +147,8 @@ void Controller::finishModelSimplify() {
   // Resize columns to fit the updated content after simplification
   view->ui->tvPolygonsInfo->resizeColumnsToContents();
   view->getGLWidget()->update();
+  
+  view->hideProgressBar(); // Hide the progress bar when finished
 }
 
 void Controller::HandleModelSimplifySave(QString fileName) {

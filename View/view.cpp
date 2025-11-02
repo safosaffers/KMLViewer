@@ -4,7 +4,7 @@ View::View(QWidget* parent) : QMainWindow(parent), ui(new Ui::View) {
   glwidget = new OpenGLWidget(ui->glwidget);
   ui->glWidgetLayout->addWidget(glwidget);
   set_parameters_validators();
-
+  hideProgressBar();
   // Connect double-click on table view to select polygon
   connect(ui->tvPolygonsInfo, &QTableView::doubleClicked, this,
           &View::on_tvPolygonsInfo_doubleClicked);
@@ -19,6 +19,10 @@ void View::setSaveSimplificationPolygonsAvailable(bool flag) {
 }
 void View::setSimplificationAvailable(bool flag) {
   ui->progressBar->setValue(0);
+  if (!flag) {
+    hideProgressBar();  // Hide progress bar when simplification is not
+                        // available
+  }
   ui->btnSimplifyPoligons->setEnabled(flag);
   ui->leEpsilon->setEnabled(flag);
   ui->btnSaveSimplifyPoligons->setEnabled(!flag);
@@ -129,5 +133,9 @@ void View::on_tvPolygonsInfo_doubleClicked(const QModelIndex& index) {
     selectPolygon(polygonId);
   }
 }
+
+void View::showProgressBar() { ui->progressBar->show(); }
+
+void View::hideProgressBar() { ui->progressBar->hide(); }
 
 void View::on_action_exit_triggered() { close(); }

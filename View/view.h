@@ -37,6 +37,8 @@ class View : public QMainWindow {
   void updateNumberOfSimplifiedPolygonsPoints(
       int numberOfSimplifiedPolygonsPoints);
   void selectPolygon(int polygonId);
+  void showProgressBar();
+  void hideProgressBar();
 
  private:
   void saveKMLFile();
