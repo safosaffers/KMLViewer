@@ -53,7 +53,7 @@ QToolTip {
 }
 QLabel, QCheckBox{
     color: #464d55;
-    background-color: #def3fb;
+    background-color: #9adbf2;
 	font: 12pt &quot;Segoe UI&quot;;
     font-weight: 600;
 }
@@ -527,6 +527,14 @@ QFrame#line {
           <height>16777215</height>
          </size>
         </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel, QCheckBox{
+    color: #464d55;
+    background-color: #9adbf2#def3fb;
+	font: 12pt &quot;Segoe UI&quot;;
+    font-weight: 600;
+}</string>
+        </property>
         <property name="horizontalScrollBarPolicy">
          <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
         </property>
@@ -537,7 +545,7 @@ QFrame#line {
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>0</y>
+           <y>-32</y>
            <width>267</width>
            <height>566</height>
           </rect>
@@ -937,7 +945,7 @@ QFrame#line {
                    <item>
                     <widget class="QPushButton" name="btnSaveSimplifyPoligons">
                      <property name="enabled">
-                      <bool>true</bool>
+                      <bool>false</bool>
                      </property>
                      <property name="text">
                       <string>Выбрать путь...</string>
