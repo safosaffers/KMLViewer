@@ -119,6 +119,8 @@ void View::selectPolygon(int polygonId) {
   // Tell the OpenGL widget to highlight the specific polygon
   getGLWidget()->setSelectedPolygonId(polygonId);
   getGLWidget()->update();  // Refresh the display
+  // Center the view on the selected polygon
+  getGLWidget()->centerOnPolygon(polygonId);
 }
 
 void View::on_tvPolygonsInfo_doubleClicked(const QModelIndex& index) {

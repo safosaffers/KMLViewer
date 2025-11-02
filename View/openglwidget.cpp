@@ -248,3 +248,61 @@ void OpenGLWidget::mouseReleaseEvent(QMouseEvent* event) {
 }
 
 void OpenGLWidget::setSelectedPolygonId(int id) { selectedPolygonId = id; }
+
+void OpenGLWidget::centerOnPolygon(int id) {
+  if (id < 0) return;  // No polygon to center on
+
+  QPolygonF poly;
+
+  // Check if we should use regular polygons or simplified polygons
+  if (!simplifiedPolygons.isEmpty() && id < simplifiedPolygons.size()) {
+    poly = simplifiedPolygons[id];
+  } else if (id < polygons.size()) {
+    poly = polygons[id];
+  } else {
+    return;  // Invalid polygon id
+  }
+
+  if (poly.isEmpty()) return;
+
+  // Calculate bounding rectangle of the polygon
+  QRectF boundingRect = poly.boundingRect();
+
+  // Get the current widget size
+  qreal widgetWidth = width();
+  qreal widgetHeight = height();
+
+  // Calculate scale to fit the bounding rectangle with some margin
+  qreal marginPercent = 20; // 20% margin around the polygon
+  qreal marginX = boundingRect.width() * marginPercent / 100;
+  qreal marginY = boundingRect.height() * marginPercent / 100;
+  
+  qreal scaleX = (widgetWidth - 2 * marginX) / boundingRect.width();
+  qreal scaleY = (widgetHeight - 2 * marginY) / boundingRect.height();
+  
+  // Take the minimum scale to ensure the whole polygon fits in the view
+  qreal calculatedScale = qMin(scaleX, scaleY);
+  
+  // The calculatedScale is in "pixels per world unit", 
+  // but we need to calculate the actual scale factor relative to initialTransformViewport
+  // which already contains an initial scale factor
+  qreal initialScale = initialTransformViewport.m11();  // Get initial scale from the initial transform
+  
+  // Calculate relative scale factor to apply to the initial transform
+  qreal newScale = calculatedScale / initialScale;
+  
+  // Calculate new translation to center the bounding rectangle
+  QPointF polygonCenter = boundingRect.center();
+  QPointF widgetCenter(widgetWidth / 2.0, widgetHeight / 2.0);
+  
+  // Start with initial transform and apply the relative scale
+  transformViewport = initialTransformViewport;
+  transformViewport.scale(newScale, newScale);
+  
+  // Apply translation to center the polygon in the view
+  QPointF currentWidgetCenter = transformViewport.inverted().map(widgetCenter);
+  QPointF translation = currentWidgetCenter - polygonCenter;
+  transformViewport.translate(translation.x(), translation.y());
+
+  update();  // Trigger repaint
+}

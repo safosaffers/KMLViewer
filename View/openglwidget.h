@@ -40,6 +40,7 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
 
   // Polygon selection functionality
   void setSelectedPolygonId(int id);
+  void centerOnPolygon(int id);
 
  protected:
   void initializeGL() override;
