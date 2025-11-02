@@ -85,7 +85,7 @@ QPushButton:disabled {
     padding: 5px 15px;
 }
 QLineEdit {
-    background-color: rgb(255, 255, 255);
+    background-color: #f9fdfe;
     padding: 3px 10px;
 	font: 12pt &quot;Verdana&quot;;
     color: #464d55;
@@ -580,7 +580,7 @@ QFrame#line {
        <widget class="QScrollArea" name="scrollArea">
         <property name="maximumSize">
          <size>
-          <width>300</width>
+          <width>600</width>
           <height>16777215</height>
          </size>
         </property>
@@ -602,8 +602,8 @@ QFrame#line {
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>-240</y>
-           <width>286</width>
+           <y>0</y>
+           <width>316</width>
            <height>872</height>
           </rect>
          </property>
@@ -623,7 +623,7 @@ QFrame#line {
               </property>
               <property name="maximumSize">
                <size>
-                <width>300</width>
+                <width>600</width>
                 <height>16777215</height>
                </size>
               </property>
@@ -750,7 +750,7 @@ QFrame#line {
              <widget class="QGroupBox" name="groupBox_2">
               <property name="maximumSize">
                <size>
-                <width>300</width>
+                <width>600</width>
                 <height>16777215</height>
                </size>
               </property>
@@ -945,7 +945,7 @@ QFrame#line {
               </property>
               <property name="maximumSize">
                <size>
-                <width>300</width>
+                <width>600</width>
                 <height>16777215</height>
                </size>
               </property>
@@ -985,30 +985,33 @@ QFrame#line {
                      <height>0</height>
                     </size>
                    </property>
+                   <property name="autoFillBackground">
+                    <bool>false</bool>
+                   </property>
                    <property name="styleSheet">
                     <string notr="true">
-/* --------QTABLEWIDGET-------- */ 
-QTableWidget {
+/* --------QTABLEVIEW-------- */ 
+QTableView {
     gridline-color: #1683aa;
     color: #464d55;
-    background-color: #9adbf2;
+    background-color: #DEF3FB;
 	font: 12pt &quot;Segoe UI&quot;;
     font-weight: 600;
-    /*background-color: #def3fb; /* фон таблицы */
     outline: 0px; /* убирает пунктир при фокусе */
 }
 
-QTableWidget::item {
+QTableView::item {
 	font: 18pt &quot;Segoe UI&quot;;
     font-weight: bold;
     border: 1px solid #1683aa;
     padding: 5px;
-    background-color: #9adbf2; /* фон ячейки */
+    background-color: #f9fdfe; /* фон ячейки */
     color: #404040; /* цвет текста */
 }
 
 QHeaderView::section {
     background-color: #e0f0ff;
+    color: #464d55;
     padding: 4px;
     border: 1px solid #1683aa;
 	font: 12pt &quot;Segoe UI&quot;;
@@ -1017,12 +1020,30 @@ QHeaderView {
     background-color: #def3fb;
     border: none;
 }
-QTableWidget::item:selected {
+QTableView::item:selected {
     background-color: #b3d7ff;
     color: black;
 }
-/* --------QTABLEWIDGET (END) -------- */ </string>
+/* --------QTABLEVIEW(END) -------- */ </string>
                    </property>
+                   <attribute name="horizontalHeaderCascadingSectionResizes">
+                    <bool>false</bool>
+                   </attribute>
+                   <attribute name="horizontalHeaderMinimumSectionSize">
+                    <number>30</number>
+                   </attribute>
+                   <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+                    <bool>false</bool>
+                   </attribute>
+                   <attribute name="horizontalHeaderStretchLastSection">
+                    <bool>true</bool>
+                   </attribute>
+                   <attribute name="verticalHeaderVisible">
+                    <bool>false</bool>
+                   </attribute>
+                   <attribute name="verticalHeaderStretchLastSection">
+                    <bool>true</bool>
+                   </attribute>
                   </widget>
                  </item>
                 </layout>
@@ -1047,7 +1068,7 @@ QTableWidget::item:selected {
              <widget class="QGroupBox" name="groupBox_3">
               <property name="maximumSize">
                <size>
-                <width>300</width>
+                <width>600</width>
                 <height>16777215</height>
                </size>
               </property>

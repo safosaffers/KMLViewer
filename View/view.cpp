@@ -19,9 +19,7 @@ void View::setSimplificationAvailable(bool flag) {
   ui->btnSaveSimplifyPoligons->setEnabled(!flag);
   if (flag) ui->leEpsilon->setText("1");
 }
-void View::clearChosenFileName() {
-  ui->lblChosenFilename->setText("—");
-}
+void View::clearChosenFileName() { ui->lblChosenFilename->setText("—"); }
 void View::clearPolygonStats() {
   ui->lblNumberOfPolygons->setText("—");
   ui->lblNumberOfPolygonsPoints->setText("—");

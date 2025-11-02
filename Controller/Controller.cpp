@@ -39,6 +39,9 @@ void Controller::HandleModelLoading(QString fileName) {
         polygonInfoModel->setPolygonInfo(i, info);
     }
     
+    // Resize columns to fit content
+    view->ui->tvPolygonsInfo->resizeColumnsToContents();
+    
     view->setSimplificationAvailable(true);
     view->getGLWidget()->update();
   } catch (const std::exception& ex) {
@@ -134,6 +137,8 @@ void Controller::finishModelSimplify() {
 
   view->getGLWidget()->setSimplifiedPolygons(
       model->getSimplifiedNormalizedPolygons());
+  // Resize columns to fit the updated content after simplification
+  view->ui->tvPolygonsInfo->resizeColumnsToContents();
   view->getGLWidget()->update();
 }
 
