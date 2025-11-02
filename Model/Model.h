@@ -12,13 +12,27 @@
 #include <cmath>
 #include <limits>
 #include <stdexcept>
-
+#include <QElapsedTimer>
 #include "CoordinateConverter.h"
 #include "KmlFileLoader.h"
 #include "KmlFileSaver.h"
 #include "Normalizer.h"
 #include "PolygonSimplifier.h"
 #include "PolyRepr.h"
+
+// Structure to hold simplification results
+struct SimplificationResult {
+    PolygonPair simplifiedPolygons;  // Pair of lon/lat and meters polygons
+    qint64 timeNs;                   // Time in nanoseconds
+    double maxDeviation;            // Maximum deviation after simplification
+    int originalPoints;             // Number of points before simplification
+    int simplifiedPoints;           // Number of points after simplification
+    
+    SimplificationResult() : timeNs(0), maxDeviation(0.0), originalPoints(0), simplifiedPoints(0) {}
+    SimplificationResult(PolygonPair poly, qint64 time, double deviation, int origPoints, int simpPoints)
+        : simplifiedPolygons(poly), timeNs(time), maxDeviation(deviation), 
+          originalPoints(origPoints), simplifiedPoints(simpPoints) {}
+};
 
 class Model {
  private:
@@ -39,6 +53,7 @@ class Model {
   QPointF getNormalizedMaxCoord();
 
   static PolygonPair simplifyPolygon(const PolygonPair metersPoly, double epsilon);
+  static SimplificationResult simplifyPolygonWithDeviation(const PolygonPair metersPoly, double epsilon);
 
   int getNumberOfPolygons();
   int getQListQPolygonFPointsCount(const QList<QPolygonF>& polygons);

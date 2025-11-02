@@ -86,6 +86,23 @@ PolygonPair Model::simplifyPolygon(const PolygonPair poly, double epsilon) {
   return simplifiedPair; // Return only the simplified meters polygon
 }
 
+SimplificationResult Model::simplifyPolygonWithDeviation(const PolygonPair poly, double epsilon) {
+    QElapsedTimer timer;
+    timer.start();
+
+    PolygonPair simplifiedPair = PolygonSimplifier::simplifyPolygon(poly, epsilon);
+    qint64 elapsed = timer.nsecsElapsed(); // Time in nanoseconds
+
+    // Calculate the maximum deviation between original and simplified polygons
+    double maxDeviation = PolygonSimplifier::calculateMaxDeviation(poly, simplifiedPair);
+    
+    int originalPoints = poly.second.size();
+    int simplifiedPoints = simplifiedPair.second.size();
+
+    // Create and return the full simplification result
+    return SimplificationResult(simplifiedPair, elapsed, maxDeviation, originalPoints, simplifiedPoints);
+}
+
 QPointF Model::getMaxCoord() const {
     return normalizedMaxCoord;
 }

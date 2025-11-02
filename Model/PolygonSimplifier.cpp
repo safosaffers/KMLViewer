@@ -158,3 +158,57 @@ PolygonPair PolygonSimplifier::simplifyPolygon(const PolygonPair& latLonMetPoly,
 
     return result;
 }
+
+double PolygonSimplifier::calculateMaxDeviation(const PolygonPair& original, const PolygonPair& simplified) {
+    if (original.second.isEmpty() || simplified.second.isEmpty()) {
+        return 0.0;
+    }
+
+    double maxDeviation = 0.0;
+
+    // For each point in the original polygon, find its distance to the simplified polygon
+    for (const QPointF& origPoint : original.second) {
+        double minDistanceToSimplified = std::numeric_limits<double>::max();
+
+        // Calculate distance from original point to each segment of simplified polygon
+        for (int i = 0; i < simplified.second.size(); ++i) {
+            QPointF p1 = simplified.second[i];
+            QPointF p2 = simplified.second[(i + 1) % simplified.second.size()]; // close the polygon
+            QLineF segment(p1, p2);
+            
+            // Calculate distance from point to line segment
+            qreal distance = distanceBetweenLineAndPoint(segment, origPoint);
+            if (distance < minDistanceToSimplified) {
+                minDistanceToSimplified = distance;
+            }
+        }
+
+        if (minDistanceToSimplified > maxDeviation) {
+            maxDeviation = minDistanceToSimplified;
+        }
+    }
+
+    // Also check for points in simplified polygon that may have large deviations from original
+    for (const QPointF& simpPoint : simplified.second) {
+        double minDistanceToOriginal = std::numeric_limits<double>::max();
+
+        // Calculate distance from simplified point to each segment of original polygon
+        for (int i = 0; i < original.second.size(); ++i) {
+            QPointF p1 = original.second[i];
+            QPointF p2 = original.second[(i + 1) % original.second.size()]; // close the polygon
+            QLineF segment(p1, p2);
+            
+            // Calculate distance from point to line segment
+            qreal distance = distanceBetweenLineAndPoint(segment, simpPoint);
+            if (distance < minDistanceToOriginal) {
+                minDistanceToOriginal = distance;
+            }
+        }
+
+        if (minDistanceToOriginal > maxDeviation) {
+            maxDeviation = minDistanceToOriginal;
+        }
+    }
+
+    return maxDeviation;
+}

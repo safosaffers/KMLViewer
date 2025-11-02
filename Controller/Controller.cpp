@@ -12,9 +12,19 @@ Controller::Controller(Model* m, View* v) : QObject(v), model(m), view(v) {
           &Controller::HandleModelSimplify);
   connect(view, &View::saveSimplifyPoligons, this,
           &Controller::HandleModelSimplifySave);
-  connect(&watcher, &QFutureWatcher<QPair<PolygonPair, qint64>>::finished, this,
+  // Connect progress bar signals
+  connect(&watcher, &QFutureWatcher<SimplificationResult>::progressRangeChanged,
+          view->ui->progressBar, &QProgressBar::setRange);
+  connect(&watcher, &QFutureWatcher<SimplificationResult>::progressValueChanged,
+          view->ui->progressBar, &QProgressBar::setValue);
+  
+  connect(view, &View::fileNameChoosed, this, &Controller::HandleModelLoading);
+  connect(view, &View::polygonSimplifyRequested, this,
+          &Controller::HandleModelSimplify);
+  connect(view, &View::saveSimplifyPoligons, this,
+          &Controller::HandleModelSimplifySave);
+  connect(&watcher, &QFutureWatcher<SimplificationResult>::finished, this,
           &Controller::finishModelSimplify);
-  // Note: Progress tracking might need to be handled differently if needed
 }
 
 Controller::~Controller() { watcher.cancel(); }
@@ -73,17 +83,9 @@ void Controller::HandleModelSimplify(double epsilon) {
     // starts simplification in parallel with timing information
     auto future = QtConcurrent::mapped(
         polygonsToSimplify,
-        [eps](const PolygonPair& p) -> QPair<PolygonPair, qint64> {
-          QElapsedTimer individualTimer;
-          individualTimer.start();
-
-          PolygonPair simplified = Model::simplifyPolygon(p, eps);
-          qint64 elapsed = individualTimer.nsecsElapsed();
-
-          // Return both the simplified polygon pair and the time it took
-          // We'll use epsilon as the maxDeviation for now since that's the
-          // threshold
-          return QPair<PolygonPair, qint64>(simplified, elapsed);
+        [eps](const PolygonPair& p) -> SimplificationResult {
+          // Use the new method that calculates proper deviation
+          return Model::simplifyPolygonWithDeviation(p, eps);
         });
 
     watcher.setFuture(future);
@@ -103,21 +105,21 @@ void Controller::finishModelSimplify() {
   // Get the elapsed time for the total simplification process
   const qint64 elapsed = timer.nsecsElapsed();
 
-  QList<QPair<PolygonPair, qint64>> results = watcher.future().results();
+  QList<SimplificationResult> results = watcher.future().results();
   QList<QPolygonF> polyMeters;
   QList<QPolygonF> polyLonLat;
 
   for (int i = 0; i < results.size(); i++) {
-    QPair<PolygonPair, qint64> result = results.at(i);
-    polyLonLat.append(result.first.first);
-    polyMeters.append(result.first.second);
+    SimplificationResult result = results.at(i);
+    polyLonLat.append(result.simplifiedPolygons.first);
+    polyMeters.append(result.simplifiedPolygons.second);
 
     // Update the polygon info model with individual polygon data
-    // Using epsilon as maxDeviation for now
     polygonInfoModel->updatePolygonAfterSimplification(
-        i, result.first.second.size(),
-        result.second,  // elapsed time
-        0.0  // Using 0.0 temporarily - could calculate actual deviation
+        i, 
+        result.simplifiedPoints,  // points after simplification
+        result.timeNs,            // elapsed time in nanoseconds
+        result.maxDeviation       // max deviation
     );
   }
 

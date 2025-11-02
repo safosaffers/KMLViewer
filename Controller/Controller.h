@@ -20,7 +20,7 @@ class Controller : public QObject {
   Model* model;
   View* view;
   QElapsedTimer timer;
-  QFutureWatcher<QPair<PolygonPair, qint64>> watcher;  // Pair of simplified polygon and time
+  QFutureWatcher<SimplificationResult> watcher;  // Simplification result with all needed info
   PolygonInfoModel* polygonInfoModel;
 
  public:

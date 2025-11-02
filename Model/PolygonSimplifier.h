@@ -18,6 +18,9 @@ public:
     static PolygonPair rammerDouglasPeucker(const PolygonPair& latLonMetPoly, double epsilon);
     static PolygonPair createFallbackSimplification(const PolygonPair& originalPoly);
     
+    // Method to calculate max deviation between original and simplified polygons
+    static double calculateMaxDeviation(const PolygonPair& original, const PolygonPair& simplified);
+    
 private:
     // Helper methods
     static qreal distanceBetweenLineAndPoint(const QLineF& line, const QPointF& p);
