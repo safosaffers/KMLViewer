@@ -75,6 +75,9 @@ void Controller::HandleModelSimplify(double epsilon) {
 void Controller::finishModelSimplify() {
   if (watcher.isCanceled()) return;
 
+  // Get the elapsed time for the simplification process
+  const qint64 elapsed = timer.elapsed();
+
   QList<PolygonPair> simplified = watcher.future().results();
   QList<QPolygonF> polyMeters;
   QList<QPolygonF> polyLonLat;
@@ -93,6 +96,10 @@ void Controller::finishModelSimplify() {
   view->ui->btnSimplifyPoligons->setText(tr("Упростить"));
   view->ui->lblNumberOfSimplifiedPolygonsPoints->setText(
       QString::number(model->getNumberOfSimplifiedPolygonsPoints()));
+
+  // Display the total simplification time
+  view->ui->lblTimeAlgorithm->setText(
+      QString::number(elapsed) + " ms");
 
   view->getGLWidget()->setSimplifiedPolygons(
       model->getSimplifiedNormalizedPolygons());
