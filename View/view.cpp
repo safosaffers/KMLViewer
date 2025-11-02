@@ -15,7 +15,6 @@ View::View(QWidget* parent) : QMainWindow(parent), ui(new Ui::View) {
 View::~View() { delete ui; }
 void View::setSaveSimplificationPolygonsAvailable(bool flag) {
   ui->btnSaveSimplifyPoligons->setEnabled(flag);
-  ui->action_saveSimplifyPoligons->setEnabled(flag);
 }
 void View::setSimplificationAvailable(bool flag) {
   ui->progressBar->setValue(0);
@@ -101,10 +100,8 @@ void View::saveKMLFile() {
 }
 void View::on_btnUploadaKMLFile_clicked() { uploadaKMLFile(); }
 
-void View::on_action_uploadaKMLFile_triggered() { uploadaKMLFile(); }
 void View::on_btnSaveSimplifyPoligons_clicked() { saveKMLFile(); }
 
-void View::on_action_saveSimplifyPoligons_triggered() { saveKMLFile(); }
 void View::confirmitionExit(QCloseEvent* event) {
   event->ignore();
   if (QMessageBox::Yes ==
@@ -138,4 +135,3 @@ void View::showProgressBar() { ui->progressBar->show(); }
 
 void View::hideProgressBar() { ui->progressBar->hide(); }
 
-void View::on_action_exit_triggered() { close(); }

@@ -51,12 +51,6 @@ class View : public QMainWindow {
 
   void on_btnSaveSimplifyPoligons_clicked();
 
-  void on_action_uploadaKMLFile_triggered();
-
-  void on_action_saveSimplifyPoligons_triggered();
-
-  void on_action_exit_triggered();
-
   void on_tvPolygonsInfo_doubleClicked(const QModelIndex &index);
 
  private:
