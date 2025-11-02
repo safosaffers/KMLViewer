@@ -25,8 +25,8 @@ class View : public QMainWindow {
   View(QWidget* parent = nullptr);
   ~View();
   OpenGLWidget* getGLWidget();
-  void setSimplificationUnavailable();
-  void setSimplificationAvailable();
+  void setSaveSimplificationPolygonsAvailable(bool flag);
+  void setSimplificationAvailable(bool flag);
   void clearPolygonStats();
   void clearViewData();
   void showMessageError(QString text);
@@ -34,12 +34,18 @@ class View : public QMainWindow {
   void updateNumberOfPolygonsPoints(int numberOfPolygonsPoints);
   void updateNumberOfSimplifiedPolygonsPoints(
       int numberOfSimplifiedPolygonsPoints);
-
+private:
+  void saveKMLFile();
+  void uploadaKMLFile();
  private slots:
   void on_btnUploadaKMLFile_clicked();
   void on_btnSimplifyPoligons_clicked();
 
   void on_btnSaveSimplifyPoligons_clicked();
+
+  void on_action_uploadaKMLFile_triggered();
+
+  void on_action_saveSimplifyPoligons_triggered();
 
 private:
   OpenGLWidget* glwidget;

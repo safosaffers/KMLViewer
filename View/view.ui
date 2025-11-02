@@ -187,7 +187,7 @@ QPlainTextEdit {
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>0</y>
+           <y>-239</y>
            <width>308</width>
            <height>773</height>
           </rect>
@@ -830,7 +830,7 @@ QPlainTextEdit {
                    <item>
                     <widget class="QPushButton" name="btnSaveSimplifyPoligons">
                      <property name="enabled">
-                      <bool>false</bool>
+                      <bool>true</bool>
                      </property>
                      <property name="text">
                       <string>Выбрать путь...</string>

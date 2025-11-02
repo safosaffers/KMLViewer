@@ -26,7 +26,7 @@ void Controller::HandleModelLoading(QString fileName) {
                                           // normalizePolygons
     view->updateNumberOfPolygons(model->getNumberOfPolygons());
     view->updateNumberOfPolygonsPoints(model->getNumberOfPolygonsPoints());
-    view->setSimplificationAvailable();
+    view->setSimplificationAvailable(true);
     view->getGLWidget()->update();
   } catch (const std::exception& ex) {
     view->clearViewData();
@@ -88,7 +88,7 @@ void Controller::finishModelSimplify() {
   model->normalizeSimplifiedPolygons();
 
   view->ui->btnUploadaKMLFile->setEnabled(true);
-  view->ui->btnSaveSimplifyPoligons->setEnabled(true);
+  view->setSaveSimplificationPolygonsAvailable(true);
   view->ui->btnSimplifyPoligons->setChecked(false);
   view->ui->btnSimplifyPoligons->setText(tr("Упростить"));
   view->ui->lblNumberOfSimplifiedPolygonsPoints->setText(

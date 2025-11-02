@@ -8,18 +8,16 @@ View::View(QWidget* parent) : QMainWindow(parent), ui(new Ui::View) {
 }
 
 View::~View() { delete ui; }
-void View::setSimplificationUnavailable() {
-  ui->progressBar->setValue(0);
-  ui->btnSimplifyPoligons->setEnabled(false);
-  ui->leEpsilon->setText("1");
-  ui->leEpsilon->setEnabled(false);
-  ui->btnSaveSimplifyPoligons->setEnabled(false);
+void View::setSaveSimplificationPolygonsAvailable(bool flag){
+  ui->btnSaveSimplifyPoligons->setEnabled(flag);
+  ui->action_saveSimplifyPoligons->setEnabled(flag);
 }
-void View::setSimplificationAvailable() {
+void View::setSimplificationAvailable(bool flag) {
   ui->progressBar->setValue(0);
-  ui->btnSimplifyPoligons->setEnabled(true);
-  ui->leEpsilon->setEnabled(true);
-  ui->btnSaveSimplifyPoligons->setEnabled(false);
+  ui->btnSimplifyPoligons->setEnabled(flag);
+  ui->leEpsilon->setEnabled(flag);
+  ui->btnSaveSimplifyPoligons->setEnabled(!flag);
+  if (flag) ui->leEpsilon->setText("1");
 }
 void View::clearPolygonStats(){
   ui->lblNumberOfPolygons->setText("—");
@@ -28,21 +26,14 @@ void View::clearPolygonStats(){
 }
 void View::clearViewData() {
   clearPolygonStats();
-  setSimplificationUnavailable();
+  setSimplificationAvailable(false);
   getGLWidget()->clearPolygons();
   getGLWidget()->clearSimplifiedPolygons();
   getGLWidget()->update();
 
 
 }
-void View::on_btnUploadaKMLFile_clicked() {
-  QString filePath = QFileDialog::getOpenFileName(
-      nullptr, "Open File", "", "Text files (*.kml);;All files (*)");
-  if (!filePath.isEmpty()) {
-    // qInfo()<< "model choosed: " << filePath;
-    emit fileNameChoosed(filePath);
-  }
-}
+
 OpenGLWidget* View::getGLWidget() { return glwidget; }
 void View::showMessageError(QString text){
   QMessageBox msgBox;
@@ -77,8 +68,16 @@ void View::updateNumberOfSimplifiedPolygonsPoints(
   ui->lblNumberOfSimplifiedPolygonsPoints->setText(
       QString::number(numberOfSimplifiedPolygonsPoints));
 }
+void View::uploadaKMLFile() {
+  QString filePath = QFileDialog::getOpenFileName(
+      nullptr, "Open File", "", "Text files (*.kml);;All files (*)");
+  if (!filePath.isEmpty()) {
+    // qInfo()<< "model choosed: " << filePath;
+    emit fileNameChoosed(filePath);
+  }
+}
 
-void View::on_btnSaveSimplifyPoligons_clicked() {
+void View::saveKMLFile(){
   QString pathToSave = QFileDialog::getSaveFileName(
       this, tr("Save Simplified Polygons as KML"), "simplified_polygons.kml",
       "KML Files (*.kml)");
@@ -90,3 +89,20 @@ void View::on_btnSaveSimplifyPoligons_clicked() {
     emit saveSimplifyPoligons(pathToSave);
   }
 }
+void View::on_btnUploadaKMLFile_clicked() {
+  uploadaKMLFile();
+}
+
+void View::on_action_uploadaKMLFile_triggered()
+{
+  uploadaKMLFile();
+}
+void View::on_btnSaveSimplifyPoligons_clicked() {
+  saveKMLFile();
+}
+
+void View::on_action_saveSimplifyPoligons_triggered()
+{
+  saveKMLFile();
+}
+
