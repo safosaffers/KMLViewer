@@ -40,8 +40,7 @@ void OpenGLWidget::setBrushWithAlpha(QPainter& painter, QColor color,
 }
 
 void OpenGLWidget::drawVertexMarkers(QPainter& painter,
-                                     const QList<QPolygonF>& polygons,
-                                     const QColor& color) {
+                                     const QList<QPolygonF>& polygons) {
   if (polygons.isEmpty()) return;
 
   qreal scaleX = qSqrt(transformViewport.m11() * transformViewport.m11() +
@@ -59,23 +58,22 @@ void OpenGLWidget::drawVertexMarkers(QPainter& painter,
   }
 
   painter.save();
-  setPenForPoints(painter, color);
   painter.setBrush(Qt::NoBrush);
   painter.drawPath(path);
   painter.restore();
 }
 void OpenGLWidget::drawPolygons(QPainter& painter,
                                 const QList<QPolygonF>& polygons,
-                                const QColor& color) {
-  setBrushWithAlpha(painter, color, 0.5);
+                                const QColor& colorPoly,
+                                const QColor& colorPoints) {
+  setBrushWithAlpha(painter, colorPoly, 0.5);
   for (const QPolygonF& poly : polygons) {
-    setPenForEdges(painter, color);
+    setPenForEdges(painter, colorPoly);
     painter.drawPolygon(poly, Qt::WindingFill);
-
-    setPenForPoints(painter, Qt::red);
   }
 
-  drawVertexMarkers(painter, polygons, Qt::red);
+  setPenForPoints(painter, colorPoints);
+  drawVertexMarkers(painter, polygons);
 }
 void OpenGLWidget::paintGL() {
   QPainter painter(this);
@@ -85,8 +83,8 @@ void OpenGLWidget::paintGL() {
 
   painter.setWorldTransform(transformViewport);
 
-  drawPolygons(painter, polygons, Qt::black);
-  drawPolygons(painter, simplifiedPolygons, Qt::green);
+  drawPolygons(painter, polygons, Qt::black, Qt::red);
+  drawPolygons(painter, simplifiedPolygons, Qt::green, QColor(qRgb(48,106,42)));
 
   painter.end();
 }

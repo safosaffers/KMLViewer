@@ -40,11 +40,11 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   void paintGL() override;
   void resizeGL(int width, int height) override;
   void drawPolygons(QPainter& painter, const QList<QPolygonF>& polygons,
-                    const QColor& color);
+                    const QColor& colorPoly,
+                    const QColor& colorPoints);
   void setPenForEdges(QPainter& painter, QColor color);
   void setPenForPoints(QPainter& painter, QColor color);
-  void drawVertexMarkers(QPainter& painter, const QList<QPolygonF>& polygons,
-                         const QColor& color);
+  void drawVertexMarkers(QPainter& painter, const QList<QPolygonF>& polygons);
   void setBrushWithAlpha(QPainter& painter, QColor color, qreal alpha);
   void wheelEvent(QWheelEvent* event) override;
   void mousePressEvent(QMouseEvent* event) override;
