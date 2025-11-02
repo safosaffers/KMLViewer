@@ -602,7 +602,7 @@ QFrame#line {
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>0</y>
+           <y>-300</y>
            <width>316</width>
            <height>872</height>
           </rect>
@@ -1025,6 +1025,9 @@ QTableView::item:selected {
     color: black;
 }
 /* --------QTABLEVIEW(END) -------- */ </string>
+                   </property>
+                   <property name="editTriggers">
+                    <set>QAbstractItemView::EditTrigger::DoubleClicked</set>
                    </property>
                    <attribute name="horizontalHeaderCascadingSectionResizes">
                     <bool>false</bool>

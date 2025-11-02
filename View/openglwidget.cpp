@@ -4,6 +4,7 @@ OpenGLWidget::OpenGLWidget(QWidget* parent) : QOpenGLWidget(parent) {
   setFocusPolicy(Qt::StrongFocus);
   isPanning = false;
   normalizeFactor = 1;
+  selectedPolygonId = -1;  // No polygon selected initially
 }
 OpenGLWidget::~OpenGLWidget() {}
 void OpenGLWidget::initializeGL() {
@@ -83,8 +84,56 @@ void OpenGLWidget::paintGL() {
 
   painter.setWorldTransform(transformViewport);
 
-  drawPolygons(painter, polygons, Qt::black, Qt::red);
-  drawPolygons(painter, simplifiedPolygons, Qt::green, QColor(qRgb(48,106,42)));
+  // Draw regular polygons
+  if (!polygons.isEmpty()) {
+    if (selectedPolygonId >= 0 && selectedPolygonId < polygons.size()) {
+      // Draw non-selected polygons normally
+      for (int i = 0; i < polygons.size(); ++i) {
+        if (i == selectedPolygonId) {
+          // Skip for now, draw selected polygon last to have it on top
+          continue;
+        }
+        QPolygonF poly = polygons[i];
+        drawPolygons(painter, QList<QPolygonF>() << poly, Qt::black, Qt::red);
+      }
+      // Draw selected polygon with unique color
+      if (selectedPolygonId < polygons.size()) {
+        QPolygonF selectedPoly = polygons[selectedPolygonId];
+        drawPolygons(painter, QList<QPolygonF>() << selectedPoly,
+                     SELECTED_POLYGON_COLOR, Qt::red);
+      }
+    } else {
+      // No polygon selected, draw all normally
+      drawPolygons(painter, polygons, Qt::black, Qt::red);
+    }
+  }
+
+  // Draw simplified polygons
+  if (!simplifiedPolygons.isEmpty()) {
+    if (selectedPolygonId >= 0 &&
+        selectedPolygonId < simplifiedPolygons.size()) {
+      // Draw non-selected simplified polygons normally
+      for (int i = 0; i < simplifiedPolygons.size(); ++i) {
+        if (i == selectedPolygonId) {
+          // Skip for now, draw selected polygon last to have it on top
+          continue;
+        }
+        QPolygonF poly = simplifiedPolygons[i];
+        drawPolygons(painter, QList<QPolygonF>() << poly, Qt::green,
+                     QColor(qRgb(48, 106, 42)));
+      }
+      // Draw selected simplified polygon with unique color
+      if (selectedPolygonId < simplifiedPolygons.size()) {
+        QPolygonF selectedPoly = simplifiedPolygons[selectedPolygonId];
+        drawPolygons(painter, QList<QPolygonF>() << selectedPoly,
+                     SELECTED_POLYGON_COLOR, QColor(qRgb(48, 106, 42)));
+      }
+    } else {
+      // No polygon selected, draw all normally
+      drawPolygons(painter, simplifiedPolygons, Qt::green,
+                   QColor(qRgb(48, 106, 42)));
+    }
+  }
 
   painter.end();
 }
@@ -95,9 +144,7 @@ void OpenGLWidget::resizeGL(int width, int height) {
 void OpenGLWidget::setPolygons(const QList<QPolygonF>& polygons) {
   this->polygons = polygons;
 }
-void OpenGLWidget::clearPolygons() {
-  this->polygons.clear();
-}
+void OpenGLWidget::clearPolygons() { this->polygons.clear(); }
 void OpenGLWidget::clearSimplifiedPolygons() {
   this->simplifiedPolygons.clear();
 }
@@ -199,3 +246,5 @@ void OpenGLWidget::mouseReleaseEvent(QMouseEvent* event) {
   }
   event->accept();
 }
+
+void OpenGLWidget::setSelectedPolygonId(int id) { selectedPolygonId = id; }

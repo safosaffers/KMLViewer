@@ -36,6 +36,7 @@ class View : public QMainWindow {
   void updateNumberOfPolygonsPoints(int numberOfPolygonsPoints);
   void updateNumberOfSimplifiedPolygonsPoints(
       int numberOfSimplifiedPolygonsPoints);
+  void selectPolygon(int polygonId);
 
  private:
   void saveKMLFile();
@@ -53,6 +54,8 @@ class View : public QMainWindow {
   void on_action_saveSimplifyPoligons_triggered();
 
   void on_action_exit_triggered();
+
+  void on_tvPolygonsInfo_doubleClicked(const QModelIndex &index);
 
  private:
   OpenGLWidget* glwidget;

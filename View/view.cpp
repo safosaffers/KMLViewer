@@ -4,6 +4,11 @@ View::View(QWidget* parent) : QMainWindow(parent), ui(new Ui::View) {
   glwidget = new OpenGLWidget(ui->glwidget);
   ui->glWidgetLayout->addWidget(glwidget);
   set_parameters_validators();
+
+  // Connect double-click on table view to select polygon
+  connect(ui->tvPolygonsInfo, &QTableView::doubleClicked, this,
+          &View::on_tvPolygonsInfo_doubleClicked);
+
   show();
 }
 
@@ -109,5 +114,18 @@ void View::confirmitionExit(QCloseEvent* event) {
   }
 }
 void View::closeEvent(QCloseEvent* event) { confirmitionExit(event); }
+
+void View::selectPolygon(int polygonId) {
+  // Tell the OpenGL widget to highlight the specific polygon
+  getGLWidget()->setSelectedPolygonId(polygonId);
+  getGLWidget()->update();  // Refresh the display
+}
+
+void View::on_tvPolygonsInfo_doubleClicked(const QModelIndex& index) {
+  if (index.isValid()) {
+    int polygonId = index.row();  // Row number corresponds to polygon ID
+    selectPolygon(polygonId);
+  }
+}
 
 void View::on_action_exit_triggered() { close(); }
