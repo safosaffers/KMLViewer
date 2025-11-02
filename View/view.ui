@@ -332,13 +332,13 @@ QFrame#line {
                   <widget class="QLabel" name="label_10">
                    <property name="minimumSize">
                     <size>
-                     <width>320</width>
+                     <width>300</width>
                      <height>0</height>
                     </size>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>260</width>
+                     <width>300</width>
                      <height>20</height>
                     </size>
                    </property>
@@ -377,7 +377,7 @@ QFrame#line {
                     <number>0</number>
                    </property>
                    <property name="indent">
-                    <number>30</number>
+                    <number>20</number>
                    </property>
                   </widget>
                  </item>
@@ -389,7 +389,7 @@ QFrame#line {
                   <widget class="QLabel" name="label_11">
                    <property name="minimumSize">
                     <size>
-                     <width>320</width>
+                     <width>300</width>
                      <height>0</height>
                     </size>
                    </property>
@@ -434,7 +434,7 @@ QFrame#line {
                     <number>0</number>
                    </property>
                    <property name="indent">
-                    <number>30</number>
+                    <number>20</number>
                    </property>
                   </widget>
                  </item>
@@ -446,13 +446,13 @@ QFrame#line {
                   <widget class="QLabel" name="label_15">
                    <property name="minimumSize">
                     <size>
-                     <width>320</width>
+                     <width>300</width>
                      <height>0</height>
                     </size>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>320</width>
+                     <width>300</width>
                      <height>20</height>
                     </size>
                    </property>
@@ -491,7 +491,7 @@ QFrame#line {
                     <number>0</number>
                    </property>
                    <property name="indent">
-                    <number>30</number>
+                    <number>20</number>
                    </property>
                   </widget>
                  </item>
@@ -503,13 +503,13 @@ QFrame#line {
                   <widget class="QLabel" name="label_13">
                    <property name="minimumSize">
                     <size>
-                     <width>320</width>
+                     <width>300</width>
                      <height>0</height>
                     </size>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>320</width>
+                     <width>300</width>
                      <height>20</height>
                     </size>
                    </property>
@@ -548,7 +548,7 @@ QFrame#line {
                     <number>0</number>
                    </property>
                    <property name="indent">
-                    <number>30</number>
+                    <number>20</number>
                    </property>
                   </widget>
                  </item>

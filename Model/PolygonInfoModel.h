@@ -10,14 +10,14 @@ struct PolygonInfo {
     int id;
     int pointsBefore;
     int pointsAfter;
-    qint64 timeMs;  // Time in milliseconds
+    qint64 timeNs;  // Time in milliseconds
     double maxDeviation;  // Maximum deviation after simplification
     bool isSimplified;  // Whether simplification has been performed
 
     PolygonInfo(int _id = 0, int _pointsBefore = 0, int _pointsAfter = 0, 
                 qint64 _timeMs = 0, double _maxDeviation = 0.0) 
         : id(_id), pointsBefore(_pointsBefore), pointsAfter(_pointsAfter), 
-          timeMs(_timeMs), maxDeviation(_maxDeviation), isSimplified(false) {}
+          timeNs(_timeMs), maxDeviation(_maxDeviation), isSimplified(false) {}
 };
 
 class PolygonInfoModel : public QAbstractTableModel {
@@ -41,7 +41,7 @@ public:
     PolygonInfo getPolygonInfo(int id) const;
     
     // Update specific fields after simplification
-    void updatePolygonAfterSimplification(int id, int pointsAfter, qint64 timeMs, double maxDeviation);
+    void updatePolygonAfterSimplification(int id, int pointsAfter, qint64 timeNs, double maxDeviation);
 
 private:
     QList<PolygonInfo> m_polygonInfos;

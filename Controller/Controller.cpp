@@ -1,11 +1,12 @@
 #include "Controller.h"
+
 #include <QElapsedTimer>
 
 Controller::Controller(Model* m, View* v) : QObject(v), model(m), view(v) {
   // Initialize polygon info model
   polygonInfoModel = new PolygonInfoModel(this);
   view->ui->tvPolygonsInfo->setModel(polygonInfoModel);
-  
+
   connect(view, &View::fileNameChoosed, this, &Controller::HandleModelLoading);
   connect(view, &View::polygonSimplifyRequested, this,
           &Controller::HandleModelSimplify);
@@ -16,9 +17,7 @@ Controller::Controller(Model* m, View* v) : QObject(v), model(m), view(v) {
   // Note: Progress tracking might need to be handled differently if needed
 }
 
-Controller::~Controller() { 
-    watcher.cancel(); 
-}
+Controller::~Controller() { watcher.cancel(); }
 
 void Controller::HandleModelLoading(QString fileName) {
   try {
@@ -30,18 +29,18 @@ void Controller::HandleModelLoading(QString fileName) {
                                           // normalizePolygons
     view->updateNumberOfPolygons(model->getNumberOfPolygons());
     view->updateNumberOfPolygonsPoints(model->getNumberOfPolygonsPoints());
-    
+
     // Initialize polygon info model with initial data
     polygonInfoModel->setPolygonCount(model->getNumberOfPolygons());
     QList<QPolygonF> metersPolygons = model->getMetersPolygons();
     for (int i = 0; i < metersPolygons.size(); i++) {
-        PolygonInfo info(i, metersPolygons[i].size(), 0, 0, 0.0);
-        polygonInfoModel->setPolygonInfo(i, info);
+      PolygonInfo info(i, metersPolygons[i].size(), 0, 0, 0.0);
+      polygonInfoModel->setPolygonInfo(i, info);
     }
-    
+
     // Resize columns to fit content
     view->ui->tvPolygonsInfo->resizeColumnsToContents();
-    
+
     view->setSimplificationAvailable(true);
     view->getGLWidget()->update();
   } catch (const std::exception& ex) {
@@ -72,17 +71,20 @@ void Controller::HandleModelSimplify(double epsilon) {
     timer.start();
 
     // starts simplification in parallel with timing information
-    auto future = QtConcurrent::mapped(polygonsToSimplify, [eps](const PolygonPair& p) -> QPair<PolygonPair, qint64> {
-        QElapsedTimer individualTimer;
-        individualTimer.start();
-        
-        PolygonPair simplified = Model::simplifyPolygon(p, eps);
-        qint64 elapsed = individualTimer.elapsed();
-        
-        // Return both the simplified polygon pair and the time it took
-        // We'll use epsilon as the maxDeviation for now since that's the threshold
-        return QPair<PolygonPair, qint64>(simplified, elapsed);
-    });
+    auto future = QtConcurrent::mapped(
+        polygonsToSimplify,
+        [eps](const PolygonPair& p) -> QPair<PolygonPair, qint64> {
+          QElapsedTimer individualTimer;
+          individualTimer.start();
+
+          PolygonPair simplified = Model::simplifyPolygon(p, eps);
+          qint64 elapsed = individualTimer.nsecsElapsed();
+
+          // Return both the simplified polygon pair and the time it took
+          // We'll use epsilon as the maxDeviation for now since that's the
+          // threshold
+          return QPair<PolygonPair, qint64>(simplified, elapsed);
+        });
 
     watcher.setFuture(future);
 
@@ -99,27 +101,26 @@ void Controller::finishModelSimplify() {
   if (watcher.isCanceled()) return;
 
   // Get the elapsed time for the total simplification process
-  const qint64 elapsed = timer.elapsed();
+  const qint64 elapsed = timer.nsecsElapsed();
 
   QList<QPair<PolygonPair, qint64>> results = watcher.future().results();
   QList<QPolygonF> polyMeters;
   QList<QPolygonF> polyLonLat;
-  
+
   for (int i = 0; i < results.size(); i++) {
     QPair<PolygonPair, qint64> result = results.at(i);
     polyLonLat.append(result.first.first);
     polyMeters.append(result.first.second);
-    
+
     // Update the polygon info model with individual polygon data
     // Using epsilon as maxDeviation for now
     polygonInfoModel->updatePolygonAfterSimplification(
-        i, 
-        result.first.second.size(), 
+        i, result.first.second.size(),
         result.second,  // elapsed time
         0.0  // Using 0.0 temporarily - could calculate actual deviation
     );
   }
-  
+
   model->setSimplifiedLonLatPolygons(polyLonLat);
   model->setSimplifiedMetersPolygons(polyMeters);
   model->normalizeSimplifiedPolygons();
@@ -132,8 +133,7 @@ void Controller::finishModelSimplify() {
       QString::number(model->getNumberOfSimplifiedPolygonsPoints()));
 
   // Display the total simplification time
-  view->ui->lblTimeAlgorithm->setText(
-      QString::number(elapsed) + " ms");
+  view->ui->lblTimeAlgorithm->setText(QString::number(elapsed) + " ns");
 
   view->getGLWidget()->setSimplifiedPolygons(
       model->getSimplifiedNormalizedPolygons());
