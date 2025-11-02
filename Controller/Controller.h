@@ -5,6 +5,7 @@
 #include <QFutureWatcher>
 #include <QObject>
 #include <QtConcurrent>
+#include <stdexcept>
 
 #include "../Model/Model.h"
 #include "../View/view.h"
@@ -21,6 +22,7 @@ class Controller : public QObject {
  public:
   Controller(Model* model, View* view);
   ~Controller();
+
  public slots:
   void HandleModelLoading(QString fileName);
   void HandleModelSimplify(double epsilon);

@@ -25,7 +25,11 @@ class View : public QMainWindow {
   View(QWidget* parent = nullptr);
   ~View();
   OpenGLWidget* getGLWidget();
-
+  void setSimplificationUnavailable();
+  void setSimplificationAvailable();
+  void clearPolygonStats();
+  void clearViewData();
+  void showMessageError(QString text);
   void updateNumberOfPolygons(int numberOfPolygons);
   void updateNumberOfPolygonsPoints(int numberOfPolygonsPoints);
   void updateNumberOfSimplifiedPolygonsPoints(

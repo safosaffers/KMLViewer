@@ -11,45 +11,66 @@
 #include <QString>
 #include <cmath>
 #include <limits>
+#include <stdexcept>
 
-#define EQUATORIAL_EARTH_RADIUS_METERS 6378137
-using PolygonPair = QPair<QPolygonF, QPolygonF>;
+#include "CoordinateConverter.h"
+#include "KmlFileLoader.h"
+#include "KmlFileSaver.h"
+#include "Normalizer.h"
+#include "PolygonSimplifier.h"
+#include "PolyRepr.h"
+
 class Model {
  private:
-  QList<PolygonPair> latLonToMetersPolygons;
-  QList<PolygonPair> simplifiedPolygons;
+  PolyRepr polygonRepresentations;  // All original polygon representations in one place
+  PolyRepr polygonRepresentationsSimplified;  // All simplified polygon representations in one place
   QPointF downRightCornerForViewPort;
   QDomDocument* currentDocument;
   QString currentFilePath;
+  QPointF normalizedMaxCoord;
+  qreal normalizeFactor;
+  qreal maxCoord;
 
  public:
   Model();
   ~Model();
   void initializeModel(QString filePath);
-  QList<PolygonPair> getPolygons();
-  QPointF getDownRightCornerForViewPort();
+  PolyRepr getPolygons();
+  QPointF getNormalizedMaxCoord();
 
-  static PolygonPair RamerDouglasPeucker(PolygonPair latLonMetPoly,
-                                         double epsilon);
-  static PolygonPair createFallbackSimplification(
-      const PolygonPair& originalPoly);
-  static PolygonPair simplifyPolygon(PolygonPair latLonMetPoly, double epsilon);
-  void simplifyPolygons(double epsilon);
+  static PolygonPair simplifyPolygon(const PolygonPair metersPoly, double epsilon);
 
   int getNumberOfPolygons();
-  int getQListQPolygonFPointsCount(QList<PolygonPair> polygons);
+  int getQListQPolygonFPointsCount(const QList<QPolygonF>& polygons);
   int getNumberOfPolygonsPoints();
   int getNumberOfSimplifiedPolygonsPoints();
-  void setSimplifiedPolygons(const QList<PolygonPair>& polys);
+  void setSimplifiedPolygons(const QList<QPolygonF>& polys);
   void saveSimplifiedModel(QString fileName);
-  QString polygonToKmlCoords(const QPolygonF& polygon);
-  void updateCoordinatesInDocument(QDomDocument& doc,
-                                   const QList<PolygonPair>& simplified);
-  bool writeDocumentToFile(const QDomDocument& doc, const QString& fileName);
 
+  // Normalization methods
+  void normalizePolygons();
+  void normalizeSimplifiedPolygons();
+  QPointF getMaxCoord() const;
+
+  // Access to different polygon representations (original)
+  QList<QPolygonF> getLonLatPolygons() const;
+  QList<QPolygonF> getMetersPolygons() const;
+  QList<QPolygonF> getNormalizedPolygons() const;
+  void setLonLatPolygons(const QList<QPolygonF>& polys);
+  void setMetersPolygons(const QList<QPolygonF>& polys);
+  void setNormalizedPolygons(const QList<QPolygonF>& polys);
+
+  // Access to different polygon representations (simplified)
+  QList<QPolygonF> getSimplifiedLonLatPolygons() const;
+  QList<QPolygonF> getSimplifiedMetersPolygons() const;
+  QList<QPolygonF> getSimplifiedNormalizedPolygons() const;
+  void setSimplifiedLonLatPolygons(const QList<QPolygonF>& polys);
+  void setSimplifiedMetersPolygons(const QList<QPolygonF>& polys);
+  void setSimplifiedNormalizedPolygons(const QList<QPolygonF>& polys);
+  QList<QPolygonF> getNormalizedSimplifiedPolygons();
  private:
-  QList<PolygonPair> convertToMeters(QList<QPolygonF> LonLatQList,
-                                     double& minLon, double& minLat);
+  QList<QPolygonF> convertToMeters(QList<QPolygonF> LonLatQList,
+                                   double& minLon, double& minLat);
   QPointF getCornerInMeters(double& minLon, double& maxLon, double& minLat,
                             double& maxLat);
 };

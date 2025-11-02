@@ -8,17 +8,29 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    ../Model/PolyRepr.cpp \
     ../main.cpp \
     openglwidget.cpp \
     view.cpp \
     ../Controller/Controller.cpp \
     ../Model/Model.cpp \
+    ../Model/CoordinateConverter.cpp \
+    ../Model/KmlFileLoader.cpp \
+    ../Model/KmlFileSaver.cpp \
+    ../Model/PolygonSimplifier.cpp \
+    ../Model/Normalizer.cpp \
 
 HEADERS += \
+    ../Model/PolyRepr.h \
     openglwidget.h \
     view.h \
     ../Controller/Controller.h \ 
-    ../Model/Model.h \ 
+    ../Model/Model.h \
+    ../Model/CoordinateConverter.h \
+    ../Model/KmlFileLoader.h \
+    ../Model/KmlFileSaver.h \
+    ../Model/PolygonSimplifier.h \
+    ../Model/Normalizer.h \
 
 FORMS += \
     view.ui

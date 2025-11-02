@@ -7,7 +7,7 @@ Controller::Controller(Model* m, View* v) : QObject(v), model(m), view(v) {
   connect(view, &View::saveSimplifyPoligons, this,
           &Controller::HandleModelSimplifySave);
   connect(&watcher, &QFutureWatcher<QPolygonF>::finished, this,
-          [this] { finishModelSimplify(); });
+          &Controller::finishModelSimplify);
   connect(&watcher, &QFutureWatcher<QPolygonF>::progressRangeChanged,
           view->ui->progressBar, &QProgressBar::setRange);
   connect(&watcher, &QFutureWatcher<QPolygonF>::progressValueChanged,
@@ -17,22 +17,24 @@ Controller::Controller(Model* m, View* v) : QObject(v), model(m), view(v) {
 Controller::~Controller() { watcher.cancel(); }
 
 void Controller::HandleModelLoading(QString fileName) {
-  model->initializeModel(fileName);
-  view->getGLWidget()->setPolygons(model->getPolygons());
-  view->getGLWidget()->normalizePolygons(model->getDownRightCornerForViewPort());
-  view->getGLWidget()->resetSimplifiedPolygons();
-  view->getGLWidget()->setInitialViewport();//always called after normalizePolygons
-  view->updateNumberOfPolygons(model->getNumberOfPolygons());
-  view->updateNumberOfPolygonsPoints(model->getNumberOfPolygonsPoints());
-  view->ui->progressBar->setValue(0);
-  view->ui->btnSimplifyPoligons->setEnabled(true);
-  view->ui->leEpsilon->setEnabled(true);
-  view->ui->btnSaveSimplifyPoligons->setEnabled(false);
-
-  view->ui->lblNumberOfPolygons->setText("—");
-  view->ui->lblNumberOfPolygonsPoints->setText("—");
-  view->ui->lblNumberOfSimplifiedPolygonsPoints->setText("—");
-  view->getGLWidget()->update();
+  try {
+    model->initializeModel(fileName);
+    view->getGLWidget()->setPolygons(model->getNormalizedPolygons());
+    view->getGLWidget()->clearSimplifiedPolygons();
+    view->getGLWidget()->setInitialViewport(
+        model->getNormalizedMaxCoord());  // always called after
+                                          // normalizePolygons
+    view->updateNumberOfPolygons(model->getNumberOfPolygons());
+    view->updateNumberOfPolygonsPoints(model->getNumberOfPolygonsPoints());
+    view->setSimplificationAvailable();
+    view->getGLWidget()->update();
+  } catch (const std::exception& ex) {
+    view->clearViewData();
+    view->showMessageError(ex.what());
+  } catch (...) {
+    view->clearViewData();
+    view->showMessageError("An unknown error occurred while loading the file.");
+  }
 }
 
 void Controller::HandleModelSimplify(double epsilon) {
@@ -45,7 +47,11 @@ void Controller::HandleModelSimplify(double epsilon) {
 
     const double eps = epsilon;
 
-    auto polygonsToSimplify = model->getPolygons();
+    QList<PolygonPair> polygonsToSimplify;
+    for (int i = 0; i < model->getNumberOfPolygons(); i++) {
+      polygonsToSimplify.append(QPair(model->getLonLatPolygons().at(i),
+                                      model->getMetersPolygons().at(i)));
+    }
 
     timer.start();
 
@@ -70,7 +76,16 @@ void Controller::finishModelSimplify() {
   if (watcher.isCanceled()) return;
 
   QList<PolygonPair> simplified = watcher.future().results();
-  model->setSimplifiedPolygons(simplified);
+  QList<QPolygonF> polyMeters;
+  QList<QPolygonF> polyLonLat;
+  for (int i = 0; i < simplified.size(); i++) {
+    PolygonPair simplifiedPair = simplified.at(i);
+    polyLonLat.append(simplifiedPair.first);
+    polyMeters.append(simplifiedPair.second);
+  }
+  model->setSimplifiedLonLatPolygons(polyLonLat);
+  model->setSimplifiedMetersPolygons(polyMeters);
+  model->normalizeSimplifiedPolygons();
 
   view->ui->btnUploadaKMLFile->setEnabled(true);
   view->ui->btnSaveSimplifyPoligons->setEnabled(true);
@@ -79,8 +94,8 @@ void Controller::finishModelSimplify() {
   view->ui->lblNumberOfSimplifiedPolygonsPoints->setText(
       QString::number(model->getNumberOfSimplifiedPolygonsPoints()));
 
-  view->getGLWidget()->setSimplifiedPolygons(simplified);
-  view->getGLWidget()->normalizeSimplifiedPolygons();
+  view->getGLWidget()->setSimplifiedPolygons(
+      model->getSimplifiedNormalizedPolygons());
   view->getGLWidget()->update();
 }
 

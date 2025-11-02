@@ -15,8 +15,8 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   QTransform initialTransformViewport;
   QPointF lastMousePos;
   bool isPanning;
-  QList<PolygonPair> polygons;
-  QList<PolygonPair> simplifiedPolygons;
+  QList<QPolygonF> polygons;
+  QList<QPolygonF> simplifiedPolygons;
   QPointF maxCoord;
   qreal scaleViewport;
   qreal minAllowedScale;
@@ -27,19 +27,19 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
 
  public:
   explicit OpenGLWidget(QWidget* parent = nullptr);
-  ~OpenGLWidget();
-  void normalizePolygons(QPointF MaxCoord);
-  void normalizeSimplifiedPolygons();
-  void setPolygons(QList<PolygonPair> polygons);
-  void resetSimplifiedPolygons();
-  void setSimplifiedPolygons(QList<PolygonPair> polygons);
-  QTransform setInitialViewport();
+  ~OpenGLWidget() override;
+
+  void setPolygons(const QList<QPolygonF>& polygons);
+  void clearPolygons();
+  void clearSimplifiedPolygons();
+  void setSimplifiedPolygons(const QList<QPolygonF>& polygons);
+  QTransform setInitialViewport(QPointF maxCoord);
 
  protected:
   void initializeGL() override;
   void paintGL() override;
   void resizeGL(int width, int height) override;
-  void drawPolygons(QPainter& painter, const QList<PolygonPair>& polygons,
+  void drawPolygons(QPainter& painter, const QList<QPolygonF>& polygons,
                     const QColor& color);
   void setPenForEdges(QPainter& painter, QColor color);
   void setPenForPoints(QPainter& painter, QColor color);
