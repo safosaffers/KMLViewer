@@ -125,6 +125,13 @@ void Model::setSimplifiedMetersPolygons(const QList<QPolygonF>& polys) {
 void Model::setSimplifiedNormalizedPolygons(const QList<QPolygonF>& polys)  {
   polygonRepresentationsSimplified.setNormalizedPolygons(polys);
 }
+
+QList<QPolygonF> Model::getSimplifiedLonLatPolygons() const {
+  return polygonRepresentationsSimplified.getLonLatPolygons();
+}
+QList<QPolygonF> Model::getSimplifiedMetersPolygons() const {
+  return polygonRepresentationsSimplified.getMetersPolygons();
+}
 QList<QPolygonF> Model::getSimplifiedNormalizedPolygons() const {
   return polygonRepresentationsSimplified.getNormalizedPolygons();
 }
@@ -181,12 +188,12 @@ void Model::saveSimplifiedModel(QString fileName) {
   QDomDocument doc = currentDocument->cloneNode(true).toDocument();
   // For saving, we need to use the simplified normalized polygons
   QList<PolygonPair> simplifiedPairs;
-  QList<QPolygonF> originalLonLatPolygons = getLonLatPolygons();
+  QList<QPolygonF> simplifiedLonLatPolygons = getSimplifiedLonLatPolygons();
   QList<QPolygonF> simplifiedNormalized = getSimplifiedNormalizedPolygons();
 
   // Create PolygonPair list for saving (using original lonLat as the first part and simplified as second)
-  for (int i = 0; i < qMin(originalLonLatPolygons.size(), simplifiedNormalized.size()); ++i) {
-    simplifiedPairs.append(qMakePair(originalLonLatPolygons[i], simplifiedNormalized[i]));
+  for (int i = 0; i < qMin(simplifiedLonLatPolygons.size(), simplifiedNormalized.size()); ++i) {
+    simplifiedPairs.append(qMakePair(simplifiedLonLatPolygons[i], simplifiedNormalized[i]));
   }
 
   KmlFileSaver::updateCoordinatesInDocument(doc, simplifiedPairs);
