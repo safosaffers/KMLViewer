@@ -28,6 +28,7 @@ class View : public QMainWindow {
   OpenGLWidget* getGLWidget();
   void setSaveSimplificationPolygonsAvailable(bool flag);
   void setSimplificationAvailable(bool flag);
+  void clearSimplificationInfo();
   void clearChosenFileName();
   void clearPolygonStats();
   void clearViewData();
@@ -51,7 +52,7 @@ class View : public QMainWindow {
 
   void on_btnSaveSimplifyPoligons_clicked();
 
-  void on_tvPolygonsInfo_doubleClicked(const QModelIndex &index);
+  void on_tvPolygonsInfo_doubleClicked(const QModelIndex& index);
 
  private:
   OpenGLWidget* glwidget;

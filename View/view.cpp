@@ -27,6 +27,10 @@ void View::setSimplificationAvailable(bool flag) {
   ui->btnSaveSimplifyPoligons->setEnabled(!flag);
   if (flag) ui->leEpsilon->setText("1");
 }
+void View::clearSimplificationInfo() {
+  ui->lblNumberOfSimplifiedPolygonsPoints->setText("—");
+  ui->lblTimeAlgorithm->setText("—");
+}
 void View::clearChosenFileName() { ui->lblChosenFilename->setText("—"); }
 void View::clearPolygonStats() {
   ui->lblNumberOfPolygons->setText("—");
@@ -134,4 +138,3 @@ void View::on_tvPolygonsInfo_doubleClicked(const QModelIndex& index) {
 void View::showProgressBar() { ui->progressBar->show(); }
 
 void View::hideProgressBar() { ui->progressBar->hide(); }
-

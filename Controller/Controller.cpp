@@ -17,7 +17,7 @@ Controller::Controller(Model* m, View* v) : QObject(v), model(m), view(v) {
           view->ui->progressBar, &QProgressBar::setRange);
   connect(&watcher, &QFutureWatcher<SimplificationResult>::progressValueChanged,
           view->ui->progressBar, &QProgressBar::setValue);
-  
+
   connect(view, &View::fileNameChoosed, this, &Controller::HandleModelLoading);
   connect(view, &View::polygonSimplifyRequested, this,
           &Controller::HandleModelSimplify);
@@ -34,6 +34,7 @@ void Controller::HandleModelLoading(QString fileName) {
     model->initializeModel(fileName);
     view->getGLWidget()->setPolygons(model->getNormalizedPolygons());
     view->getGLWidget()->clearSimplifiedPolygons();
+    view->clearSimplificationInfo();
     view->getGLWidget()->setInitialViewport(
         model->getNormalizedMaxCoord());  // always called after
                                           // normalizePolygons
@@ -69,7 +70,7 @@ void Controller::HandleModelSimplify(double epsilon) {
     view->ui->lblNumberOfSimplifiedPolygonsPoints->setText(
         tr("Вычисление ..."));
     view->ui->progressBar->setValue(0);
-    view->showProgressBar(); // Show the progress bar
+    view->showProgressBar();  // Show the progress bar
 
     const double eps = epsilon;
 
@@ -94,7 +95,7 @@ void Controller::HandleModelSimplify(double epsilon) {
   } else {
     watcher.cancel();
     view->ui->progressBar->setValue(0);
-    view->hideProgressBar(); // Hide the progress bar when cancelled
+    view->hideProgressBar();  // Hide the progress bar when cancelled
     view->ui->btnUploadaKMLFile->setEnabled(true);
     view->ui->lblNumberOfSimplifiedPolygonsPoints->setText(tr("—"));
     view->ui->btnSimplifyPoligons->setText(tr("Упростить"));
@@ -103,7 +104,7 @@ void Controller::HandleModelSimplify(double epsilon) {
 
 void Controller::finishModelSimplify() {
   if (watcher.isCanceled()) {
-    view->hideProgressBar(); // Hide the progress bar if cancelled
+    view->hideProgressBar();  // Hide the progress bar if cancelled
     return;
   }
 
@@ -121,7 +122,7 @@ void Controller::finishModelSimplify() {
 
     // Update the polygon info model with individual polygon data
     polygonInfoModel->updatePolygonAfterSimplification(
-        i, 
+        i,
         result.simplifiedPoints,  // points after simplification
         result.timeNs,            // elapsed time in nanoseconds
         result.maxDeviation       // max deviation
@@ -147,8 +148,8 @@ void Controller::finishModelSimplify() {
   // Resize columns to fit the updated content after simplification
   view->ui->tvPolygonsInfo->resizeColumnsToContents();
   view->getGLWidget()->update();
-  
-  view->hideProgressBar(); // Hide the progress bar when finished
+
+  view->hideProgressBar();  // Hide the progress bar when finished
 }
 
 void Controller::HandleModelSimplifySave(QString fileName) {
