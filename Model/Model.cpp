@@ -46,6 +46,8 @@ void Model::initializeModel(QString filePath) {
     QList<QPolygonF> metersPolygons = convertToMeters(LonLatQList, minLon, minLat);
 
     // Set up the polygon representations
+    polygonRepresentations.clear();
+    polygonRepresentationsSimplified.clear();
     setLonLatPolygons(LonLatQList);
     setMetersPolygons(metersPolygons);
 
