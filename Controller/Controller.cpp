@@ -1,20 +1,24 @@
 #include "Controller.h"
+#include <QElapsedTimer>
 
 Controller::Controller(Model* m, View* v) : QObject(v), model(m), view(v) {
+  // Initialize polygon info model
+  polygonInfoModel = new PolygonInfoModel(this);
+  view->ui->tvPolygonsInfo->setModel(polygonInfoModel);
+  
   connect(view, &View::fileNameChoosed, this, &Controller::HandleModelLoading);
   connect(view, &View::polygonSimplifyRequested, this,
           &Controller::HandleModelSimplify);
   connect(view, &View::saveSimplifyPoligons, this,
           &Controller::HandleModelSimplifySave);
-  connect(&watcher, &QFutureWatcher<QPolygonF>::finished, this,
+  connect(&watcher, &QFutureWatcher<QPair<PolygonPair, qint64>>::finished, this,
           &Controller::finishModelSimplify);
-  connect(&watcher, &QFutureWatcher<QPolygonF>::progressRangeChanged,
-          view->ui->progressBar, &QProgressBar::setRange);
-  connect(&watcher, &QFutureWatcher<QPolygonF>::progressValueChanged,
-          view->ui->progressBar, &QProgressBar::setValue);
+  // Note: Progress tracking might need to be handled differently if needed
 }
 
-Controller::~Controller() { watcher.cancel(); }
+Controller::~Controller() { 
+    watcher.cancel(); 
+}
 
 void Controller::HandleModelLoading(QString fileName) {
   try {
@@ -26,6 +30,15 @@ void Controller::HandleModelLoading(QString fileName) {
                                           // normalizePolygons
     view->updateNumberOfPolygons(model->getNumberOfPolygons());
     view->updateNumberOfPolygonsPoints(model->getNumberOfPolygonsPoints());
+    
+    // Initialize polygon info model with initial data
+    polygonInfoModel->setPolygonCount(model->getNumberOfPolygons());
+    QList<QPolygonF> metersPolygons = model->getMetersPolygons();
+    for (int i = 0; i < metersPolygons.size(); i++) {
+        PolygonInfo info(i, metersPolygons[i].size(), 0, 0, 0.0);
+        polygonInfoModel->setPolygonInfo(i, info);
+    }
+    
     view->setSimplificationAvailable(true);
     view->getGLWidget()->update();
   } catch (const std::exception& ex) {
@@ -55,11 +68,18 @@ void Controller::HandleModelSimplify(double epsilon) {
 
     timer.start();
 
-    // starts simplification in parrallel
-    auto future = QtConcurrent::mapped(
-        polygonsToSimplify, [eps](const PolygonPair& p) -> PolygonPair {
-          return Model::simplifyPolygon(p, eps);
-        });
+    // starts simplification in parallel with timing information
+    auto future = QtConcurrent::mapped(polygonsToSimplify, [eps](const PolygonPair& p) -> QPair<PolygonPair, qint64> {
+        QElapsedTimer individualTimer;
+        individualTimer.start();
+        
+        PolygonPair simplified = Model::simplifyPolygon(p, eps);
+        qint64 elapsed = individualTimer.elapsed();
+        
+        // Return both the simplified polygon pair and the time it took
+        // We'll use epsilon as the maxDeviation for now since that's the threshold
+        return QPair<PolygonPair, qint64>(simplified, elapsed);
+    });
 
     watcher.setFuture(future);
 
@@ -75,17 +95,28 @@ void Controller::HandleModelSimplify(double epsilon) {
 void Controller::finishModelSimplify() {
   if (watcher.isCanceled()) return;
 
-  // Get the elapsed time for the simplification process
+  // Get the elapsed time for the total simplification process
   const qint64 elapsed = timer.elapsed();
 
-  QList<PolygonPair> simplified = watcher.future().results();
+  QList<QPair<PolygonPair, qint64>> results = watcher.future().results();
   QList<QPolygonF> polyMeters;
   QList<QPolygonF> polyLonLat;
-  for (int i = 0; i < simplified.size(); i++) {
-    PolygonPair simplifiedPair = simplified.at(i);
-    polyLonLat.append(simplifiedPair.first);
-    polyMeters.append(simplifiedPair.second);
+  
+  for (int i = 0; i < results.size(); i++) {
+    QPair<PolygonPair, qint64> result = results.at(i);
+    polyLonLat.append(result.first.first);
+    polyMeters.append(result.first.second);
+    
+    // Update the polygon info model with individual polygon data
+    // Using epsilon as maxDeviation for now
+    polygonInfoModel->updatePolygonAfterSimplification(
+        i, 
+        result.first.second.size(), 
+        result.second,  // elapsed time
+        0.0  // Using 0.0 temporarily - could calculate actual deviation
+    );
   }
+  
   model->setSimplifiedLonLatPolygons(polyLonLat);
   model->setSimplifiedMetersPolygons(polyMeters);
   model->normalizeSimplifiedPolygons();

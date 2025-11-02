@@ -19,6 +19,7 @@ SOURCES += \
     ../Model/KmlFileSaver.cpp \
     ../Model/PolygonSimplifier.cpp \
     ../Model/Normalizer.cpp \
+    ../Model/PolygonInfoModel.cpp \
 
 HEADERS += \
     ../Model/PolyRepr.h \
@@ -31,6 +32,7 @@ HEADERS += \
     ../Model/KmlFileSaver.h \
     ../Model/PolygonSimplifier.h \
     ../Model/Normalizer.h \
+    ../Model/PolygonInfoModel.h \
 
 FORMS += \
     view.ui

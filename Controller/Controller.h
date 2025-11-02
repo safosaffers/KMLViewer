@@ -6,9 +6,12 @@
 #include <QObject>
 #include <QtConcurrent>
 #include <stdexcept>
+#include <QElapsedTimer>
+#include <QPair>
 
 #include "../Model/Model.h"
 #include "../View/view.h"
+#include "../Model/PolygonInfoModel.h"
 
 class Controller : public QObject {
   Q_OBJECT
@@ -17,7 +20,8 @@ class Controller : public QObject {
   Model* model;
   View* view;
   QElapsedTimer timer;
-  QFutureWatcher<PolygonPair> watcher;
+  QFutureWatcher<QPair<PolygonPair, qint64>> watcher;  // Pair of simplified polygon and time
+  PolygonInfoModel* polygonInfoModel;
 
  public:
   Controller(Model* model, View* view);
