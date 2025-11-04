@@ -6,16 +6,18 @@
 #include <QPair>
 #include <QPolygonF>
 
+#include "MaxDeviationResult.h"
 struct PolygonInfo {
   int id;
   int pointsBefore;
   int pointsAfter;
-  qint64 timeNs;        // Time in milliseconds
-  double maxDeviation;  // Maximum deviation after simplification
-  bool isSimplified;    // Whether simplification has been performed
+  qint64 timeNs;  // Time in milliseconds
+  MaxDeviationResult
+      maxDeviation;   // Maximum deviation after simplification and LineF of that deviation
+  bool isSimplified;  // Whether simplification has been performed
 
   PolygonInfo(int _id = 0, int _pointsBefore = 0, int _pointsAfter = 0, qint64 _timeMs = 0,
-              double _maxDeviation = 0.0)
+              MaxDeviationResult _maxDeviation = MaxDeviationResult())
       : id(_id),
         pointsBefore(_pointsBefore),
         pointsAfter(_pointsAfter),
@@ -47,7 +49,7 @@ public:
 
   // Update specific fields after simplification
   void updatePolygonAfterSimplification(int id, int pointsAfter, qint64 timeNs,
-                                        double maxDeviation);
+                                        MaxDeviationResult maxDeviation);
 
 private:
   QList<PolygonInfo> m_polygonInfos;

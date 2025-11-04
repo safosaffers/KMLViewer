@@ -40,7 +40,7 @@ void Controller::HandleModelLoading(QString fileName) {
     polygonInfoModel->setPolygonCount(model->getNumberOfPolygons());
     QList<QPolygonF> metersPolygons = model->getMetersPolygons();
     for (int i = 0; i < metersPolygons.size(); i++) {
-      PolygonInfo info(i, metersPolygons[i].size(), 0, 0, 0.0);
+      PolygonInfo info(i, metersPolygons[i].size(), 0, 0, MaxDeviationResult());
       polygonInfoModel->setPolygonInfo(i, info);
     }
 
@@ -116,9 +116,9 @@ void Controller::finishModelSimplify() {
     // Update the polygon info model with individual polygon data
     polygonInfoModel->updatePolygonAfterSimplification(
         i,
-        result.simplifiedPoints,   // points after simplification
-        result.timeNs,             // elapsed time in nanoseconds
-        result.maxDeviation.value  // max deviation
+        result.simplifiedPoints,  // points after simplification
+        result.timeNs,            // elapsed time in nanoseconds
+        result.maxDeviation       // max deviation
     );
   }
 

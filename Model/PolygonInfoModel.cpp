@@ -46,7 +46,7 @@ QVariant PolygonInfoModel::data(const QModelIndex& index, int role) const {
       case 3:  // Time
         return info.isSimplified ? QString::number(info.timeNs) + " ns" : QString("—");
       case 4:  // Max deviation
-        return info.isSimplified ? QString::number(info.maxDeviation, 'f', 4) : QString("—");
+        return info.isSimplified ? QString::number(info.maxDeviation.value, 'f', 4) : QString("—");
       default:
         return QVariant();
     }
@@ -60,7 +60,7 @@ void PolygonInfoModel::setPolygonCount(int count) {
   m_polygonInfos.clear();
 
   for (int i = 0; i < count; i++) {
-    m_polygonInfos.append(PolygonInfo(i, 0, 0, 0, 0.0));
+    m_polygonInfos.append(PolygonInfo());
   }
 
   endResetModel();
@@ -83,7 +83,7 @@ PolygonInfo PolygonInfoModel::getPolygonInfo(int id) const {
 }
 
 void PolygonInfoModel::updatePolygonAfterSimplification(int id, int pointsAfter, qint64 timeNs,
-                                                        double maxDeviation) {
+                                                        MaxDeviationResult maxDeviation) {
   if (id >= 0 && id < m_polygonInfos.size()) {
     m_polygonInfos[id].pointsAfter = pointsAfter;
     m_polygonInfos[id].timeNs = timeNs;

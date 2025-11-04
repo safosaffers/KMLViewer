@@ -9,14 +9,9 @@
 #include <limits>
 #include <utility>  // for std::pair
 
+#include "MaxDeviationResult.h"
 using PolygonPair = QPair<QPolygonF, QPolygonF>;
-typedef struct MaxDeviationResult {
-  double value;  /// max deviation value between simplified and original per
-                 /// all lines
-  QLineF line;   /// line from that max value achieved
-  MaxDeviationResult() : value(0), line(QLineF()) {}
-  MaxDeviationResult(double value, QLineF line) : value(value), line(line) {}
-} MaxDeviationResult;
+
 class PolygonSimplifier {
 public:
   // Main simplification methods
@@ -30,10 +25,10 @@ public:
   // Method to calculate max deviation between original and simplified polygons
   static MaxDeviationResult calculateMaxDeviation(const PolygonPair& original,
                                                   const PolygonPair& simplified);
+  static QPointF closestPointOnLineToPoint(const QLineF& line, const QPointF& p);
 
 private:
   // Helper methods
-  static QPointF closestPointOnLineToPoint(const QLineF& line, const QPointF& p);
   static qreal distanceBetweenLineAndPoint(const QLineF& line, const QPointF& p);
   static void findClosestToPointToLine(PolygonPair& latLonMetPoly, QLineF line,
                                        PolygonPair& result);

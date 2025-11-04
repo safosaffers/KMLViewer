@@ -3,17 +3,17 @@
 QPointF PolygonSimplifier::closestPointOnLineToPoint(const QLineF& line, const QPointF& m) {
   QPointF p1 = line.p1();
   QPointF p2 = line.p2();
-  QPointF d_vec=p2-p1;
-  QPointF m_vec=m-p1;
+  QPointF d_vec = p2 - p1;
+  QPointF m_vec = m - p1;
 
-  qreal d_square=d_vec.x()*d_vec.x()+d_vec.y()*d_vec.y();
-  if(qFuzzyIsNull(d_square))  {
+  qreal d_square = d_vec.x() * d_vec.x() + d_vec.y() * d_vec.y();
+  if (qFuzzyIsNull(d_square)) {
     return p1;
   }
   qreal product = QPointF::dotProduct(d_vec, m_vec);
   qreal t = product / d_square;
 
-  return p1+t*d_vec;
+  return p1 + t * d_vec;
 }
 qreal PolygonSimplifier::distanceBetweenLineAndPoint(const QLineF& line, const QPointF& p) {
   // transform to local coordinates system (0,0) - (lx, ly)
