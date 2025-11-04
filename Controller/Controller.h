@@ -12,7 +12,6 @@
 #include "../Model/Model.h"
 #include "../Model/PolygonInfoModel.h"
 #include "../View/view.h"
-
 class Controller : public QObject {
   Q_OBJECT
 

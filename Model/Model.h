@@ -23,13 +23,14 @@
 
 // Structure to hold simplification results
 struct SimplificationResult {
-  PolygonPair simplifiedPolygons;  // Pair of lon/lat and meters polygons
-  qint64 timeNs;                   // Time in nanoseconds
-  MaxDeviationResult maxDeviation;             // Maximum deviation after simplification
-  int originalPoints;              // Number of points before simplification
-  int simplifiedPoints;            // Number of points after simplification
+  PolygonPair simplifiedPolygons;   // Pair of lon/lat and meters polygons
+  qint64 timeNs;                    // Time in nanoseconds
+  MaxDeviationResult maxDeviation;  // Maximum deviation after simplification
+  int originalPoints;               // Number of points before simplification
+  int simplifiedPoints;             // Number of points after simplification
 
-  SimplificationResult() : timeNs(0), maxDeviation(MaxDeviationResult()), originalPoints(0), simplifiedPoints(0) {}
+  SimplificationResult()
+      : timeNs(0), maxDeviation(MaxDeviationResult()), originalPoints(0), simplifiedPoints(0) {}
   SimplificationResult(PolygonPair poly, qint64 time, MaxDeviationResult deviation, int origPoints,
                        int simpPoints)
       : simplifiedPolygons(poly),

@@ -22,6 +22,7 @@
 - [https://doc.qt.io/qt-6/](https://doc.qt.io/qt-6/) - официальная документация Qt6
 - Особое внимание: Qt Concurrent, Qt OpenGL, Qt XML, Qt Widgets
 - Алгоритм Дугласа-Пекера: [https://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm](https://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm)
+- Расстояние от точки до прямой https://ru.wikipedia.org/wiki/Расстояние_от_точки_до_прямой_на_плоскости.
 
 ### 4. Инструменты:
 - Qt Creator (для удобной разработки)

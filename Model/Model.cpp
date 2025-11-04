@@ -90,8 +90,7 @@ SimplificationResult Model::simplifyPolygonWithDeviation(const PolygonPair poly,
   qint64 elapsed = timer.nsecsElapsed();  // Time in nanoseconds
 
   // Calculate the maximum deviation between original and simplified polygons
-  MaxDeviationResult maxDeviation =
-      PolygonSimplifier::calculateMaxDeviation(poly, simplifiedPair);
+  MaxDeviationResult maxDeviation = PolygonSimplifier::calculateMaxDeviation(poly, simplifiedPair);
 
   int originalPoints = poly.second.size();
   int simplifiedPoints = simplifiedPair.second.size();

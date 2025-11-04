@@ -116,9 +116,9 @@ void Controller::finishModelSimplify() {
     // Update the polygon info model with individual polygon data
     polygonInfoModel->updatePolygonAfterSimplification(
         i,
-        result.simplifiedPoints,  // points after simplification
-        result.timeNs,            // elapsed time in nanoseconds
-        result.maxDeviation.value       // max deviation
+        result.simplifiedPoints,   // points after simplification
+        result.timeNs,             // elapsed time in nanoseconds
+        result.maxDeviation.value  // max deviation
     );
   }
 

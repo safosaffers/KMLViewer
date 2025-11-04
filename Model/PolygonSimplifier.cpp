@@ -1,5 +1,20 @@
 #include "PolygonSimplifier.h"
 
+QPointF PolygonSimplifier::closestPointOnLineToPoint(const QLineF& line, const QPointF& m) {
+  QPointF p1 = line.p1();
+  QPointF p2 = line.p2();
+  QPointF d_vec=p2-p1;
+  QPointF m_vec=m-p1;
+
+  qreal d_square=d_vec.x()*d_vec.x()+d_vec.y()*d_vec.y();
+  if(qFuzzyIsNull(d_square))  {
+    return p1;
+  }
+  qreal product = QPointF::dotProduct(d_vec, m_vec);
+  qreal t = product / d_square;
+
+  return p1+t*d_vec;
+}
 qreal PolygonSimplifier::distanceBetweenLineAndPoint(const QLineF& line, const QPointF& p) {
   // transform to local coordinates system (0,0) - (lx, ly)
   QPointF p1 = line.p1();
@@ -12,7 +27,7 @@ qreal PolygonSimplifier::distanceBetweenLineAndPoint(const QLineF& line, const Q
   // if line is a point (nodes are the same) =>
   // just return distance between point and one line node
   qreal norm = sqrt(x2 * x2 + y2 * y2);
-  if (norm <= std::numeric_limits<int>::epsilon())
+  if (norm <= std::numeric_limits<qreal>::epsilon())
     return sqrt(x * x + y * y);
 
   // distance
@@ -167,9 +182,9 @@ MaxDeviationResult PolygonSimplifier::calculateMaxDeviationFromTo(const QPolygon
     double currentMinDeviation = std::numeric_limits<double>::max();
     QLineF minDeviationIsToLine;
     int secondSize = second.size();
-    for (int i=0; i < secondSize; i++) {
+    for (int i = 0; i < secondSize; i++) {
       QPointF p1 = second.at(i);
-      QPointF p2 = second.at((i+1) % secondSize);
+      QPointF p2 = second.at((i + 1) % secondSize);
       QLineF currentLine(p1, p2);
       qreal currentDeviation = distanceBetweenLineAndPoint(currentLine, point);
       if (currentDeviation < currentMinDeviation) {
@@ -177,8 +192,8 @@ MaxDeviationResult PolygonSimplifier::calculateMaxDeviationFromTo(const QPolygon
         minDeviationIsToLine = std::move(currentLine);
       }
     }
-    if (currentMinDeviation>maxDeviation){
-      maxDeviation=currentMinDeviation;
+    if (currentMinDeviation > maxDeviation) {
+      maxDeviation = currentMinDeviation;
       maxDeviationIsToLine = std::move(minDeviationIsToLine);
     }
   }
@@ -194,5 +209,5 @@ MaxDeviationResult PolygonSimplifier::calculateMaxDeviation(const PolygonPair& o
   MaxDeviationResult max1 = calculateMaxDeviationFromTo(original.second, simplified.second);
   MaxDeviationResult max2 = calculateMaxDeviationFromTo(simplified.second, original.second);
 
-  return max1.value>max2.value?max1:max2;
+  return max1.value > max2.value ? max1 : max2;
 }

@@ -81,3 +81,5 @@ build/
 
 # vscode files
 .vscode/
+
+kmlviewer.out
