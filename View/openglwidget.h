@@ -48,6 +48,9 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   void resizeGL(int width, int height) override;
   void drawPolygons(QPainter& painter, const QList<QPolygonF>& polygons,
                     const QColor& colorPoly, const QColor& colorPoints);
+  void drawPolygonsWithSelected(QPainter& painter, QList<QPolygonF> polygons,
+                                QColor colorFill, QColor colorPoints,
+                                int selectedId, QColor selectedColor);
   void setPenForEdges(QPainter& painter, QColor color);
   void setPenForPoints(QPainter& painter, QColor color);
   void drawVertexMarkers(QPainter& painter, const QList<QPolygonF>& polygons);
