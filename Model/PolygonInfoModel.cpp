@@ -3,14 +3,11 @@
 #include <QStringList>
 #include <QVariant>
 
-PolygonInfoModel::PolygonInfoModel(QObject* parent)
-    : QAbstractTableModel(parent) {}
+PolygonInfoModel::PolygonInfoModel(QObject* parent) : QAbstractTableModel(parent) {}
 
-QVariant PolygonInfoModel::headerData(int section, Qt::Orientation orientation,
-                                      int role) const {
+QVariant PolygonInfoModel::headerData(int section, Qt::Orientation orientation, int role) const {
   if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
-    QStringList headers = {"ID", "Точек до", "Точек после", "Время (нс)",
-                           "Макс. отклонение"};
+    QStringList headers = {"ID", "Точек до", "Точек после", "Время (нс)", "Макс. отклонение"};
     if (section < headers.size()) {
       return headers[section];
     }
@@ -19,20 +16,21 @@ QVariant PolygonInfoModel::headerData(int section, Qt::Orientation orientation,
 }
 
 int PolygonInfoModel::rowCount(const QModelIndex& parent) const {
-  if (parent.isValid()) return 0;
+  if (parent.isValid())
+    return 0;
 
   return m_polygonInfos.size();
 }
 
 int PolygonInfoModel::columnCount(const QModelIndex& parent) const {
-  if (parent.isValid()) return 0;
+  if (parent.isValid())
+    return 0;
 
   return 5;  // ID, pointsBefore, pointsAfter, timeNs, maxDeviation
 }
 
 QVariant PolygonInfoModel::data(const QModelIndex& index, int role) const {
-  if (!index.isValid() || index.row() >= m_polygonInfos.size() ||
-      index.row() < 0)
+  if (!index.isValid() || index.row() >= m_polygonInfos.size() || index.row() < 0)
     return QVariant();
 
   if (role == Qt::DisplayRole) {
@@ -42,17 +40,13 @@ QVariant PolygonInfoModel::data(const QModelIndex& index, int role) const {
       case 0:  // ID
         return info.id;
       case 1:  // Points before
-        return info.pointsBefore > 0 ? QString::number(info.pointsBefore)
-                                     : QString("—");
+        return info.pointsBefore > 0 ? QString::number(info.pointsBefore) : QString("—");
       case 2:  // Points after
-        return info.isSimplified ? QString::number(info.pointsAfter)
-                                 : QString("—");
+        return info.isSimplified ? QString::number(info.pointsAfter) : QString("—");
       case 3:  // Time
-        return info.isSimplified ? QString::number(info.timeNs) + " ns"
-                                 : QString("—");
+        return info.isSimplified ? QString::number(info.timeNs) + " ns" : QString("—");
       case 4:  // Max deviation
-        return info.isSimplified ? QString::number(info.maxDeviation, 'f', 4)
-                                 : QString("—");
+        return info.isSimplified ? QString::number(info.maxDeviation, 'f', 4) : QString("—");
       default:
         return QVariant();
     }
@@ -88,8 +82,7 @@ PolygonInfo PolygonInfoModel::getPolygonInfo(int id) const {
   return PolygonInfo();
 }
 
-void PolygonInfoModel::updatePolygonAfterSimplification(int id, int pointsAfter,
-                                                        qint64 timeNs,
+void PolygonInfoModel::updatePolygonAfterSimplification(int id, int pointsAfter, qint64 timeNs,
                                                         double maxDeviation) {
   if (id >= 0 && id < m_polygonInfos.size()) {
     m_polygonInfos[id].pointsAfter = pointsAfter;

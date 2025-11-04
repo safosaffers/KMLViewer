@@ -10,7 +10,7 @@
 using PolygonPair = QPair<QPolygonF, QPolygonF>;
 class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   Q_OBJECT
- private:
+private:
   QTransform transformViewport;
   QTransform initialTransformViewport;
   QPointF lastMousePos;
@@ -25,10 +25,9 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   static constexpr const double MIN_PEN_WIDTH = 5e-6;
   static constexpr const double LINE_WIDTH_RATIO = 2;
   int selectedPolygonId;  // ID of currently selected polygon (-1 if none)
-  static constexpr const QColor SELECTED_POLYGON_COLOR =
-      QColor(255, 165, 0);  // Orange color
+  static constexpr const QColor SELECTED_POLYGON_COLOR = QColor(255, 165, 0);  // Orange color
 
- public:
+public:
   explicit OpenGLWidget(QWidget* parent = nullptr);
   ~OpenGLWidget() override;
 
@@ -42,15 +41,14 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
   void setSelectedPolygonId(int id);
   void centerOnPolygon(int id);
 
- protected:
+protected:
   void initializeGL() override;
   void paintGL() override;
   void resizeGL(int width, int height) override;
-  void drawPolygons(QPainter& painter, const QList<QPolygonF>& polygons,
-                    const QColor& colorPoly, const QColor& colorPoints);
-  void drawPolygonsWithSelected(QPainter& painter, QList<QPolygonF> polygons,
-                                QColor colorFill, QColor colorPoints,
-                                int selectedId, QColor selectedColor);
+  void drawPolygons(QPainter& painter, const QList<QPolygonF>& polygons, const QColor& colorPoly,
+                    const QColor& colorPoints);
+  void drawPolygonsWithSelected(QPainter& painter, QList<QPolygonF> polygons, QColor colorFill,
+                                QColor colorPoints, int selectedId, QColor selectedColor);
   void setPenForEdges(QPainter& painter, QColor color);
   void setPenForPoints(QPainter& painter, QColor color);
   void drawVertexMarkers(QPainter& painter, const QList<QPolygonF>& polygons);

@@ -33,21 +33,22 @@ void OpenGLWidget::setPenForPoints(QPainter& painter, QColor color) {
   penWidth *= 4;
   painter.setPen(QPen(color, penWidth, Qt::SolidLine, Qt::RoundCap));
 }
-void OpenGLWidget::setBrushWithAlpha(QPainter& painter, QColor color,
-                                     qreal alpha) {
+void OpenGLWidget::setBrushWithAlpha(QPainter& painter, QColor color, qreal alpha) {
   QColor br = color;
   br.setAlphaF(alpha);
   painter.setBrush(br);
 }
 
-void OpenGLWidget::drawVertexMarkers(QPainter& painter,
-                                     const QList<QPolygonF>& polygons) {
-  if (polygons.isEmpty()) return;
+void OpenGLWidget::drawVertexMarkers(QPainter& painter, const QList<QPolygonF>& polygons) {
+  if (polygons.isEmpty())
+    return;
 
   qreal scaleX = qSqrt(transformViewport.m11() * transformViewport.m11() +
                        transformViewport.m12() * transformViewport.m12());
-  if (scaleX >= 1e+6) scaleX = 1e+6;
-  if (scaleX <= 1e-6) scaleX = 1e-6;
+  if (scaleX >= 1e+6)
+    scaleX = 1e+6;
+  if (scaleX <= 1e-6)
+    scaleX = 1e-6;
   const qreal worldLength = 1.0 / scaleX;
 
   QPainterPath path;
@@ -63,10 +64,8 @@ void OpenGLWidget::drawVertexMarkers(QPainter& painter,
   painter.drawPath(path);
   painter.restore();
 }
-void OpenGLWidget::drawPolygons(QPainter& painter,
-                                const QList<QPolygonF>& polygons,
-                                const QColor& colorPoly,
-                                const QColor& colorPoints) {
+void OpenGLWidget::drawPolygons(QPainter& painter, const QList<QPolygonF>& polygons,
+                                const QColor& colorPoly, const QColor& colorPoints) {
   setBrushWithAlpha(painter, colorPoly, 0.5);
   for (const QPolygonF& poly : polygons) {
     setPenForEdges(painter, colorPoly);
@@ -76,10 +75,8 @@ void OpenGLWidget::drawPolygons(QPainter& painter,
   setPenForPoints(painter, colorPoints);
   drawVertexMarkers(painter, polygons);
 }
-void OpenGLWidget::drawPolygonsWithSelected(QPainter& painter,
-                                            QList<QPolygonF> polygons,
-                                            QColor colorFill,
-                                            QColor colorPoints, int selectedId,
+void OpenGLWidget::drawPolygonsWithSelected(QPainter& painter, QList<QPolygonF> polygons,
+                                            QColor colorFill, QColor colorPoints, int selectedId,
                                             QColor selectedColor) {
   if (!polygons.isEmpty()) {
     if (selectedId >= 0 && selectedId < polygons.size()) {
@@ -90,14 +87,12 @@ void OpenGLWidget::drawPolygonsWithSelected(QPainter& painter,
           continue;
         }
         QPolygonF poly = polygons[i];
-        drawPolygons(painter, QList<QPolygonF>() << poly, colorFill,
-                     colorPoints);
+        drawPolygons(painter, QList<QPolygonF>() << poly, colorFill, colorPoints);
       }
       // Draw selected polygon with unique color
       if (selectedId < polygons.size()) {
         QPolygonF selectedPoly = polygons[selectedId];
-        drawPolygons(painter, QList<QPolygonF>() << selectedPoly, selectedColor,
-                     colorPoints);
+        drawPolygons(painter, QList<QPolygonF>() << selectedPoly, selectedColor, colorPoints);
       }
     } else {
       // No polygon selected, draw all normally
@@ -113,27 +108,19 @@ void OpenGLWidget::paintGL() {
 
   painter.setWorldTransform(transformViewport);
 
-  drawPolygonsWithSelected(painter, polygons, Qt::black, Qt::red,
-                           selectedPolygonId, SELECTED_POLYGON_COLOR);
-  drawPolygonsWithSelected(painter, simplifiedPolygons, Qt::green,
-                           QColor(qRgb(48, 106, 42)), selectedPolygonId,
+  drawPolygonsWithSelected(painter, polygons, Qt::black, Qt::red, selectedPolygonId,
                            SELECTED_POLYGON_COLOR);
+  drawPolygonsWithSelected(painter, simplifiedPolygons, Qt::green, QColor(qRgb(48, 106, 42)),
+                           selectedPolygonId, SELECTED_POLYGON_COLOR);
 
   painter.end();
 }
-void OpenGLWidget::resizeGL(int width, int height) {
-  glViewport(0, 0, width, height);
-}
+void OpenGLWidget::resizeGL(int width, int height) { glViewport(0, 0, width, height); }
 
-void OpenGLWidget::setPolygons(const QList<QPolygonF>& polygons) {
-  this->polygons = polygons;
-}
+void OpenGLWidget::setPolygons(const QList<QPolygonF>& polygons) { this->polygons = polygons; }
 void OpenGLWidget::clearPolygons() { this->polygons.clear(); }
-void OpenGLWidget::clearSimplifiedPolygons() {
-  this->simplifiedPolygons.clear();
-}
-void OpenGLWidget::setSimplifiedPolygons(
-    const QList<QPolygonF>& simplifiedPolygons) {
+void OpenGLWidget::clearSimplifiedPolygons() { this->simplifiedPolygons.clear(); }
+void OpenGLWidget::setSimplifiedPolygons(const QList<QPolygonF>& simplifiedPolygons) {
   this->simplifiedPolygons = simplifiedPolygons;
 }
 QTransform OpenGLWidget::setInitialViewport(QPointF maxCoord) {
@@ -141,8 +128,8 @@ QTransform OpenGLWidget::setInitialViewport(QPointF maxCoord) {
   int emptyPercent = 20;
   qreal emptySpaceX = maxCoord.x() * emptyPercent / 100;
   qreal emptySpaceY = maxCoord.y() * emptyPercent / 100;
-  scaleViewport = qMin(width(), height()) / (qMax(maxCoord.x(), maxCoord.y()) +
-                                             qMax(emptySpaceX, emptySpaceY));
+  scaleViewport =
+      qMin(width(), height()) / (qMax(maxCoord.x(), maxCoord.y()) + qMax(emptySpaceX, emptySpaceY));
   t.scale(scaleViewport, scaleViewport);
   t.translate(emptySpaceX / 2, emptySpaceY / 2);
 
@@ -234,7 +221,8 @@ void OpenGLWidget::mouseReleaseEvent(QMouseEvent* event) {
 void OpenGLWidget::setSelectedPolygonId(int id) { selectedPolygonId = id; }
 
 void OpenGLWidget::centerOnPolygon(int id) {
-  if (id < 0) return;  // No polygon to center on
+  if (id < 0)
+    return;  // No polygon to center on
 
   QPolygonF poly;
 
@@ -247,7 +235,8 @@ void OpenGLWidget::centerOnPolygon(int id) {
     return;  // Invalid polygon id
   }
 
-  if (poly.isEmpty()) return;
+  if (poly.isEmpty())
+    return;
 
   // Calculate bounding rectangle of the polygon
   QRectF boundingRect = poly.boundingRect();
@@ -271,8 +260,7 @@ void OpenGLWidget::centerOnPolygon(int id) {
   // but we need to calculate the actual scale factor relative to
   // initialTransformViewport which already contains an initial scale factor
   qreal initialScale =
-      initialTransformViewport
-          .m11();  // Get initial scale from the initial transform
+      initialTransformViewport.m11();  // Get initial scale from the initial transform
 
   // Calculate relative scale factor to apply to the initial transform
   qreal newScale = calculatedScale / initialScale;

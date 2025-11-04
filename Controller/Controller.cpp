@@ -8,10 +8,8 @@ Controller::Controller(Model* m, View* v) : QObject(v), model(m), view(v) {
   view->ui->tvPolygonsInfo->setModel(polygonInfoModel);
 
   connect(view, &View::fileNameChoosed, this, &Controller::HandleModelLoading);
-  connect(view, &View::polygonSimplifyRequested, this,
-          &Controller::HandleModelSimplify);
-  connect(view, &View::saveSimplifyPoligons, this,
-          &Controller::HandleModelSimplifySave);
+  connect(view, &View::polygonSimplifyRequested, this, &Controller::HandleModelSimplify);
+  connect(view, &View::saveSimplifyPoligons, this, &Controller::HandleModelSimplifySave);
   // Connect progress bar signals
   connect(&watcher, &QFutureWatcher<SimplificationResult>::progressRangeChanged,
           view->ui->progressBar, &QProgressBar::setRange);
@@ -19,10 +17,8 @@ Controller::Controller(Model* m, View* v) : QObject(v), model(m), view(v) {
           view->ui->progressBar, &QProgressBar::setValue);
 
   connect(view, &View::fileNameChoosed, this, &Controller::HandleModelLoading);
-  connect(view, &View::polygonSimplifyRequested, this,
-          &Controller::HandleModelSimplify);
-  connect(view, &View::saveSimplifyPoligons, this,
-          &Controller::HandleModelSimplifySave);
+  connect(view, &View::polygonSimplifyRequested, this, &Controller::HandleModelSimplify);
+  connect(view, &View::saveSimplifyPoligons, this, &Controller::HandleModelSimplifySave);
   connect(&watcher, &QFutureWatcher<SimplificationResult>::finished, this,
           &Controller::finishModelSimplify);
 }
@@ -35,9 +31,8 @@ void Controller::HandleModelLoading(QString fileName) {
     view->getGLWidget()->setPolygons(model->getNormalizedPolygons());
     view->getGLWidget()->clearSimplifiedPolygons();
     view->clearSimplificationInfo();
-    view->getGLWidget()->setInitialViewport(
-        model->getNormalizedMaxCoord());  // always called after
-                                          // normalizePolygons
+    view->getGLWidget()->setInitialViewport(model->getNormalizedMaxCoord());  // always called after
+                                                                              // normalizePolygons
     view->updateNumberOfPolygons(model->getNumberOfPolygons());
     view->updateNumberOfPolygonsPoints(model->getNumberOfPolygonsPoints());
 
@@ -67,8 +62,7 @@ void Controller::HandleModelSimplify(double epsilon) {
   if (view->ui->btnSimplifyPoligons->isChecked()) {
     view->ui->btnUploadaKMLFile->setEnabled(false);
     view->ui->btnSimplifyPoligons->setText(tr("Отмена"));
-    view->ui->lblNumberOfSimplifiedPolygonsPoints->setText(
-        tr("Вычисление ..."));
+    view->ui->lblNumberOfSimplifiedPolygonsPoints->setText(tr("Вычисление ..."));
     view->ui->progressBar->setValue(0);
     view->showProgressBar();  // Show the progress bar
 
@@ -76,19 +70,18 @@ void Controller::HandleModelSimplify(double epsilon) {
 
     QList<PolygonPair> polygonsToSimplify;
     for (int i = 0; i < model->getNumberOfPolygons(); i++) {
-      polygonsToSimplify.append(QPair(model->getLonLatPolygons().at(i),
-                                      model->getMetersPolygons().at(i)));
+      polygonsToSimplify.append(
+          QPair(model->getLonLatPolygons().at(i), model->getMetersPolygons().at(i)));
     }
 
     timer.start();
 
     // starts simplification in parallel with timing information
-    auto future = QtConcurrent::mapped(
-        polygonsToSimplify,
-        [eps](const PolygonPair& p) -> SimplificationResult {
-          // Use the new method that calculates proper deviation
-          return Model::simplifyPolygonWithDeviation(p, eps);
-        });
+    auto future = QtConcurrent::mapped(polygonsToSimplify,
+                                       [eps](const PolygonPair& p) -> SimplificationResult {
+                                         // Use the new method that calculates proper deviation
+                                         return Model::simplifyPolygonWithDeviation(p, eps);
+                                       });
 
     watcher.setFuture(future);
 
@@ -143,8 +136,7 @@ void Controller::finishModelSimplify() {
   // Display the total simplification time
   view->ui->lblTimeAlgorithm->setText(QString::number(elapsed) + " ns");
 
-  view->getGLWidget()->setSimplifiedPolygons(
-      model->getSimplifiedNormalizedPolygons());
+  view->getGLWidget()->setSimplifiedPolygons(model->getSimplifiedNormalizedPolygons());
   // Resize columns to fit the updated content after simplification
   view->ui->tvPolygonsInfo->resizeColumnsToContents();
   view->getGLWidget()->update();
@@ -152,6 +144,4 @@ void Controller::finishModelSimplify() {
   view->hideProgressBar();  // Hide the progress bar when finished
 }
 
-void Controller::HandleModelSimplifySave(QString fileName) {
-  model->saveSimplifiedModel(fileName);
-}
+void Controller::HandleModelSimplifySave(QString fileName) { model->saveSimplifiedModel(fileName); }

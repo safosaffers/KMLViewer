@@ -25,7 +25,8 @@ void View::setSimplificationAvailable(bool flag) {
   ui->btnSimplifyPoligons->setEnabled(flag);
   ui->leEpsilon->setEnabled(flag);
   ui->btnSaveSimplifyPoligons->setEnabled(!flag);
-  if (flag) ui->leEpsilon->setText("1");
+  if (flag)
+    ui->leEpsilon->setText("1");
 }
 void View::clearSimplificationInfo() {
   ui->lblNumberOfSimplifiedPolygonsPoints->setText("—");
@@ -72,17 +73,15 @@ void View::updateNumberOfPolygons(int numberOfPolygons) {
   ui->lblNumberOfPolygons->setText(QString::number(numberOfPolygons));
 }
 void View::updateNumberOfPolygonsPoints(int numberOfPolygonsPoints) {
-  ui->lblNumberOfPolygonsPoints->setText(
-      QString::number(numberOfPolygonsPoints));
+  ui->lblNumberOfPolygonsPoints->setText(QString::number(numberOfPolygonsPoints));
 }
-void View::updateNumberOfSimplifiedPolygonsPoints(
-    int numberOfSimplifiedPolygonsPoints) {
+void View::updateNumberOfSimplifiedPolygonsPoints(int numberOfSimplifiedPolygonsPoints) {
   ui->lblNumberOfSimplifiedPolygonsPoints->setText(
       QString::number(numberOfSimplifiedPolygonsPoints));
 }
 void View::uploadaKMLFile() {
-  QString filePath = QFileDialog::getOpenFileName(
-      nullptr, "Open File", "", "Text files (*.kml);;All files (*)");
+  QString filePath =
+      QFileDialog::getOpenFileName(nullptr, "Open File", "", "Text files (*.kml);;All files (*)");
   if (!filePath.isEmpty()) {
     // qInfo()<< "model choosed: " << filePath;
     emit fileNameChoosed(filePath);
@@ -91,9 +90,8 @@ void View::uploadaKMLFile() {
 }
 
 void View::saveKMLFile() {
-  QString pathToSave = QFileDialog::getSaveFileName(
-      this, tr("Save Simplified Polygons as KML"), "simplified_polygons.kml",
-      "KML Files (*.kml)");
+  QString pathToSave = QFileDialog::getSaveFileName(this, tr("Save Simplified Polygons as KML"),
+                                                    "simplified_polygons.kml", "KML Files (*.kml)");
 
   if (!pathToSave.isEmpty()) {
     if (!pathToSave.endsWith(".kml", Qt::CaseInsensitive)) {
@@ -108,10 +106,9 @@ void View::on_btnSaveSimplifyPoligons_clicked() { saveKMLFile(); }
 
 void View::confirmitionExit(QCloseEvent* event) {
   event->ignore();
-  if (QMessageBox::Yes ==
-      QMessageBox::question(this, "Подтверждне закрытия",
-                            "Вы уверены, что хотите выйти?",
-                            QMessageBox::Yes | QMessageBox::No)) {
+  if (QMessageBox::Yes == QMessageBox::question(this, "Подтверждне закрытия",
+                                                "Вы уверены, что хотите выйти?",
+                                                QMessageBox::Yes | QMessageBox::No)) {
     // Если добавлю стили
     // то тут сохраняем настройки стилей...
     glwidget->update();

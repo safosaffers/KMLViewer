@@ -4,6 +4,7 @@
 
 #include <QDebug>
 #include <QDomAttr>
+#include <QElapsedTimer>
 #include <QFile>
 #include <QLineF>
 #include <QPointF>
@@ -12,31 +13,35 @@
 #include <cmath>
 #include <limits>
 #include <stdexcept>
-#include <QElapsedTimer>
+
 #include "CoordinateConverter.h"
 #include "KmlFileLoader.h"
 #include "KmlFileSaver.h"
 #include "Normalizer.h"
-#include "PolygonSimplifier.h"
 #include "PolyRepr.h"
+#include "PolygonSimplifier.h"
 
 // Structure to hold simplification results
 struct SimplificationResult {
-    PolygonPair simplifiedPolygons;  // Pair of lon/lat and meters polygons
-    qint64 timeNs;                   // Time in nanoseconds
-    double maxDeviation;            // Maximum deviation after simplification
-    int originalPoints;             // Number of points before simplification
-    int simplifiedPoints;           // Number of points after simplification
-    
-    SimplificationResult() : timeNs(0), maxDeviation(0.0), originalPoints(0), simplifiedPoints(0) {}
-    SimplificationResult(PolygonPair poly, qint64 time, double deviation, int origPoints, int simpPoints)
-        : simplifiedPolygons(poly), timeNs(time), maxDeviation(deviation), 
-          originalPoints(origPoints), simplifiedPoints(simpPoints) {}
+  PolygonPair simplifiedPolygons;  // Pair of lon/lat and meters polygons
+  qint64 timeNs;                   // Time in nanoseconds
+  double maxDeviation;             // Maximum deviation after simplification
+  int originalPoints;              // Number of points before simplification
+  int simplifiedPoints;            // Number of points after simplification
+
+  SimplificationResult() : timeNs(0), maxDeviation(0.0), originalPoints(0), simplifiedPoints(0) {}
+  SimplificationResult(PolygonPair poly, qint64 time, double deviation, int origPoints,
+                       int simpPoints)
+      : simplifiedPolygons(poly),
+        timeNs(time),
+        maxDeviation(deviation),
+        originalPoints(origPoints),
+        simplifiedPoints(simpPoints) {}
 };
 
 class Model {
- private:
-  PolyRepr polygonRepresentations;  // All original polygon representations in one place
+private:
+  PolyRepr polygonRepresentations;            // All original polygon representations in one place
   PolyRepr polygonRepresentationsSimplified;  // All simplified polygon representations in one place
   QPointF downRightCornerForViewPort;
   QDomDocument* currentDocument;
@@ -45,7 +50,7 @@ class Model {
   qreal normalizeFactor;
   qreal maxCoord;
 
- public:
+public:
   Model();
   ~Model();
   void initializeModel(QString filePath);
@@ -53,7 +58,8 @@ class Model {
   QPointF getNormalizedMaxCoord();
 
   static PolygonPair simplifyPolygon(const PolygonPair metersPoly, double epsilon);
-  static SimplificationResult simplifyPolygonWithDeviation(const PolygonPair metersPoly, double epsilon);
+  static SimplificationResult simplifyPolygonWithDeviation(const PolygonPair metersPoly,
+                                                           double epsilon);
 
   int getNumberOfPolygons();
   int getQListQPolygonFPointsCount(const QList<QPolygonF>& polygons);
@@ -83,10 +89,9 @@ class Model {
   void setSimplifiedMetersPolygons(const QList<QPolygonF>& polys);
   void setSimplifiedNormalizedPolygons(const QList<QPolygonF>& polys);
   QList<QPolygonF> getNormalizedSimplifiedPolygons();
- private:
-  QList<QPolygonF> convertToMeters(QList<QPolygonF> LonLatQList,
-                                   double& minLon, double& minLat);
-  QPointF getCornerInMeters(double& minLon, double& maxLon, double& minLat,
-                            double& maxLat);
+
+private:
+  QList<QPolygonF> convertToMeters(QList<QPolygonF> LonLatQList, double& minLon, double& minLat);
+  QPointF getCornerInMeters(double& minLon, double& maxLon, double& minLat, double& maxLat);
 };
 #endif  // MODEL_H

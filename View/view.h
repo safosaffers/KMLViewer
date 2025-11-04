@@ -21,7 +21,7 @@ class OpenGLWidget;
 class View : public QMainWindow {
   Q_OBJECT
 
- public:
+public:
   Ui::View* ui;
   View(QWidget* parent = nullptr);
   ~View();
@@ -35,18 +35,17 @@ class View : public QMainWindow {
   void showMessageError(QString text);
   void updateNumberOfPolygons(int numberOfPolygons);
   void updateNumberOfPolygonsPoints(int numberOfPolygonsPoints);
-  void updateNumberOfSimplifiedPolygonsPoints(
-      int numberOfSimplifiedPolygonsPoints);
+  void updateNumberOfSimplifiedPolygonsPoints(int numberOfSimplifiedPolygonsPoints);
   void selectPolygon(int polygonId);
   void showProgressBar();
   void hideProgressBar();
 
- private:
+private:
   void saveKMLFile();
   void uploadaKMLFile();
   void confirmitionExit(QCloseEvent* event);
   void closeEvent(QCloseEvent* event);
- private slots:
+private slots:
   void on_btnUploadaKMLFile_clicked();
   void on_btnSimplifyPoligons_clicked();
 
@@ -54,10 +53,10 @@ class View : public QMainWindow {
 
   void on_tvPolygonsInfo_doubleClicked(const QModelIndex& index);
 
- private:
+private:
   OpenGLWidget* glwidget;
   void set_parameters_validators();
- signals:
+signals:
   /**
    * @brief Signal emitted when a file name is selected by the user
    * @param fileName Path to the selected model file
