@@ -156,57 +156,43 @@ PolygonPair PolygonSimplifier::simplifyPolygon(const PolygonPair& latLonMetPoly,
   return result;
 }
 
-double PolygonSimplifier::calculateMaxDeviation(const PolygonPair& original,
-                                                const PolygonPair& simplified) {
+MaxDeviationResult PolygonSimplifier::calculateMaxDeviationFromTo(const QPolygonF& first,
+                                                                  const QPolygonF& second) {
+  if (first.isEmpty() || second.isEmpty() != 0) {
+    return MaxDeviationResult();
+  }
+  double maxDeviation = 0.;
+  QLineF maxDeviationIsToLine;
+  for (const QPointF& point : first) {
+    double currentMinDeviation = std::numeric_limits<double>::max();
+    QLineF minDeviationIsToLine;
+    int secondSize = second.size();
+    for (int i=0; i < secondSize; i++) {
+      QPointF p1 = second.at(i);
+      QPointF p2 = second.at((i+1) % secondSize);
+      QLineF currentLine(p1, p2);
+      qreal currentDeviation = distanceBetweenLineAndPoint(currentLine, point);
+      if (currentDeviation < currentMinDeviation) {
+        currentMinDeviation = currentDeviation;
+        minDeviationIsToLine = std::move(currentLine);
+      }
+    }
+    if (currentMinDeviation>maxDeviation){
+      maxDeviation=currentMinDeviation;
+      maxDeviationIsToLine = std::move(minDeviationIsToLine);
+    }
+  }
+  return MaxDeviationResult(maxDeviation, maxDeviationIsToLine);
+}
+
+MaxDeviationResult PolygonSimplifier::calculateMaxDeviation(const PolygonPair& original,
+                                                            const PolygonPair& simplified) {
   if (original.second.isEmpty() || simplified.second.isEmpty()) {
-    return 0.0;
+    return MaxDeviationResult();
   }
 
-  double maxDeviation = 0.0;
+  MaxDeviationResult max1 = calculateMaxDeviationFromTo(original.second, simplified.second);
+  MaxDeviationResult max2 = calculateMaxDeviationFromTo(simplified.second, original.second);
 
-  // For each point in the original polygon, find its distance to the simplified polygon
-  for (const QPointF& origPoint : original.second) {
-    double minDistanceToSimplified = std::numeric_limits<double>::max();
-
-    // Calculate distance from original point to each segment of simplified polygon
-    for (int i = 0; i < simplified.second.size(); ++i) {
-      QPointF p1 = simplified.second[i];
-      QPointF p2 = simplified.second[(i + 1) % simplified.second.size()];  // close the polygon
-      QLineF segment(p1, p2);
-
-      // Calculate distance from point to line segment
-      qreal distance = distanceBetweenLineAndPoint(segment, origPoint);
-      if (distance < minDistanceToSimplified) {
-        minDistanceToSimplified = distance;
-      }
-    }
-
-    if (minDistanceToSimplified > maxDeviation) {
-      maxDeviation = minDistanceToSimplified;
-    }
-  }
-
-  // Also check for points in simplified polygon that may have large deviations from original
-  for (const QPointF& simpPoint : simplified.second) {
-    double minDistanceToOriginal = std::numeric_limits<double>::max();
-
-    // Calculate distance from simplified point to each segment of original polygon
-    for (int i = 0; i < original.second.size(); ++i) {
-      QPointF p1 = original.second[i];
-      QPointF p2 = original.second[(i + 1) % original.second.size()];  // close the polygon
-      QLineF segment(p1, p2);
-
-      // Calculate distance from point to line segment
-      qreal distance = distanceBetweenLineAndPoint(segment, simpPoint);
-      if (distance < minDistanceToOriginal) {
-        minDistanceToOriginal = distance;
-      }
-    }
-
-    if (minDistanceToOriginal > maxDeviation) {
-      maxDeviation = minDistanceToOriginal;
-    }
-  }
-
-  return maxDeviation;
+  return max1.value>max2.value?max1:max2;
 }

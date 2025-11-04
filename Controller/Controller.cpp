@@ -118,7 +118,7 @@ void Controller::finishModelSimplify() {
         i,
         result.simplifiedPoints,  // points after simplification
         result.timeNs,            // elapsed time in nanoseconds
-        result.maxDeviation       // max deviation
+        result.maxDeviation.value       // max deviation
     );
   }
 
