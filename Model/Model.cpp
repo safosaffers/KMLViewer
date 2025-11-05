@@ -212,3 +212,7 @@ void Model::saveSimplifiedModel(QString fileName) {
   KmlFileSaver::updateCoordinatesInDocument(doc, simplifiedPairs);
   KmlFileSaver::saveKmlFile(doc, fileName);
 }
+
+qreal Model::getNormalizeFactor(){
+  return normalizeFactor;
+}

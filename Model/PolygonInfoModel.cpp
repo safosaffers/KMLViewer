@@ -95,3 +95,13 @@ void PolygonInfoModel::updatePolygonAfterSimplification(int id, int pointsAfter,
     emit dataChanged(topLeft, bottomRight);
   }
 }
+
+QList<QLineF> PolygonInfoModel::getAllDerivationsLines(qreal normalize) {
+  QList<QLineF> result;
+  for (int i = 0; i < m_polygonInfos.size();i++){
+    QPointF p1=  m_polygonInfos[i].maxDeviation.line.p1();
+    QPointF p2=  m_polygonInfos[i].maxDeviation.line.p2();
+    result.append(QLineF(p1/normalize, p2/normalize));
+  }
+  return result;
+}

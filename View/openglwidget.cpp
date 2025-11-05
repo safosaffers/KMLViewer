@@ -100,6 +100,23 @@ void OpenGLWidget::drawPolygonsWithSelected(QPainter& painter, QList<QPolygonF> 
     }
   }
 }
+void OpenGLWidget::drawDeviations(QPainter& painter, QList<QLineF> deviationLines) {
+  if (deviationLines.empty()) {return;}
+
+  QPainterPath path;
+
+  for(const QLineF line:deviationLines)
+  {
+    path.moveTo(line.p1());
+    path.lineTo(line.p2());
+  }
+
+
+  painter.save();
+  painter.setBrush(Qt::NoBrush);
+  painter.drawPath(path);
+  painter.restore();
+}
 void OpenGLWidget::paintGL() {
   QPainter painter(this);
   painter.setRenderHint(QPainter::Antialiasing);
@@ -112,6 +129,10 @@ void OpenGLWidget::paintGL() {
                            SELECTED_POLYGON_COLOR);
   drawPolygonsWithSelected(painter, simplifiedPolygons, Qt::green, QColor(qRgb(48, 106, 42)),
                            selectedPolygonId, SELECTED_POLYGON_COLOR);
+
+  setPenForEdges(painter, QColor(qRgb(0, 0, 205)));
+
+  drawDeviations(painter, deviationLines);
 
   painter.end();
 }
@@ -279,4 +300,8 @@ void OpenGLWidget::centerOnPolygon(int id) {
   transformViewport.translate(translation.x(), translation.y());
 
   update();  // Trigger repaint
+}
+
+void OpenGLWidget::setDeviationsLines(QList<QLineF> deviationLines) {
+  this->deviationLines=deviationLines;
 }

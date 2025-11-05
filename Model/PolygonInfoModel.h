@@ -50,7 +50,7 @@ public:
   // Update specific fields after simplification
   void updatePolygonAfterSimplification(int id, int pointsAfter, qint64 timeNs,
                                         MaxDeviationResult maxDeviation);
-
+  QList<QLineF> getAllDerivationsLines(qreal normalize);
 private:
   QList<PolygonInfo> m_polygonInfos;
 };

@@ -126,6 +126,7 @@ void Controller::finishModelSimplify() {
   model->setSimplifiedMetersPolygons(polyMeters);
   model->normalizeSimplifiedPolygons();
 
+  view->getGLWidget()->setDeviationsLines(polygonInfoModel->getAllDerivationsLines(model->getNormalizeFactor()));
   view->ui->btnUploadaKMLFile->setEnabled(true);
   view->setSaveSimplificationPolygonsAvailable(true);
   view->ui->btnSimplifyPoligons->setChecked(false);

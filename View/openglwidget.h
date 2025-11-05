@@ -17,6 +17,7 @@ private:
   bool isPanning;
   QList<QPolygonF> polygons;
   QList<QPolygonF> simplifiedPolygons;
+  QList<QLineF> deviationLines;
   QPointF maxCoord;
   qreal scaleViewport;
   qreal minAllowedScale;
@@ -40,11 +41,13 @@ public:
   // Polygon selection functionality
   void setSelectedPolygonId(int id);
   void centerOnPolygon(int id);
+  void setDeviationsLines(QList<QLineF> deviationLines);
 
 protected:
   void initializeGL() override;
   void paintGL() override;
   void resizeGL(int width, int height) override;
+  void drawDeviations(QPainter& painter, QList<QLineF> deviationLines);
   void drawPolygons(QPainter& painter, const QList<QPolygonF>& polygons, const QColor& colorPoly,
                     const QColor& colorPoints);
   void drawPolygonsWithSelected(QPainter& painter, QList<QPolygonF> polygons, QColor colorFill,

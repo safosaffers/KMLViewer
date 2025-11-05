@@ -90,6 +90,7 @@ public:
   void setSimplifiedMetersPolygons(const QList<QPolygonF>& polys);
   void setSimplifiedNormalizedPolygons(const QList<QPolygonF>& polys);
   QList<QPolygonF> getNormalizedSimplifiedPolygons();
+  qreal getNormalizeFactor();
 
 private:
   QList<QPolygonF> convertToMeters(QList<QPolygonF> LonLatQList, double& minLon, double& minLat);
