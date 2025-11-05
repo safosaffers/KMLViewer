@@ -13,7 +13,7 @@ struct PolygonInfo {
   int pointsAfter;
   qint64 timeNs;  // Time in milliseconds
   MaxDeviationResult
-      maxDeviation;   // Maximum deviation after simplification and LineF of that deviation
+      maxDeviation;   // Maximum deviation after simplification and LineF represents that deviation
   bool isSimplified;  // Whether simplification has been performed
 
   PolygonInfo(int _id = 0, int _pointsBefore = 0, int _pointsAfter = 0, qint64 _timeMs = 0,

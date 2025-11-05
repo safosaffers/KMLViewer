@@ -5,7 +5,7 @@
 typedef struct MaxDeviationResult {
   double value;  /// max deviation value between simplified and original per
                  /// all lines
-  QLineF line;   /// line from that max value achieved
+  QLineF line;   /// perpendicular with lenth value represented this deviation
   MaxDeviationResult() : value(0), line(QLineF()) {}
   MaxDeviationResult(double value, QLineF line) : value(value), line(line) {}
   MaxDeviationResult(MaxDeviationResult&& other) noexcept
