@@ -6,10 +6,9 @@
 #include <QPointF>
 #include <QPolygonF>
 #include <cmath>
-#include <limits>
 #include <utility>  // for std::pair
 
-#include "MaxDeviationResult.h"
+#include "DeviationResult.h"
 using PolygonPair = QPair<QPolygonF, QPolygonF>;
 
 class PolygonSimplifier {
@@ -18,14 +17,19 @@ public:
   static PolygonPair simplifyPolygon(const PolygonPair& latLonMetPoly, double epsilon);
   static PolygonPair rammerDouglasPeucker(const PolygonPair& latLonMetPoly, double epsilon);
   static PolygonPair createFallbackSimplification(const PolygonPair& originalPoly);
-
+  static QPointF QPointFProjectionOntoQLineF(const QPointF& p, const QLineF& line);
+  static bool isProjectionPointOnLine(const QPointF& point, const QLineF& line);
+  static DeviationResult calculateDeviationBetweenQPointFAndQLineF(const QPointF& point,
+                                                                   const QLineF& edge);
+  // For all lines in polygon calculate the shortest length and represent result as DeviationResult
+  static DeviationResult calculateDeviationBetweenQPointFAndQPolygonF(const QPointF &point, const QPolygonF& polygon);
   // For all points in first check max perpendicular length to closest line in second
-  static MaxDeviationResult calculateMaxDeviationFromTo(const QPolygonF& first,
+  static DeviationResult calculateMaxDeviationBetweenPolygons(const QPolygonF& first,
                                                         const QPolygonF& second);
   // Method to calculate max deviation between original and simplified polygons
-  static MaxDeviationResult calculateMaxDeviation(const PolygonPair& original,
+  static DeviationResult calculateMaxDeviation(const PolygonPair& original,
                                                   const PolygonPair& simplified);
-  static QPointF QPointFprojectionOntooQLineF(const QLineF& line, const QPointF& p);
+
 
 private:
   // Helper methods

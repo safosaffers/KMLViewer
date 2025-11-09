@@ -46,7 +46,7 @@ QVariant PolygonInfoModel::data(const QModelIndex& index, int role) const {
       case 3:  // Time
         return info.isSimplified ? QString::number(info.timeNs) + " ns" : QString("—");
       case 4:  // Max deviation
-        return info.isSimplified ? QString::number(info.maxDeviation.value, 'f', 4) : QString("—");
+        return info.isSimplified ? QString::number(info.maxDeviation.getValue(), 'f', 4) : QString("—");
       default:
         return QVariant();
     }
@@ -83,7 +83,7 @@ PolygonInfo PolygonInfoModel::getPolygonInfo(int id) const {
 }
 
 void PolygonInfoModel::updatePolygonAfterSimplification(int id, int pointsAfter, qint64 timeNs,
-                                                        MaxDeviationResult maxDeviation) {
+                                                        DeviationResult maxDeviation) {
   if (id >= 0 && id < m_polygonInfos.size()) {
     m_polygonInfos[id].pointsAfter = pointsAfter;
     m_polygonInfos[id].timeNs = timeNs;
@@ -99,8 +99,8 @@ void PolygonInfoModel::updatePolygonAfterSimplification(int id, int pointsAfter,
 QList<QLineF> PolygonInfoModel::getAllDerivationsLines(qreal normalize) {
   QList<QLineF> result;
   for (int i = 0; i < m_polygonInfos.size();i++){
-    QPointF p1=  m_polygonInfos[i].maxDeviation.line.p1();
-    QPointF p2=  m_polygonInfos[i].maxDeviation.line.p2();
+    QPointF p1=  m_polygonInfos[i].maxDeviation.getLine().p1();
+    QPointF p2=  m_polygonInfos[i].maxDeviation.getLine().p2();
     result.append(QLineF(p1/normalize, p2/normalize));
   }
   return result;

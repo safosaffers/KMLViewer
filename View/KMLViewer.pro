@@ -33,6 +33,8 @@ HEADERS += \
     ../Model/PolygonSimplifier.h \
     ../Model/Normalizer.h \
     ../Model/PolygonInfoModel.h \
+    ../Model/DeviationResult.h \
+    
 
 FORMS += \
     view.ui

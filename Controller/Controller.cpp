@@ -40,7 +40,7 @@ void Controller::HandleModelLoading(QString fileName) {
     polygonInfoModel->setPolygonCount(model->getNumberOfPolygons());
     QList<QPolygonF> metersPolygons = model->getMetersPolygons();
     for (int i = 0; i < metersPolygons.size(); i++) {
-      PolygonInfo info(i, metersPolygons[i].size(), 0, 0, MaxDeviationResult());
+      PolygonInfo info(i, metersPolygons[i].size(), 0, 0, DeviationResult());
       polygonInfoModel->setPolygonInfo(i, info);
     }
 

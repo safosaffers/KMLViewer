@@ -1,6 +1,6 @@
 #include "PolygonSimplifier.h"
 
-QPointF PolygonSimplifier::QPointFprojectionOntooQLineF(const QLineF& AB, const QPointF& P) {
+QPointF PolygonSimplifier::QPointFProjectionOntoQLineF(const QPointF& P, const QLineF& AB) {
   QPointF A = AB.p1();
   QPointF B = AB.p2();
   QPointF d_vec = B - A;
@@ -170,51 +170,87 @@ PolygonPair PolygonSimplifier::simplifyPolygon(const PolygonPair& latLonMetPoly,
 
   return result;
 }
-
-MaxDeviationResult PolygonSimplifier::calculateMaxDeviationFromTo(const QPolygonF& first,
-                                                                  const QPolygonF& second) {
-  if (first.isEmpty() || second.isEmpty() != 0) {
-    return MaxDeviationResult();
-  }
-  double maxDeviation = 0.;
-  QLineF maxDeviationIsFromLine;
-  QPointF maxDeviationIsFromPoint;
-  for (const QPointF& point : first) {
-    double currentMinDeviation = std::numeric_limits<double>::max();
-    QLineF minDeviationIsFromLine;
-    QPointF minDeviationIsFromPoint;
-    int secondSize = second.size();
-    for (int i = 0; i < secondSize; i++) {
-      QPointF p1 = second.at(i);
-      QPointF p2 = second.at((i + 1) % secondSize);
-      QLineF currentLine(p1, p2);
-      qreal currentDeviation = distanceBetweenLineAndPoint(currentLine, point);
-      if (currentDeviation < currentMinDeviation) {
-        currentMinDeviation = currentDeviation;
-        minDeviationIsFromLine = std::move(currentLine);
-        minDeviationIsFromPoint = point;
-      }
+bool PolygonSimplifier::isProjectionPointOnLine(const QPointF& point,
+                                    const QLineF& line) {
+  QPointF A=line.p1();
+  QPointF B=line.p2();
+  qreal minX = qMin(A.x(), B.x());
+  qreal minY = qMin(A.y(), B.y());
+  qreal maxX = qMax(A.x(), B.x());
+  qreal maxY = qMax(A.y(), B.y());
+  return minX <= point.x() && point.x() <= maxX &&
+         minY <= point.y() && point.y() <= maxY;
+}
+DeviationResult PolygonSimplifier::calculateDeviationBetweenQPointFAndQLineF(const QPointF& point,
+                                                                 const QLineF& edge) {
+  DeviationResult res;
+  res.setFromEdge(edge);
+  res.setFromPoint(point);
+  QPointF projectionPoint = QPointFProjectionOntoQLineF(point, edge);
+  if (isProjectionPointOnLine(projectionPoint, edge)){
+    QLineF deviationLine(point, projectionPoint);
+    res.setLine(deviationLine);
+    res.setValue(deviationLine.length());
+  }else{
+    QLineF line1 = QLineF(point, edge.p1());
+    QLineF line2 = QLineF(point, edge.p2());
+    qreal value1 = line1.length();
+    qreal value2= line2.length();
+    if (value1 < value2){
+      res.setLine(line1);
+      res.setValue(value1);
+    }else{
+      res.setLine(line2);
+      res.setValue(value2);
     }
-    if (currentMinDeviation > maxDeviation) {
-      maxDeviation = currentMinDeviation;
-      maxDeviationIsFromLine = std::move(minDeviationIsFromLine);
-      maxDeviationIsFromPoint = minDeviationIsFromPoint;
-    }
   }
-
-  QPointF closest = QPointFprojectionOntooQLineF(maxDeviationIsFromLine, maxDeviationIsFromPoint);
-  QLineF maxDeviationLine(maxDeviationIsFromPoint, closest);
-  return MaxDeviationResult(maxDeviation, maxDeviationLine);
+  return res;
 }
 
-MaxDeviationResult PolygonSimplifier::calculateMaxDeviation(const PolygonPair& original,
-                                                            const PolygonPair& simplified) {
-  if (original.second.isEmpty() || simplified.second.isEmpty()) {
-    return MaxDeviationResult();
+DeviationResult PolygonSimplifier::calculateDeviationBetweenQPointFAndQPolygonF(
+    const QPointF& point, const QPolygonF& polygon) {
+  // double currentMinDeviation = std::numeric_limits<double>::max();
+  // QLineF minDeviationIsFromLine;
+  // QPointF minDeviationIsFromPoint;
+  DeviationResult minDeviation = MIN_DEVIATION;
+  int polygonSize = polygon.size();
+  for (int i = 0; i < polygonSize; i++) {
+    QPointF p1 = polygon.at(i);
+    QPointF p2 = polygon.at((i + 1) % polygonSize);
+    QLineF currentLine(p1, p2);
+    DeviationResult currentDeviation =
+        calculateDeviationBetweenQPointFAndQLineF(point, currentLine);
+    if (currentDeviation.getValue() < minDeviation.getValue()) {
+      minDeviation = currentDeviation;
+    }
+  }
+  return minDeviation;
+}
+DeviationResult PolygonSimplifier::calculateMaxDeviationBetweenPolygons(const QPolygonF& first,
+                                                                        const QPolygonF& second) {
+  if (first.isEmpty() || second.isEmpty() != 0) {
+    return DeviationResult();
   }
 
-  MaxDeviationResult max1 = calculateMaxDeviationFromTo(original.second, simplified.second);
-  MaxDeviationResult max2 = calculateMaxDeviationFromTo(simplified.second, original.second);
+  DeviationResult maxDeviation;
+  for (const QPointF& point : first) {
+    DeviationResult currentDeviation = calculateDeviationBetweenQPointFAndQPolygonF(point, second);
+    if (currentDeviation.getValue() > maxDeviation.getValue()) {
+      maxDeviation = currentDeviation;
+    }
+  }
 
-  return max1.value > max2.value ? max1 : max2;
+  return maxDeviation;
+}
+
+DeviationResult PolygonSimplifier::calculateMaxDeviation(const PolygonPair& original,
+                                                         const PolygonPair& simplified) {
+  if (original.second.isEmpty() || simplified.second.isEmpty()) {
+    return DeviationResult();
+  }
+
+  DeviationResult max1 = calculateMaxDeviationBetweenPolygons(original.second, simplified.second);
+  DeviationResult max2 = calculateMaxDeviationBetweenPolygons(simplified.second, original.second);
+
+  return max1.getValue() > max2.getValue() ? max1 : max2;
 }
