@@ -25,7 +25,7 @@ public:
   // Method to calculate max deviation between original and simplified polygons
   static MaxDeviationResult calculateMaxDeviation(const PolygonPair& original,
                                                   const PolygonPair& simplified);
-  static QPointF closestPointOnLineToPoint(const QLineF& line, const QPointF& p);
+  static QPointF QPointFprojectionOntooQLineF(const QLineF& line, const QPointF& p);
 
 private:
   // Helper methods

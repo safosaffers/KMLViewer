@@ -1,19 +1,19 @@
 #include "PolygonSimplifier.h"
 
-QPointF PolygonSimplifier::closestPointOnLineToPoint(const QLineF& line, const QPointF& m) {
-  QPointF p1 = line.p1();
-  QPointF p2 = line.p2();
-  QPointF d_vec = p2 - p1;
-  QPointF m_vec = m - p1;
+QPointF PolygonSimplifier::QPointFprojectionOntooQLineF(const QLineF& AB, const QPointF& P) {
+  QPointF A = AB.p1();
+  QPointF B = AB.p2();
+  QPointF d_vec = B - A;
 
   qreal d_square = d_vec.x() * d_vec.x() + d_vec.y() * d_vec.y();
   if (qFuzzyIsNull(d_square)) {
-    return p1;
+    return A;
   }
-  qreal product = QPointF::dotProduct(d_vec, m_vec);
-  qreal t = product / d_square;
+  QPointF AP_vec = P - A;
+  qreal AP_dot_v = QPointF::dotProduct(AP_vec, d_vec);
+  qreal t = AP_dot_v / d_square;
 
-  return p1 + t * d_vec;
+  return A + t * d_vec;
 }
 qreal PolygonSimplifier::distanceBetweenLineAndPoint(const QLineF& line, const QPointF& p) {
   // transform to local coordinates system (0,0) - (lx, ly)
@@ -198,11 +198,11 @@ MaxDeviationResult PolygonSimplifier::calculateMaxDeviationFromTo(const QPolygon
     if (currentMinDeviation > maxDeviation) {
       maxDeviation = currentMinDeviation;
       maxDeviationIsFromLine = std::move(minDeviationIsFromLine);
-      maxDeviationIsFromPoint=minDeviationIsFromPoint;
+      maxDeviationIsFromPoint = minDeviationIsFromPoint;
     }
   }
 
-  QPointF closest = closestPointOnLineToPoint(maxDeviationIsFromLine, maxDeviationIsFromPoint);
+  QPointF closest = QPointFprojectionOntooQLineF(maxDeviationIsFromLine, maxDeviationIsFromPoint);
   QLineF maxDeviationLine(maxDeviationIsFromPoint, closest);
   return MaxDeviationResult(maxDeviation, maxDeviationLine);
 }
