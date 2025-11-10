@@ -107,7 +107,7 @@ void View::on_btnSaveSimplifyPoligons_clicked() { saveKMLFile(); }
 
 void View::confirmitionExit(QCloseEvent* event) {
   event->ignore();
-  if (QMessageBox::Yes == QMessageBox::question(this, "Подтверждне закрытия",
+  if (QMessageBox::Yes == QMessageBox::question(this, "Подтверждение закрытия",
                                                 "Вы уверены, что хотите выйти?",
                                                 QMessageBox::Yes | QMessageBox::No)) {
     // Если добавлю стили
