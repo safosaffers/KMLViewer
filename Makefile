@@ -23,6 +23,14 @@ $(TARGET):
 # Правило для установки
 install: $(TARGET)
 
+install-standalone-windows:
+	set PATH=C:\Program Files (x86)\mingw64\bin;C:\Qt\6.9.3\static-mingw\bin;%SystemRoot%\system32 && \
+	cd View && \
+	if not exist build mkdir build && \
+	cd build && \
+	qmake "DESTDIR = ../../" "QMAKE_LFLAGS += -static" ../KMLViewer.pro && \
+	mingw32-make
+
 uninstall:
 	rm -f /usr/local/bin/$(TARGET)
 
@@ -48,6 +56,6 @@ cppcheck:
 rebuild: clean all
 
 clean:
-	rm -rf *.a *.out dist/ $(DIST_NAME)
+	rm -rf *.a *.out *.exe dist/ $(DIST_NAME)
 	find . -name "*.o" -exec rm {} +
 	rm -rf View/build View/KMLViewer.pro.user libs/ $(TARGET)
