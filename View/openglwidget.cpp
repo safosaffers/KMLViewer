@@ -139,6 +139,7 @@ void OpenGLWidget::paintGL() {
 void OpenGLWidget::resizeGL(int width, int height) { glViewport(0, 0, width, height); }
 
 void OpenGLWidget::setPolygons(const QList<QPolygonF>& polygons) { this->polygons = polygons; }
+void OpenGLWidget::clearDeviationLines(){this->deviationLines.clear();}
 void OpenGLWidget::clearPolygons() { this->polygons.clear(); }
 void OpenGLWidget::clearSimplifiedPolygons() { this->simplifiedPolygons.clear(); }
 void OpenGLWidget::setSimplifiedPolygons(const QList<QPolygonF>& simplifiedPolygons) {

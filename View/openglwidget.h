@@ -33,6 +33,7 @@ public:
   ~OpenGLWidget() override;
 
   void setPolygons(const QList<QPolygonF>& polygons);
+  void clearDeviationLines();
   void clearPolygons();
   void clearSimplifiedPolygons();
   void setSimplifiedPolygons(const QList<QPolygonF>& polygons);

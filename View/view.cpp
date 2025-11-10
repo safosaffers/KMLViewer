@@ -31,6 +31,7 @@ void View::setSimplificationAvailable(bool flag) {
 void View::clearSimplificationInfo() {
   ui->lblNumberOfSimplifiedPolygonsPoints->setText("—");
   ui->lblTimeAlgorithm->setText("—");
+  glwidget->clearDeviationLines();
 }
 void View::clearChosenFileName() { ui->lblChosenFilename->setText("—"); }
 void View::clearPolygonStats() {
