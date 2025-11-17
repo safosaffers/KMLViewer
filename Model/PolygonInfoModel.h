@@ -51,6 +51,7 @@ public:
   void updatePolygonAfterSimplification(int id, int pointsAfter, qint64 timeNs,
                                         DeviationResult maxDeviation);
   QList<QLineF> getAllDerivationsLines(qreal normalize);
+
 private:
   QList<PolygonInfo> m_polygonInfos;
 };

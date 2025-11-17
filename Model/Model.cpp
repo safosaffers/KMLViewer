@@ -213,6 +213,4 @@ void Model::saveSimplifiedModel(QString fileName) {
   KmlFileSaver::saveKmlFile(doc, fileName);
 }
 
-qreal Model::getNormalizeFactor(){
-  return normalizeFactor;
-}
+qreal Model::getNormalizeFactor() { return normalizeFactor; }

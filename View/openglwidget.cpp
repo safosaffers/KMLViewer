@@ -101,16 +101,16 @@ void OpenGLWidget::drawPolygonsWithSelected(QPainter& painter, QList<QPolygonF> 
   }
 }
 void OpenGLWidget::drawDeviations(QPainter& painter, QList<QLineF> deviationLines) {
-  if (deviationLines.empty()) {return;}
+  if (deviationLines.empty()) {
+    return;
+  }
 
   QPainterPath path;
 
-  for(const QLineF line:deviationLines)
-  {
+  for (const QLineF line : deviationLines) {
     path.moveTo(line.p1());
     path.lineTo(line.p2());
   }
-
 
   painter.save();
   painter.setBrush(Qt::NoBrush);
@@ -139,7 +139,7 @@ void OpenGLWidget::paintGL() {
 void OpenGLWidget::resizeGL(int width, int height) { glViewport(0, 0, width, height); }
 
 void OpenGLWidget::setPolygons(const QList<QPolygonF>& polygons) { this->polygons = polygons; }
-void OpenGLWidget::clearDeviationLines(){this->deviationLines.clear();}
+void OpenGLWidget::clearDeviationLines() { this->deviationLines.clear(); }
 void OpenGLWidget::clearPolygons() { this->polygons.clear(); }
 void OpenGLWidget::clearSimplifiedPolygons() { this->simplifiedPolygons.clear(); }
 void OpenGLWidget::setSimplifiedPolygons(const QList<QPolygonF>& simplifiedPolygons) {
@@ -304,5 +304,5 @@ void OpenGLWidget::centerOnPolygon(int id) {
 }
 
 void OpenGLWidget::setDeviationsLines(QList<QLineF> deviationLines) {
-  this->deviationLines=deviationLines;
+  this->deviationLines = deviationLines;
 }

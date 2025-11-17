@@ -22,14 +22,14 @@ public:
   static DeviationResult calculateDeviationBetweenQPointFAndQLineF(const QPointF& point,
                                                                    const QLineF& edge);
   // For all lines in polygon calculate the shortest length and represent result as DeviationResult
-  static DeviationResult calculateDeviationBetweenQPointFAndQPolygonF(const QPointF &point, const QPolygonF& polygon);
+  static DeviationResult calculateDeviationBetweenQPointFAndQPolygonF(const QPointF& point,
+                                                                      const QPolygonF& polygon);
   // For all points in first check max perpendicular length to closest line in second
   static DeviationResult calculateMaxDeviationBetweenPolygons(const QPolygonF& first,
-                                                        const QPolygonF& second);
+                                                              const QPolygonF& second);
   // Method to calculate max deviation between original and simplified polygons
   static DeviationResult calculateMaxDeviation(const PolygonPair& original,
-                                                  const PolygonPair& simplified);
-
+                                               const PolygonPair& simplified);
 
 private:
   // Helper methods

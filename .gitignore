@@ -82,4 +82,8 @@ build/
 # vscode files
 .vscode/
 
-kmlviewer.out
+# compiled results
+*.out
+*.exe
+# draw io bkp files
+*.drawio.bkp

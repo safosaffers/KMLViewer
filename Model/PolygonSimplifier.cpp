@@ -170,36 +170,34 @@ PolygonPair PolygonSimplifier::simplifyPolygon(const PolygonPair& latLonMetPoly,
 
   return result;
 }
-bool PolygonSimplifier::isProjectionPointOnLine(const QPointF& point,
-                                    const QLineF& line) {
-  QPointF A=line.p1();
-  QPointF B=line.p2();
+bool PolygonSimplifier::isProjectionPointOnLine(const QPointF& point, const QLineF& line) {
+  QPointF A = line.p1();
+  QPointF B = line.p2();
   qreal minX = qMin(A.x(), B.x());
   qreal minY = qMin(A.y(), B.y());
   qreal maxX = qMax(A.x(), B.x());
   qreal maxY = qMax(A.y(), B.y());
-  return minX <= point.x() && point.x() <= maxX &&
-         minY <= point.y() && point.y() <= maxY;
+  return minX <= point.x() && point.x() <= maxX && minY <= point.y() && point.y() <= maxY;
 }
 DeviationResult PolygonSimplifier::calculateDeviationBetweenQPointFAndQLineF(const QPointF& point,
-                                                                 const QLineF& edge) {
+                                                                             const QLineF& edge) {
   DeviationResult res;
   res.setFromEdge(edge);
   res.setFromPoint(point);
   QPointF projectionPoint = QPointFProjectionOntoQLineF(point, edge);
-  if (isProjectionPointOnLine(projectionPoint, edge)){
+  if (isProjectionPointOnLine(projectionPoint, edge)) {
     QLineF deviationLine(point, projectionPoint);
     res.setLine(deviationLine);
     res.setValue(deviationLine.length());
-  }else{
+  } else {
     QLineF line1 = QLineF(point, edge.p1());
     QLineF line2 = QLineF(point, edge.p2());
     qreal value1 = line1.length();
-    qreal value2= line2.length();
-    if (value1 < value2){
+    qreal value2 = line2.length();
+    if (value1 < value2) {
       res.setLine(line1);
       res.setValue(value1);
-    }else{
+    } else {
       res.setLine(line2);
       res.setValue(value2);
     }
